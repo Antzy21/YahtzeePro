@@ -4,106 +4,64 @@
     {
         private readonly int _maxDiceCount;
 
+        private record DiceCombination(int NumberOfOnes, int NumberOfFives, int NumberOfOthers);
+
+        public record ScoreAndValuableDiceCount(int score, int valueAddingDice);
+
+        private Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
+
+        private readonly Dictionary<ScoreAndValuableDiceCount, double> _scoresToProbabilities = new();
+
+        public Dictionary<ScoreAndValuableDiceCount, double> ProbabilitiesOfScores => _scoresToProbabilities;
+
         public RollPosibilities(int maxDiceCount)
         {
             _maxDiceCount = maxDiceCount;
-            GenerateValues(_maxDiceCount);
+
+            GenerateValues(_maxDiceCount, new DiceCombination(0, 0, 0));
+
+            _scoresToProbabilities = _diceComboToProbabilities.ToDictionary(
+                    kvp => new ScoreAndValuableDiceCount(
+                        ScoreDiceCombination(kvp.Key),
+                        kvp.Key.NumberOfOnes + kvp.Key.NumberOfFives
+                    ),
+                    kvp => kvp.Value
+                );
         }
 
-        public Dictionary<List<int>, int> DiceCombinationsCounter = new()
+        private void GenerateValues(int diceCount, DiceCombination currentCombination, double probability = 1)
         {
-            { new List<int>() {1}, 1  },
-            { new List<int>() {2}, 1  },
-            { new List<int>() {3}, 1  },
-            { new List<int>() {4}, 1  },
-            { new List<int>() {5}, 1  },
-            { new List<int>() {6}, 1  },
-        };
-
-        // Get the total number of roll possibilities for an amount of dice.
-        // Should be equal to 6 ^ diceCount?
-        public int CombinationCountForDiceCount(int diceCount)
-        {
-            return DiceCombinationsCounter
-                .Where(kvp => kvp.Key.Count == diceCount)
-                .Aggregate(0, (sum, kvp) => sum + kvp.Value);
-        }
-
-        // For a set of dice, 1s and 5s can be rolled
-        // Use recursion to figure out the posibilities
-        private void GenerateValues(int maxDiceCount)
-        {
-            for (int i = 1; i < maxDiceCount; i++)
+            if (diceCount == 0)
             {
-                GenerateDiceCombinationsForAdditionalDice();
-            }
-        }
-
-        private void GenerateDiceCombinationsForAdditionalDice()
-        {
-            var additionalDiceCombination = new Dictionary<List<int>, int>();
-
-            foreach (var (diceCombo, _) in DiceCombinationsCounter)
-            {
-                for (int additionalDiceValue = 1; additionalDiceValue <= 6; additionalDiceValue++)
-                {
-                    var newDiceCombination = new List<int>(diceCombo) { additionalDiceValue };
-                    newDiceCombination.Order();
-
-                    if (additionalDiceCombination.ContainsKey(newDiceCombination))
-                    {
-                        additionalDiceCombination[newDiceCombination]++;
-                    }
-                    else
-                    {
-                        additionalDiceCombination[newDiceCombination] = 1;
-                    }
-                }
+                _diceComboToProbabilities.Add(currentCombination, probability);
             }
 
-            foreach (var (key, value) in additionalDiceCombination)
-            {
-                DiceCombinationsCounter.Add(key, value);
-            }
+            // Add a 1
+            var comboWithExtraOne = new DiceCombination(
+                currentCombination.NumberOfOnes + 1,
+                currentCombination.NumberOfFives,
+                currentCombination.NumberOfOthers);
+            GenerateValues(diceCount - 1, comboWithExtraOne, probability / 6);
+
+            // Add a 5
+            var comboWithExtraFive = new DiceCombination(
+                currentCombination.NumberOfOnes,
+                currentCombination.NumberOfFives + 1,
+                currentCombination.NumberOfOthers);
+            GenerateValues(diceCount - 1, comboWithExtraFive, probability / 6);
+
+            // Add 2,3,4 or 6
+            var comboWithExtraOther = new DiceCombination(
+                currentCombination.NumberOfOnes,
+                currentCombination.NumberOfFives + 1,
+                currentCombination.NumberOfOthers);
+            GenerateValues(diceCount - 1, comboWithExtraOther, probability * 4 / 6);
         }
 
-        private int ScoreDice(int dice)
+        private int ScoreDiceCombination(DiceCombination diceCombination)
         {
-            if (dice == 1) return 100;
-            if (dice == 5) return 50;
-            return 0;
-        }
-
-        private int ScoreDiceCombination(List<int> diceCombinations)
-        {
-            // Functional Yeahhhh
-            return diceCombinations.Aggregate(0, (sum, dice) => sum + ScoreDice(dice));
-        }
-
-        public Dictionary<int, double> PossibleScoring(int diceCount)
-        {
-            var scoresAndProbabilities = new Dictionary<int, double>();
-
-            // Count the number of times a score is reached from a dice combination
-            foreach (var (diceCombo, frequency) in DiceCombinationsCounter)
-            {
-                var score = ScoreDiceCombination(diceCombo);
-
-                if (scoresAndProbabilities.ContainsKey(score))
-                {
-                    scoresAndProbabilities[score]++;
-                }
-                else
-                {
-                    scoresAndProbabilities[score] = 1;
-                }
-            }
-
-            // Map the value in the dictionary from the count of the score to the probability of the score
-            return scoresAndProbabilities.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value / DiceCombinationsCounter.Count
-            );
+            return diceCombination.NumberOfOnes * 100 +
+                diceCombination.NumberOfFives * 50;
         }
     }
 }
