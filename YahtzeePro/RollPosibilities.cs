@@ -1,4 +1,6 @@
-﻿namespace YahtzeePro
+﻿using System.Text;
+
+namespace YahtzeePro
 {
     public class RollPosibilities
     {
@@ -14,11 +16,6 @@
         private readonly Dictionary<ValuableDiceCount, Dictionary<Score, double>> _diceCountToScoresToProbabilities = new();
 
         public Dictionary<ValuableDiceCount, Dictionary<Score, double>> ProbabilitiesOfScores => _diceCountToScoresToProbabilities;
-
-        private ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
-        {
-            return new(diceCombination.NumberOfFives + diceCombination.NumberOfOnes);
-        }
 
         public RollPosibilities(int maxDiceCount)
         {
@@ -37,11 +34,29 @@
             }
         }
 
+        private ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
+        {
+            return new(diceCombination.NumberOfFives + diceCombination.NumberOfOnes);
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+
+            foreach (var (diceCombo, probability) in _diceComboToProbabilities)
+            {
+                stringBuilder.AppendLine($"{diceCombo} - {ScoreDiceCombination(diceCombo).score} = {probability.ToString("#.###")}");
+            }
+
+            return stringBuilder.ToString();
+        }
+
         private void GenerateValues(int diceCount, DiceCombination currentCombination, double probability = 1)
         {
             if (diceCount == 0)
             {
-                _diceComboToProbabilities.Add(currentCombination, probability);
+                _diceComboToProbabilities[currentCombination] = probability;
+                return;
             }
 
             // Add a 1
@@ -61,8 +76,8 @@
             // Add 2,3,4 or 6
             var comboWithExtraOther = new DiceCombination(
                 currentCombination.NumberOfOnes,
-                currentCombination.NumberOfFives + 1,
-                currentCombination.NumberOfOthers);
+                currentCombination.NumberOfFives,
+                currentCombination.NumberOfOthers + 1);
             GenerateValues(diceCount - 1, comboWithExtraOther, probability * 4 / 6);
         }
 
