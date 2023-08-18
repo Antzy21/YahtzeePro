@@ -6,13 +6,19 @@
 
         private record DiceCombination(int NumberOfOnes, int NumberOfFives, int NumberOfOthers);
 
-        public record ScoreAndValuableDiceCount(int score, int valueAddingDice);
+        public record Score(int score);
+        public record ValuableDiceCount(int valueAddingDice);
 
         private Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
 
-        private readonly Dictionary<ScoreAndValuableDiceCount, double> _scoresToProbabilities = new();
+        private readonly Dictionary<ValuableDiceCount, Dictionary<Score, double>> _diceCountToScoresToProbabilities = new();
 
-        public Dictionary<ScoreAndValuableDiceCount, double> ProbabilitiesOfScores => _scoresToProbabilities;
+        public Dictionary<ValuableDiceCount, Dictionary<Score, double>> ProbabilitiesOfScores => _diceCountToScoresToProbabilities;
+
+        private ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
+        {
+            return new(diceCombination.NumberOfFives + diceCombination.NumberOfOnes);
+        }
 
         public RollPosibilities(int maxDiceCount)
         {
@@ -20,13 +26,15 @@
 
             GenerateValues(_maxDiceCount, new DiceCombination(0, 0, 0));
 
-            _scoresToProbabilities = _diceComboToProbabilities.ToDictionary(
-                    kvp => new ScoreAndValuableDiceCount(
-                        ScoreDiceCombination(kvp.Key),
-                        kvp.Key.NumberOfOnes + kvp.Key.NumberOfFives
-                    ),
-                    kvp => kvp.Value
-                );
+            foreach (var (diceCombo, probability) in _diceComboToProbabilities)
+            {
+                var valueableDiceCount = GetNumberOfValuableDice(diceCombo);
+                if (!_diceCountToScoresToProbabilities.ContainsKey(valueableDiceCount))
+                {
+                    _diceCountToScoresToProbabilities[valueableDiceCount] = new();
+                }
+                _diceCountToScoresToProbabilities[valueableDiceCount].Add(ScoreDiceCombination(diceCombo), probability);
+            }
         }
 
         private void GenerateValues(int diceCount, DiceCombination currentCombination, double probability = 1)
@@ -58,10 +66,11 @@
             GenerateValues(diceCount - 1, comboWithExtraOther, probability * 4 / 6);
         }
 
-        private int ScoreDiceCombination(DiceCombination diceCombination)
+        private Score ScoreDiceCombination(DiceCombination diceCombination)
         {
-            return diceCombination.NumberOfOnes * 100 +
-                diceCombination.NumberOfFives * 50;
+            return new(
+                diceCombination.NumberOfOnes * 100 +
+                diceCombination.NumberOfFives * 50);
         }
     }
 }
