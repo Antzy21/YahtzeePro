@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro", "YahtzeePro\YahtzeePro.csproj", "{AA5F0006-236F-4F60-BFE8-F68B41253DEA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.tests", "YahtzeePro.tests\YahtzeePro.tests.csproj", "{12CB7296-2B08-401D-AAC1-C3914926FBFA}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.CmdTests", "YahtzeePro.CmdTests\YahtzeePro.CmdTests.csproj", "{D839EB9B-FE47-41F4-B952-C9D6E0B262B9}"
 EndProject
 Global
@@ -17,6 +19,10 @@ Global
 		{AA5F0006-236F-4F60-BFE8-F68B41253DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA5F0006-236F-4F60-BFE8-F68B41253DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA5F0006-236F-4F60-BFE8-F68B41253DEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12CB7296-2B08-401D-AAC1-C3914926FBFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12CB7296-2B08-401D-AAC1-C3914926FBFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12CB7296-2B08-401D-AAC1-C3914926FBFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12CB7296-2B08-401D-AAC1-C3914926FBFA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D839EB9B-FE47-41F4-B952-C9D6E0B262B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D839EB9B-FE47-41F4-B952-C9D6E0B262B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D839EB9B-FE47-41F4-B952-C9D6E0B262B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
