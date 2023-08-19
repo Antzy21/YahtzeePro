@@ -6,17 +6,20 @@
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
 
-        public ProbabilitiesCalculator()
+        private readonly int _winningValue;
+
+        private readonly int _totalDice;
+
+        public ProbabilitiesCalculator(int winningValue, int totalDice)
         {
-            for (int i = 1; i <= totalDice; i++)
+            _winningValue = winningValue;
+            _totalDice = totalDice;
+
+            for (int i = 1; i <= _totalDice; i++)
             {
                 _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
             }
         }
-
-        private static int winningValue = 5000;
-
-        private static int totalDice = 5;
 
         public Dictionary<GameState, double> gameStateProbabilities = new() { };
 
@@ -33,17 +36,17 @@
         public void PopulateGameStateProbabilities()
         {
             var timer = System.Diagnostics.Stopwatch.StartNew();
-            var LoggingInterval = new TimeSpan(1000000);
+            var LoggingInterval = new TimeSpan(0, 0, 1);
             var NextLoggingTime = timer.Elapsed;
             Console.WriteLine("\nBegin populating...\n");
 
-            for (int playerScore = winningValue - 50; playerScore >= 0; playerScore -= 50)
+            for (int playerScore = _winningValue - 50; playerScore >= 0; playerScore -= 50)
             {
-                for (int opponentScore = winningValue - 50; opponentScore >= 0; opponentScore -= 50)
+                for (int opponentScore = _winningValue - 50; opponentScore >= 0; opponentScore -= 50)
                 {
-                    for (int cachedScore = winningValue - playerScore; cachedScore >= 0; cachedScore -= 50)
+                    for (int cachedScore = _winningValue - playerScore; cachedScore >= 0; cachedScore -= 50)
                     {
-                        for (int diceCount = totalDice; diceCount > 0; diceCount--)
+                        for (int diceCount = _totalDice; diceCount > 0; diceCount--)
                         {
                             // New gs to test
                             var gs = new GameState(playerScore, opponentScore, cachedScore, diceCount);
@@ -74,7 +77,7 @@
                 PlayerScore: gs.OpponentScore,
                 OpponentScore: gs.PlayerScore + gs.CachedScore,
                 CachedScore: 0,
-                DiceToRoll: totalDice
+                DiceToRoll: _totalDice
                 );
 
             var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs);
@@ -102,15 +105,15 @@
             }
 
             // Default cases
-            if (gs.PlayerScore + gs.CachedScore >= winningValue)
+            if (gs.PlayerScore + gs.CachedScore >= _winningValue)
             {
-                if (gs.OpponentScore >= winningValue)
+                if (gs.OpponentScore >= _winningValue)
                 {
                     throw new Exception("Both players are in a winning state.");
                 }
                 return 1;
             }
-            else if (gs.OpponentScore >= winningValue)
+            else if (gs.OpponentScore >= _winningValue)
             {
                 return 0;
             }
@@ -153,7 +156,7 @@
                             PlayerScore: gs.OpponentScore,
                             OpponentScore: gs.PlayerScore,
                             CachedScore: 0,
-                            DiceToRoll: totalDice
+                            DiceToRoll: _totalDice
                         );
 
                         // Goes to opponent.
@@ -166,7 +169,7 @@
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
                             CachedScore: gs.CachedScore + score.score,
-                            DiceToRoll: totalDice
+                            DiceToRoll: _totalDice
                         );
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, rollsThisTurn + 1) * probability;
@@ -177,7 +180,7 @@
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
                             CachedScore: gs.CachedScore + score.score,
-                            DiceToRoll: totalDice - diceUsed.valueAddingDice
+                            DiceToRoll: _totalDice - diceUsed.valueAddingDice
                         );
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, rollsThisTurn + 1) * probability;
