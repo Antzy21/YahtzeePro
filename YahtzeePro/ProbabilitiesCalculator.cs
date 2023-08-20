@@ -15,6 +15,10 @@
             _winningValue = winningValue;
             _totalDice = totalDice;
 
+            Console.WriteLine("New Probabilities Calculator created.");
+            Console.WriteLine($"Win Value: {_winningValue}");
+            Console.WriteLine($"Total Dice: {_totalDice}");
+
             for (int i = 1; i <= _totalDice; i++)
             {
                 _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
@@ -61,7 +65,7 @@
                             if (timer.Elapsed > NextLoggingTime)
                             {
                                 NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                Console.WriteLine($"Score: {playerScore,4}+{cachedScore,4} - {opponentScore,4} => Prob: {gameStateProbabilities[gs].ToString("#.##")}");
+                                Console.WriteLine($" ({diceCount}Ds) {playerScore,4} + {cachedScore,4} - {opponentScore,4} => Prob: {gameStateProbabilities[gs].ToString("#.##")}");
                             }
                         }
                     }
