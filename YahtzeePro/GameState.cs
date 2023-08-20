@@ -4,6 +4,7 @@
         int PlayerScore,
         int OpponentScore,
         int CachedScore,
-        int DiceToRoll
+        int DiceToRoll,
+        bool IsStartOfTurn
     );
 }

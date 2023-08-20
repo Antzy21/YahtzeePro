@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 
 namespace YahtzeePro
@@ -11,6 +12,7 @@ namespace YahtzeePro
         private readonly bool _logAll = false;
         private readonly int _winningValue;
         private readonly int _totalDice;
+        private readonly string _dir;
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
         private readonly int _initialStackCounterToReturnKnownValue;
         private readonly int _calculationIterations;
@@ -18,7 +20,8 @@ namespace YahtzeePro
         private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new() { };
 
         public Dictionary<GameState, double> gameStateProbabilities = new() { };
-        public Dictionary<GameState, bool> gameStateShouldRoll = new();
+        public Dictionary<GameState, double> gameStateProbabilitiesRisky = new();
+        public Dictionary<GameState, double> gameStateProbabilitiesSafe = new();
 
         public ProbabilitiesCalculator(
             int winningValue,
@@ -32,6 +35,7 @@ namespace YahtzeePro
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             _logAll = logAll;
+            _dir = $"../../../../Win{_winningValue}/Dice{_totalDice}/";
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -47,7 +51,7 @@ namespace YahtzeePro
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            foreach (var (gs, probability) in gameStateProbabilities)
+            foreach (var (gs, _) in gameStateProbabilities)
             {
                 stringBuilder.AppendLine(GsDataToString(gs));
             }
@@ -58,13 +62,14 @@ namespace YahtzeePro
         {
             Console.WriteLine($"Writing data to {fileName}");
 
-            var file = File.CreateText(fileName);
+            Directory.CreateDirectory(_dir);
+            var file = File.CreateText(_dir+fileName);
 
             foreach (var (gs, probability) in gameStateProbabilities)
             {
                 var gsSerialised = JsonSerializer.Serialize(gs);
                 file.Write(gsSerialised);
-                file.WriteLine($"---{probability}---{gameStateShouldRoll[gs]}");
+                file.WriteLine($"---{probability}---{gameStateProbabilitiesRisky[gs]}---{gameStateProbabilitiesSafe[gs]}");
             }
 
             file.Close();
@@ -72,20 +77,22 @@ namespace YahtzeePro
 
         public void ReadDataFromFile(string fileName)
         {
-            Console.WriteLine($"Reading data from {fileName}");
+            Console.WriteLine($"Reading data from {_dir+fileName}");
 
-            var gsDataLines = File.ReadAllLines(fileName);
+            var gsDataLines = File.ReadAllLines(_dir+fileName);
 
             foreach (var gsData in gsDataLines)
             {
                 var gsSerialised = gsData.Split("---")[0];
                 var probability = gsData.Split("---")[1];
-                var shouldRoll = gsData.Split("---")[2];
+                var rollProbability = gsData.Split("---")[2];
+                var bankProbability = gsData.Split("---")[3];
 
-                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised);
+                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised)!;
 
                 gameStateProbabilities[gs] = double.Parse(probability);
-                gameStateShouldRoll[gs] = bool.Parse(shouldRoll);
+                gameStateProbabilitiesRisky[gs] = double.Parse(rollProbability);
+                gameStateProbabilitiesSafe[gs] = double.Parse(bankProbability);
             }
         }
 
@@ -105,28 +112,35 @@ namespace YahtzeePro
                     {
                         for (int diceCount = _totalDice; diceCount > 0; diceCount--)
                         {
-                            // New gs to test
-                            _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount);
-
-                            // Assume bank to start with.
-                            gameStateShouldRoll[_currentCalculatingGs] = false;
-
-                            // Make more accurate estimate
-                            // Iterate a few times to improve the estimate.
-                            for (int i = 0; i < _calculationIterations; i++)
+                            foreach (bool isStartOfTurn in new[]{ true, false })
                             {
-                                gameStateProbabilities[_currentCalculatingGs] = ProbabilityOfWinningFromGs(
-                                    _currentCalculatingGs,
-                                    _initialStackCounterToReturnKnownValue,
-                                    diceCount);
-                            }
+                                // Impossible to have no cache not at start of turn
+                                if (cachedScore == 0 && !isStartOfTurn)
+                                { continue; }
 
-                            _gameStateThatHaveBeenCalculated.Add(_currentCalculatingGs);
+                                // New gs to test
+                                _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn);
 
-                            if (_logAll || timer.Elapsed > NextLoggingTime)
-                            {
-                                NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                Console.WriteLine(GsDataToString(_currentCalculatingGs));
+                                // Assume bank to start with.
+                                gameStateProbabilitiesRisky[_currentCalculatingGs] = 0;
+                                gameStateProbabilitiesSafe[_currentCalculatingGs] = 1;
+
+                                // Make more accurate estimate
+                                // Iterate a few times to improve the estimate.
+                                for (int i = 0; i < _calculationIterations; i++)
+                                {
+                                    gameStateProbabilities[_currentCalculatingGs] = ProbabilityOfWinningFromGs(
+                                        _currentCalculatingGs,
+                                        _initialStackCounterToReturnKnownValue);
+                                }
+
+                                _gameStateThatHaveBeenCalculated.Add(_currentCalculatingGs);
+
+                                if (_logAll || timer.Elapsed > NextLoggingTime)
+                                {
+                                    NextLoggingTime = timer.Elapsed + LoggingInterval;
+                                    Console.WriteLine(GsDataToString(_currentCalculatingGs));
+                                }
                             }
                         }
                     }
@@ -159,54 +173,61 @@ namespace YahtzeePro
                 return 0;
             }
 
-            /// #########################################################
-            /// 
+
+            /// This is the risky play
+            /// ####################
             var rollScoreProbability = ProbabilityOfWinningIfRolling(gs, rollsThisTurn, stackCounterToReturnKnownValue);
-            ///
-            /// #########################################################
+            /// ####################
 
-            // Can't bank if they haven't rolled yet. 
-            if (rollsThisTurn == 0)
+            // This will either be:
+            // Choosing to reset the cache at start of turn
+            // Choosing to bank at subsequent rolls 
+            double safePlayProbability;
+
+            // Can't bank if it's the start of their turn. 
+            // Has to choose to reset cache or not!
+            if (gs.IsStartOfTurn)
             {
-                gameStateShouldRoll[gs] = true;
-                return rollScoreProbability;
-            }
+                var resetCacheGs = new GameState(
+                    PlayerScore: gs.PlayerScore,
+                    OpponentScore: gs.OpponentScore,
+                    CachedScore: 0,
+                    DiceToRoll: gs.DiceToRoll,
+                    IsStartOfTurn: false
+                );
 
-            /// #########################################################
-            ///
-            var bankScoreProbability = ProbabilityOfWinningIfBanking(gs, stackCounterToReturnKnownValue);
-            /// 
-            /// #########################################################
+                /// ###############
+                safePlayProbability = ProbabilityOfWinningIfRolling(resetCacheGs, rollsThisTurn, stackCounterToReturnKnownValue);
+                /// ###############
+            }
+            else
+            {
+                /// ###############
+                safePlayProbability = ProbabilityOfWinningIfBanking(gs, stackCounterToReturnKnownValue);
+                /// ###############
+            }
 
             if (gs == _currentCalculatingGs)
             {
-                gameStateShouldRoll[gs] = rollScoreProbability > bankScoreProbability;
+                gameStateProbabilitiesSafe[gs] = safePlayProbability;
+                gameStateProbabilitiesRisky[gs] = rollScoreProbability;
+                gameStateProbabilities[gs] = Math.Max(safePlayProbability, rollScoreProbability);
             }
 
-            return Math.Max(bankScoreProbability, rollScoreProbability);
+            return Math.Max(safePlayProbability, rollScoreProbability);
         }
 
         private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
         {
-            var resetDiceGs = new GameState(
-                PlayerScore: gs.OpponentScore,
-                OpponentScore: gs.PlayerScore + gs.CachedScore,
-                CachedScore: 0,
-                DiceToRoll: _totalDice
-                );
-
-            var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
-
-            var continueDiceGs = new GameState(
+            var newGs = new GameState(
                 PlayerScore: gs.OpponentScore,
                 OpponentScore: gs.PlayerScore + gs.CachedScore,
                 CachedScore: gs.CachedScore,
-                DiceToRoll: gs.DiceToRoll
+                DiceToRoll: gs.DiceToRoll,
+                IsStartOfTurn: true
                 );
 
-            var continueDiceProability = ProbabilityOfWinningFromGs(continueDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
-
-            return 1 - Math.Max(resetDiceProability, continueDiceProability);
+            return 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
         }
 
         private double ProbabilityOfWinningIfRolling(GameState gs, int rollsThisTurn, int stackCounterToReturnKnownValue)
@@ -226,11 +247,12 @@ namespace YahtzeePro
                             PlayerScore: gs.OpponentScore,
                             OpponentScore: gs.PlayerScore,
                             CachedScore: 0,
-                            DiceToRoll: _totalDice
+                            DiceToRoll: _totalDice,
+                            IsStartOfTurn: true
                         );
 
                         // Goes to opponent.
-                        TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
+                        TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
                     else if (diceUsed.valueAddingDice == gs.DiceToRoll)
                     {
@@ -239,10 +261,11 @@ namespace YahtzeePro
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
                             CachedScore: gs.CachedScore + score.score,
-                            DiceToRoll: _totalDice
+                            DiceToRoll: _totalDice,
+                            IsStartOfTurn: false
                         );
 
-                        TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1, rollsThisTurn: rollsThisTurn + 1) * probability;
+                        TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
                     else
                     {
@@ -250,7 +273,8 @@ namespace YahtzeePro
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
                             CachedScore: gs.CachedScore + score.score,
-                            DiceToRoll: _totalDice - diceUsed.valueAddingDice
+                            DiceToRoll: _totalDice - diceUsed.valueAddingDice,
+                            IsStartOfTurn: false
                         );
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
@@ -271,12 +295,23 @@ namespace YahtzeePro
             return 0.5;
         }
 
+        private bool ShouldRoll(GameState gs, out double probability)
+        {
+            if (gameStateProbabilitiesRisky.TryGetValue(gs, out var probabilityRisky)){
+                if (gameStateProbabilitiesSafe.TryGetValue(gs, out var probabilitySafe))
+                {
+                    probability = Math.Max(probabilityRisky, probabilitySafe);
+                    return probabilityRisky > probabilitySafe;
+                }
+            }
+            throw new Exception("No values found");
+        }
+
         private string GsDataToString(GameState gs)
         {
-            var bestMove = gameStateShouldRoll[gs] ? "roll" : "bank";
-            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} - {gs.OpponentScore,4}" +
-                $" => Prob: {gameStateProbabilities[gs],4:#.##}" +
-                $" => {bestMove}";
+            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} : {gs.OpponentScore,4}" +
+                $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
+                $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####}";
         }
     }
 }
