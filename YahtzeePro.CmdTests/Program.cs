@@ -5,11 +5,13 @@ Console.WriteLine("Hello, World!");
 
 var winningValue = 2000;
 var totalDice = 5;
-var maxIterationCounter = 3;
+var initialStackCounterToReturnKnownValue = 3;
+var calculationIterations = 5;
 
 var ProbabilitiesCalculator = new ProbabilitiesCalculator(
     winningValue,
     totalDice,
-    maxIterationCounter);
+    initialStackCounterToReturnKnownValue,
+    calculationIterations);
 
 ProbabilitiesCalculator.PopulateGameStateProbabilities();

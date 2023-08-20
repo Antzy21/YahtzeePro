@@ -11,13 +11,20 @@
         private readonly int _totalDice;
 
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
-        private readonly int _maxIterationCounter;
+        private readonly int _initialStackCounterToReturnKnownValue;
 
-        public ProbabilitiesCalculator(int winningValue, int totalDice, int maxiterationCounter = 5)
+        private readonly int _calculationIterations;
+
+        public ProbabilitiesCalculator(
+            int winningValue,
+            int totalDice,
+            int initialStackCounterToReturnKnownValue = 3,
+            int calculationIterations = 10)
         {
             _winningValue = winningValue;
             _totalDice = totalDice;
-            _maxIterationCounter = maxiterationCounter;
+            _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
+            _calculationIterations = calculationIterations;
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -27,9 +34,12 @@
             {
                 _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
             }
+            _calculationIterations = calculationIterations;
         }
 
         public Dictionary<GameState, double> gameStateProbabilities = new() { };
+
+        private HashSet<GameState> gameStateThatHaveBeenCalculated = new() { };
 
         // If the value doesnt exist in the dictionary, mock it at 0.5 to avoid infinite loops
         private double GetGameStateProbability(GameState gs)
@@ -61,10 +71,12 @@
 
                             // Make more accurate estimate
                             // Iterate a few times to improve the estimate.
-                            for (int i = 0; i < 20; i++)
+                            for (int i = 0; i < _calculationIterations; i++)
                             {
-                                gameStateProbabilities[gs] = ProbabilityOfWinningFromGs(gs);
+                                gameStateProbabilities[gs] = ProbabilityOfWinningFromGs(gs, _initialStackCounterToReturnKnownValue, 0);
                             }
+
+                            gameStateThatHaveBeenCalculated.Add(gs);
 
                             if (timer.Elapsed > NextLoggingTime)
                             {
@@ -79,7 +91,7 @@
             Console.WriteLine("\nFinished populating\n");
         }
 
-        private double ProbabilityOfWinningIfBanking(GameState gs, int iterationCounter)
+        private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
         {
             var resetDiceGs = new GameState(
                 PlayerScore: gs.OpponentScore,
@@ -88,7 +100,7 @@
                 DiceToRoll: _totalDice
                 );
 
-            var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs, iterationCounter: iterationCounter - 1);
+            var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
 
             var continueDiceGs = new GameState(
                 PlayerScore: gs.OpponentScore,
@@ -97,16 +109,16 @@
                 DiceToRoll: gs.DiceToRoll
                 );
 
-            var continueDiceProability = ProbabilityOfWinningFromGs(continueDiceGs, iterationCounter: iterationCounter - 1);
+            var continueDiceProability = ProbabilityOfWinningFromGs(continueDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
 
             return 1 - Math.Max(resetDiceProability, continueDiceProability);
         }
 
-        private double ProbabilityOfWinningFromGs(GameState gs, int rollsThisTurn = 0, int iterationCounter = _maxIterationCounter)
+        private double ProbabilityOfWinningFromGs(GameState gs, int stackCounterToReturnKnownValue, int rollsThisTurn = 0)
         {
-            // iterationCounter makes sure that the existing preset value (which is needed to avoid stack overflow),
+            // stackCounterToReturnKnownValue makes sure that the existing preset value (which is needed to avoid stack overflow),
             // is not immediately returned. Once it is zero, it will return.
-            if (iterationCounter == 0)
+            if (stackCounterToReturnKnownValue == 0 || gameStateThatHaveBeenCalculated.Contains(gs))
             {
                 return GetGameStateProbability(gs);
             }
@@ -127,7 +139,7 @@
 
             /// #########################################################
             /// 
-            var rollScoreProbability = ProbabilityOfWinningIfRolling(gs, rollsThisTurn, iterationCounter);
+            var rollScoreProbability = ProbabilityOfWinningIfRolling(gs, rollsThisTurn, stackCounterToReturnKnownValue);
             ///
             /// #########################################################
 
@@ -139,14 +151,14 @@
 
             /// #########################################################
             ///
-            var bankScoreProbability = ProbabilityOfWinningIfBanking(gs, iterationCounter);
+            var bankScoreProbability = ProbabilityOfWinningIfBanking(gs, stackCounterToReturnKnownValue);
             /// 
             /// #########################################################
 
             return Math.Max(bankScoreProbability, rollScoreProbability);
         }
 
-        private double ProbabilityOfWinningIfRolling(GameState gs, int rollsThisTurn, int iterationCounter)
+        private double ProbabilityOfWinningIfRolling(GameState gs, int rollsThisTurn, int stackCounterToReturnKnownValue)
         {
             double TotalScore = 0;
 
@@ -167,7 +179,7 @@
                         );
 
                         // Goes to opponent.
-                        TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, 0, iterationCounter: iterationCounter - 1) * probability;
+                        TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
                     else if (diceUsed.valueAddingDice == gs.DiceToRoll)
                     {
@@ -179,7 +191,7 @@
                             DiceToRoll: _totalDice
                         );
 
-                        TotalScore += ProbabilityOfWinningFromGs(newGs, rollsThisTurn + 1, iterationCounter: iterationCounter - 1) * probability;
+                        TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1, rollsThisTurn: rollsThisTurn + 1) * probability;
                     }
                     else
                     {
@@ -190,7 +202,7 @@
                             DiceToRoll: _totalDice - diceUsed.valueAddingDice
                         );
 
-                        TotalScore += ProbabilityOfWinningFromGs(newGs, rollsThisTurn + 1, iterationCounter - 1) * probability;
+                        TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
                 }
             }
