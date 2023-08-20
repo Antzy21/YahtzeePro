@@ -6,6 +6,8 @@
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
 
+        private readonly bool _logAll = false;
+
         private readonly int _winningValue;
 
         private readonly int _totalDice;
@@ -19,12 +21,14 @@
             int winningValue,
             int totalDice,
             int initialStackCounterToReturnKnownValue = 3,
-            int calculationIterations = 10)
+            int calculationIterations = 10,
+            bool logAll = false)
         {
             _winningValue = winningValue;
             _totalDice = totalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
+            _logAll = logAll;
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -78,7 +82,7 @@
 
                             gameStateThatHaveBeenCalculated.Add(gs);
 
-                            if (timer.Elapsed > NextLoggingTime)
+                            if (_logAll || timer.Elapsed > NextLoggingTime)
                             {
                                 NextLoggingTime = timer.Elapsed + LoggingInterval;
                                 Console.WriteLine($" ({diceCount}Ds) {playerScore,4} + {cachedScore,4} - {opponentScore,4} => Prob: {gameStateProbabilities[gs].ToString("#.##")}");

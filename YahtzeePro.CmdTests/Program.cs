@@ -12,6 +12,7 @@ var ProbabilitiesCalculator = new ProbabilitiesCalculator(
     winningValue,
     totalDice,
     initialStackCounterToReturnKnownValue,
-    calculationIterations);
+    calculationIterations,
+    logAll: true);
 
 ProbabilitiesCalculator.PopulateGameStateProbabilities();
