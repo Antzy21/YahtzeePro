@@ -17,6 +17,8 @@
 
         private readonly int _calculationIterations;
 
+        private GameState? _currentCalculatingGs;
+
         public ProbabilitiesCalculator(
             int winningValue,
             int totalDice,
@@ -43,7 +45,9 @@
 
         public Dictionary<GameState, double> gameStateProbabilities = new() { };
 
-        private HashSet<GameState> gameStateThatHaveBeenCalculated = new() { };
+        public Dictionary<GameState, bool> gameStateShouldRoll = new();
+
+        private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new() { };
 
         // If the value doesnt exist in the dictionary, mock it at 0.5 to avoid infinite loops
         private double GetGameStateProbability(GameState gs)
@@ -71,21 +75,31 @@
                         for (int diceCount = _totalDice; diceCount > 0; diceCount--)
                         {
                             // New gs to test
-                            var gs = new GameState(playerScore, opponentScore, cachedScore, diceCount);
+                            _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount);
 
                             // Make more accurate estimate
                             // Iterate a few times to improve the estimate.
                             for (int i = 0; i < _calculationIterations; i++)
                             {
-                                gameStateProbabilities[gs] = ProbabilityOfWinningFromGs(gs, _initialStackCounterToReturnKnownValue, 0);
+                                gameStateProbabilities[_currentCalculatingGs] = ProbabilityOfWinningFromGs(
+                                    _currentCalculatingGs,
+                                    _initialStackCounterToReturnKnownValue,
+                                    diceCount);
                             }
 
-                            gameStateThatHaveBeenCalculated.Add(gs);
+                            _gameStateThatHaveBeenCalculated.Add(_currentCalculatingGs);
 
                             if (_logAll || timer.Elapsed > NextLoggingTime)
                             {
                                 NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                Console.WriteLine($" ({diceCount}Ds) {playerScore,4} + {cachedScore,4} - {opponentScore,4} => Prob: {gameStateProbabilities[gs].ToString("#.##")}");
+                                var bestMove = "bank";
+                                if (gameStateShouldRoll.TryGetValue(_currentCalculatingGs, out bool shouldRoll) && shouldRoll)
+                                    bestMove = "roll";
+
+                                Console.WriteLine($" ({diceCount}Ds) {playerScore,4} + {cachedScore,4} - {opponentScore,4}" +
+                                    $" => Prob: {gameStateProbabilities[_currentCalculatingGs],4:#.##}" +
+                                    $" => {bestMove}"
+                                );
                             }
                         }
                     }
@@ -122,7 +136,7 @@
         {
             // stackCounterToReturnKnownValue makes sure that the existing preset value (which is needed to avoid stack overflow),
             // is not immediately returned. Once it is zero, it will return.
-            if (stackCounterToReturnKnownValue == 0 || gameStateThatHaveBeenCalculated.Contains(gs))
+            if (stackCounterToReturnKnownValue == 0 || _gameStateThatHaveBeenCalculated.Contains(gs))
             {
                 return GetGameStateProbability(gs);
             }
@@ -150,6 +164,7 @@
             // Can't bank if they haven't rolled yet. 
             if (rollsThisTurn == 0)
             {
+                gameStateShouldRoll[gs] = true;
                 return rollScoreProbability;
             }
 
@@ -158,6 +173,11 @@
             var bankScoreProbability = ProbabilityOfWinningIfBanking(gs, stackCounterToReturnKnownValue);
             /// 
             /// #########################################################
+
+            if (gs == _currentCalculatingGs)
+            {
+                gameStateShouldRoll[gs] = rollScoreProbability > bankScoreProbability;
+            }
 
             return Math.Max(bankScoreProbability, rollScoreProbability);
         }
