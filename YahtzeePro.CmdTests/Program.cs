@@ -4,8 +4,8 @@ using YahtzeePro;
 Console.WriteLine("Hello, World!");
 
 var winningValue = 2000;
-var totalDice = 5;
-var initialStackCounterToReturnKnownValue = 3;
+var totalDice = 3;
+var initialStackCounterToReturnKnownValue = 4;
 var calculationIterations = 5;
 
 var ProbabilitiesCalculator = new ProbabilitiesCalculator(
@@ -13,6 +13,18 @@ var ProbabilitiesCalculator = new ProbabilitiesCalculator(
     totalDice,
     initialStackCounterToReturnKnownValue,
     calculationIterations,
-    logAll: true);
+    logAll: false);
 
 ProbabilitiesCalculator.PopulateGameStateProbabilities();
+
+var fileName = "../../../../Win5000Dice5/stack4Iter5.txt";
+
+ProbabilitiesCalculator.WriteDataToFile(fileName);
+
+var newProbCalc = new ProbabilitiesCalculator(
+    winningValue,
+    totalDice);
+
+newProbCalc.ReadDataFromFile(fileName);
+
+Console.WriteLine(newProbCalc);
