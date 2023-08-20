@@ -1,4 +1,7 @@
-﻿namespace YahtzeePro
+﻿using System.Text;
+using System.Text.Json;
+
+namespace YahtzeePro
 {
     public class ProbabilitiesCalculator
     {
@@ -59,6 +62,24 @@
             return 0.5;
         }
 
+        private string GsDataToString(GameState gs)
+        {
+            var bestMove = gameStateShouldRoll[gs] ? "roll" : "bank";
+            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} - {gs.OpponentScore,4}" +
+                $" => Prob: {gameStateProbabilities[gs],4:#.##}" +
+                $" => {bestMove}";
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var (gs, probability) in gameStateProbabilities)
+            {
+                stringBuilder.AppendLine(GsDataToString(gs));
+            }
+            return stringBuilder.ToString();
+        }
+
         public void PopulateGameStateProbabilities()
         {
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -77,6 +98,9 @@
                             // New gs to test
                             _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount);
 
+                            // Assume bank to start with.
+                            gameStateShouldRoll[_currentCalculatingGs] = false;
+
                             // Make more accurate estimate
                             // Iterate a few times to improve the estimate.
                             for (int i = 0; i < _calculationIterations; i++)
@@ -92,14 +116,7 @@
                             if (_logAll || timer.Elapsed > NextLoggingTime)
                             {
                                 NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                var bestMove = "bank";
-                                if (gameStateShouldRoll.TryGetValue(_currentCalculatingGs, out bool shouldRoll) && shouldRoll)
-                                    bestMove = "roll";
-
-                                Console.WriteLine($" ({diceCount}Ds) {playerScore,4} + {cachedScore,4} - {opponentScore,4}" +
-                                    $" => Prob: {gameStateProbabilities[_currentCalculatingGs],4:#.##}" +
-                                    $" => {bestMove}"
-                                );
+                                Console.WriteLine(GsDataToString(_currentCalculatingGs));
                             }
                         }
                     }
@@ -232,6 +249,41 @@
             }
 
             return TotalScore;
+        }
+
+        public void WriteDataToFile(string fileName)
+        {
+            Console.WriteLine($"Writing data to {fileName}");
+
+            var file = File.CreateText(fileName);
+
+            foreach (var (gs, probability) in gameStateProbabilities)
+            {
+                var gsSerialised = JsonSerializer.Serialize(gs);
+                file.Write(gsSerialised);
+                file.WriteLine($"---{probability}---{gameStateShouldRoll[gs]}");
+            }
+
+            file.Close();
+        }
+
+        public void ReadDataFromFile(string fileName)
+        {
+            Console.WriteLine($"Reading data from {fileName}");
+
+            var gsDataLines = File.ReadAllLines(fileName);
+
+            foreach (var gsData in gsDataLines)
+            {
+                var gsSerialised = gsData.Split("---")[0];
+                var probability = gsData.Split("---")[1];
+                var shouldRoll = gsData.Split("---")[2];
+
+                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised);
+
+                gameStateProbabilities[gs] = double.Parse(probability);
+                gameStateShouldRoll[gs] = bool.Parse(shouldRoll);
+            }
         }
     }
 }
