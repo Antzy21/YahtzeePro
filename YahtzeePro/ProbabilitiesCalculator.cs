@@ -8,19 +8,17 @@ namespace YahtzeePro
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
-
         private readonly bool _logAll = false;
-
         private readonly int _winningValue;
-
         private readonly int _totalDice;
-
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
         private readonly int _initialStackCounterToReturnKnownValue;
-
         private readonly int _calculationIterations;
-
         private GameState? _currentCalculatingGs;
+        private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new() { };
+
+        public Dictionary<GameState, double> gameStateProbabilities = new() { };
+        public Dictionary<GameState, bool> gameStateShouldRoll = new();
 
         public ProbabilitiesCalculator(
             int winningValue,
@@ -46,30 +44,6 @@ namespace YahtzeePro
             _calculationIterations = calculationIterations;
         }
 
-        public Dictionary<GameState, double> gameStateProbabilities = new() { };
-
-        public Dictionary<GameState, bool> gameStateShouldRoll = new();
-
-        private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new() { };
-
-        // If the value doesnt exist in the dictionary, mock it at 0.5 to avoid infinite loops
-        private double GetGameStateProbability(GameState gs)
-        {
-            if (gameStateProbabilities.TryGetValue(gs, out var probability))
-            {
-                return probability;
-            }
-            return 0.5;
-        }
-
-        private string GsDataToString(GameState gs)
-        {
-            var bestMove = gameStateShouldRoll[gs] ? "roll" : "bank";
-            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} - {gs.OpponentScore,4}" +
-                $" => Prob: {gameStateProbabilities[gs],4:#.##}" +
-                $" => {bestMove}";
-        }
-
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
@@ -80,6 +54,42 @@ namespace YahtzeePro
             return stringBuilder.ToString();
         }
 
+        public void WriteDataToFile(string fileName)
+        {
+            Console.WriteLine($"Writing data to {fileName}");
+
+            var file = File.CreateText(fileName);
+
+            foreach (var (gs, probability) in gameStateProbabilities)
+            {
+                var gsSerialised = JsonSerializer.Serialize(gs);
+                file.Write(gsSerialised);
+                file.WriteLine($"---{probability}---{gameStateShouldRoll[gs]}");
+            }
+
+            file.Close();
+        }
+
+        public void ReadDataFromFile(string fileName)
+        {
+            Console.WriteLine($"Reading data from {fileName}");
+
+            var gsDataLines = File.ReadAllLines(fileName);
+
+            foreach (var gsData in gsDataLines)
+            {
+                var gsSerialised = gsData.Split("---")[0];
+                var probability = gsData.Split("---")[1];
+                var shouldRoll = gsData.Split("---")[2];
+
+                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised);
+
+                gameStateProbabilities[gs] = double.Parse(probability);
+                gameStateShouldRoll[gs] = bool.Parse(shouldRoll);
+            }
+        }
+
+        // The main function
         public void PopulateGameStateProbabilities()
         {
             var timer = System.Diagnostics.Stopwatch.StartNew();
@@ -124,29 +134,6 @@ namespace YahtzeePro
             }
 
             Console.WriteLine("\nFinished populating\n");
-        }
-
-        private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
-        {
-            var resetDiceGs = new GameState(
-                PlayerScore: gs.OpponentScore,
-                OpponentScore: gs.PlayerScore + gs.CachedScore,
-                CachedScore: 0,
-                DiceToRoll: _totalDice
-                );
-
-            var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
-
-            var continueDiceGs = new GameState(
-                PlayerScore: gs.OpponentScore,
-                OpponentScore: gs.PlayerScore + gs.CachedScore,
-                CachedScore: gs.CachedScore,
-                DiceToRoll: gs.DiceToRoll
-                );
-
-            var continueDiceProability = ProbabilityOfWinningFromGs(continueDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
-
-            return 1 - Math.Max(resetDiceProability, continueDiceProability);
         }
 
         private double ProbabilityOfWinningFromGs(GameState gs, int stackCounterToReturnKnownValue, int rollsThisTurn = 0)
@@ -197,6 +184,29 @@ namespace YahtzeePro
             }
 
             return Math.Max(bankScoreProbability, rollScoreProbability);
+        }
+
+        private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
+        {
+            var resetDiceGs = new GameState(
+                PlayerScore: gs.OpponentScore,
+                OpponentScore: gs.PlayerScore + gs.CachedScore,
+                CachedScore: 0,
+                DiceToRoll: _totalDice
+                );
+
+            var resetDiceProability = ProbabilityOfWinningFromGs(resetDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
+
+            var continueDiceGs = new GameState(
+                PlayerScore: gs.OpponentScore,
+                OpponentScore: gs.PlayerScore + gs.CachedScore,
+                CachedScore: gs.CachedScore,
+                DiceToRoll: gs.DiceToRoll
+                );
+
+            var continueDiceProability = ProbabilityOfWinningFromGs(continueDiceGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
+
+            return 1 - Math.Max(resetDiceProability, continueDiceProability);
         }
 
         private double ProbabilityOfWinningIfRolling(GameState gs, int rollsThisTurn, int stackCounterToReturnKnownValue)
@@ -251,39 +261,22 @@ namespace YahtzeePro
             return TotalScore;
         }
 
-        public void WriteDataToFile(string fileName)
+        // If the value doesnt exist in the dictionary, mock it at 0.5 to avoid infinite loops
+        private double GetGameStateProbability(GameState gs)
         {
-            Console.WriteLine($"Writing data to {fileName}");
-
-            var file = File.CreateText(fileName);
-
-            foreach (var (gs, probability) in gameStateProbabilities)
+            if (gameStateProbabilities.TryGetValue(gs, out var probability))
             {
-                var gsSerialised = JsonSerializer.Serialize(gs);
-                file.Write(gsSerialised);
-                file.WriteLine($"---{probability}---{gameStateShouldRoll[gs]}");
+                return probability;
             }
-
-            file.Close();
+            return 0.5;
         }
 
-        public void ReadDataFromFile(string fileName)
+        private string GsDataToString(GameState gs)
         {
-            Console.WriteLine($"Reading data from {fileName}");
-
-            var gsDataLines = File.ReadAllLines(fileName);
-
-            foreach (var gsData in gsDataLines)
-            {
-                var gsSerialised = gsData.Split("---")[0];
-                var probability = gsData.Split("---")[1];
-                var shouldRoll = gsData.Split("---")[2];
-
-                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised);
-
-                gameStateProbabilities[gs] = double.Parse(probability);
-                gameStateShouldRoll[gs] = bool.Parse(shouldRoll);
-            }
+            var bestMove = gameStateShouldRoll[gs] ? "roll" : "bank";
+            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} - {gs.OpponentScore,4}" +
+                $" => Prob: {gameStateProbabilities[gs],4:#.##}" +
+                $" => {bestMove}";
         }
     }
 }
