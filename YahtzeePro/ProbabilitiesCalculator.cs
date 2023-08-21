@@ -77,9 +77,9 @@ namespace YahtzeePro
 
         public void ReadDataFromFile(string fileName)
         {
-            Console.WriteLine($"Reading data from {_dir+fileName}");
-
             var gsDataLines = File.ReadAllLines(_dir+fileName);
+
+            Console.WriteLine($"Reading data from {_dir + fileName}. {gsDataLines.Length} lines.");
 
             foreach (var gsData in gsDataLines)
             {
@@ -94,6 +94,8 @@ namespace YahtzeePro
                 gameStateProbabilitiesRisky[gs] = double.Parse(rollProbability);
                 gameStateProbabilitiesSafe[gs] = double.Parse(bankProbability);
             }
+
+            Console.WriteLine("Finished reading");
         }
 
         // The main function
@@ -309,7 +311,8 @@ namespace YahtzeePro
 
         private string GsDataToString(GameState gs)
         {
-            return $" ({gs.DiceToRoll}Ds) {gs.PlayerScore,4} + {gs.CachedScore,4} : {gs.OpponentScore,4}" +
+            return $" {gs.DiceToRoll} Dice, New turn: {gs.IsStartOfTurn,5}" +
+                $" | {gs.PlayerScore,4} + {gs.CachedScore,4} : {gs.OpponentScore,4}" +
                 $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
                 $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####}";
         }
