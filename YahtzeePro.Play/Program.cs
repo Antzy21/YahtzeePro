@@ -6,6 +6,9 @@ internal class Program
     {
         Console.WriteLine("Duel!");
 
-        var game = new Game();
+        IPlayer player1 = null;
+        IPlayer player2 = null;
+
+        var game = new Game(winningValue: 5000, totalDice: 5, player1, player2);
     }
 }

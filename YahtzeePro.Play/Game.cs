@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using YahtzeePro;
 using YahtzeePro.Play;
@@ -10,6 +11,10 @@ internal class Game
     private readonly IPlayer _player1;
     private readonly IPlayer _player2;
 
+    private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
+
+    private readonly Random _random = new();
+
     private IPlayer _currentPlayer;
 
     private GameState _gameState;
@@ -17,9 +22,13 @@ internal class Game
     public Game(int winningValue, int totalDice, IPlayer player1, IPlayer player2)
     {
         _winningValue = winningValue;
-        _totalDice = totalDice;
         _player1 = player1;
         _player2 = player2;
+
+        for (int i = 1; i <= _totalDice; i++)
+        {
+            _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
+        }
 
         _currentPlayer = _player1;
 
@@ -46,8 +55,6 @@ internal class Game
                     _gameState = MakeRiskyMove(_gameState);
                     break;
             }
-
-            SwitchPlayer();
         }
     }
 
@@ -65,27 +72,45 @@ internal class Game
 
     private GameState MakeRiskyMove(GameState gs)
     {
-        if (gs.IsStartOfTurn)
-        {
-            // Roll
-        }
-        else
-        {
-            // Roll
-        }
-        throw new NotImplementedException();
+        var rolledDice = DiceCombination.Generate(gs.DiceToRoll, _random);
+
+        return ResolveRolledDice(rolledDice, gs);
     }
 
     private GameState MakeSafeMove(GameState gs)
     {
         if (gs.IsStartOfTurn)
         {
-            // Roll
+            // Roll at start of turn
+            var rolledDice = DiceCombination.Generate(_totalDice, _random);
+            return ResolveRolledDice(rolledDice, gs);
         }
         else
         {
-            // Roll
+            // Bank
+            SwitchPlayer();
+            return new GameState(gs.OpponentScore, gs.PlayerScore + gs.CachedScore, 0, _totalDice, IsStartOfTurn: true);
         }
         throw new NotImplementedException();
+    }
+
+    private GameState ResolveRolledDice(DiceCombination rolledDice, GameState gs)
+    {
+        if (rolledDice.Score == 0)
+        {
+            // Fail
+            SwitchPlayer();
+            return new GameState(gs.OpponentScore, gs.PlayerScore, 0, _totalDice, IsStartOfTurn: true);
+        }
+        else if (rolledDice.UsesAllDice)
+        {
+            // Roll Over
+            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, _totalDice, gs.IsStartOfTurn);
+        }
+        else
+        {
+            // Gained score...
+            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, gs.DiceToRoll - rolledDice.ScoringDice, gs.IsStartOfTurn);
+        }
     }
 }

@@ -6,10 +6,8 @@ namespace YahtzeePro
     {
         private readonly int _maxDiceCount;
 
-        private record DiceCombination(int NumberOfOnes, int NumberOfFives, int NumberOfOthers);
-
-        public record Score(int score);
-        public record ValuableDiceCount(int valueAddingDice);
+        public record Score(int Value);
+        public record ValuableDiceCount(int Value);
 
         private Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
 
@@ -30,7 +28,7 @@ namespace YahtzeePro
                 {
                     _diceCountToScoresToProbabilities[valueableDiceCount] = new();
                 }
-                _diceCountToScoresToProbabilities[valueableDiceCount].Add(ScoreDiceCombination(diceCombo), probability);
+                _diceCountToScoresToProbabilities[valueableDiceCount].Add(new Score(diceCombo.Score), probability);
             }
         }
 
@@ -45,7 +43,7 @@ namespace YahtzeePro
 
             foreach (var (diceCombo, probability) in _diceComboToProbabilities)
             {
-                stringBuilder.AppendLine($"{diceCombo} - {ScoreDiceCombination(diceCombo).score} = {probability.ToString("#.###")}");
+                stringBuilder.AppendLine($"{diceCombo} - {diceCombo.Score} = {probability.ToString("#.###")}");
             }
 
             return stringBuilder.ToString();
@@ -79,13 +77,6 @@ namespace YahtzeePro
                 currentCombination.NumberOfFives,
                 currentCombination.NumberOfOthers + 1);
             GenerateValues(diceCount - 1, comboWithExtraOther, probability * 4 / 6);
-        }
-
-        private Score ScoreDiceCombination(DiceCombination diceCombination)
-        {
-            return new(
-                diceCombination.NumberOfOnes * 100 +
-                diceCombination.NumberOfFives * 50);
         }
     }
 }

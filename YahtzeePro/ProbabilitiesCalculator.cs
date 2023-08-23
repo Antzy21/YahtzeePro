@@ -243,7 +243,7 @@ namespace YahtzeePro
                 foreach (var (score, probability) in scoreToProbabilities)
                 {
                     // Fail!!
-                    if (score.score == 0)
+                    if (score.Value == 0)
                     {
                         var newGs = new GameState(
                             PlayerScore: gs.OpponentScore,
@@ -256,13 +256,13 @@ namespace YahtzeePro
                         // Goes to opponent.
                         TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
-                    else if (diceUsed.valueAddingDice == gs.DiceToRoll)
+                    else if (diceUsed.Value == gs.DiceToRoll)
                     {
                         // Roll over!!!!
                         var newGs = new GameState(
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
-                            CachedScore: gs.CachedScore + score.score,
+                            CachedScore: gs.CachedScore + score.Value,
                             DiceToRoll: _totalDice,
                             IsStartOfTurn: false
                         );
@@ -274,8 +274,8 @@ namespace YahtzeePro
                         var newGs = new GameState(
                             PlayerScore: gs.PlayerScore,
                             OpponentScore: gs.OpponentScore,
-                            CachedScore: gs.CachedScore + score.score,
-                            DiceToRoll: _totalDice - diceUsed.valueAddingDice,
+                            CachedScore: gs.CachedScore + score.Value,
+                            DiceToRoll: _totalDice - diceUsed.Value,
                             IsStartOfTurn: false
                         );
 
