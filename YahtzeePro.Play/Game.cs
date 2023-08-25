@@ -17,6 +17,8 @@ internal class Game
 
     private IPlayer _currentPlayer;
 
+    public bool player1Won = false;
+
     private GameState _gameState;
 
     public Game(int winningValue, int totalDice, IPlayer player1, IPlayer player2)
@@ -24,6 +26,7 @@ internal class Game
         _winningValue = winningValue;
         _player1 = player1;
         _player2 = player2;
+        _totalDice = totalDice;
 
         for (int i = 1; i <= _totalDice; i++)
         {
@@ -56,6 +59,11 @@ internal class Game
                     break;
             }
         }
+
+        if (_currentPlayer == _player1)
+            player1Won = true;
+        else
+            player1Won = false;
     }
 
     private void SwitchPlayer()
@@ -105,12 +113,12 @@ internal class Game
         else if (rolledDice.UsesAllDice)
         {
             // Roll Over
-            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, _totalDice, gs.IsStartOfTurn);
+            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, _totalDice, false);
         }
         else
         {
             // Gained score...
-            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, gs.DiceToRoll - rolledDice.ScoringDice, gs.IsStartOfTurn);
+            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, gs.DiceToRoll - rolledDice.ScoringDice, false);
         }
     }
 }
