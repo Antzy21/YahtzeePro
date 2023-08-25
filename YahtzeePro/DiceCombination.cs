@@ -6,6 +6,10 @@ namespace YahtzeePro
     {
         public static DiceCombination Generate(int numberOfDice, Random random)
         {
+            if (numberOfDice < 0) {
+                throw new ArgumentOutOfRangeException();
+            }
+
             var ones = 0;
             var fives = 0;
             var others = 0;
