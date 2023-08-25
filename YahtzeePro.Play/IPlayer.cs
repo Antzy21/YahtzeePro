@@ -3,5 +3,6 @@ using YahtzeePro.Play;
 
 internal interface IPlayer
 {
-    PlayChoice GetMove(GameState gameState);
+    string Name { get; }
+    PlayChoice GetMove(GameState gs);
 }
