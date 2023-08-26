@@ -35,11 +35,11 @@ internal class Game
         _currentPlayer = _player1;
 
         _gameState = new(
-            PlayerScore: 0,
-            OpponentScore: 0,
-            CachedScore: 0,
-            DiceToRoll: totalDice,
-            IsStartOfTurn: true);
+            playerScore: 0,
+            opponentScore: 0,
+            cachedScore: 0,
+            diceToRoll: totalDice,
+            isStartOfTurn: true);
     }
 
     public void Play()
@@ -95,9 +95,8 @@ internal class Game
         }
         else
         {
-            // Bank
             SwitchPlayer();
-            return new GameState(gs.OpponentScore, gs.PlayerScore + gs.CachedScore, 0, _totalDice, IsStartOfTurn: true);
+            return gs.Bank();
         }
         throw new NotImplementedException();
     }
@@ -108,17 +107,15 @@ internal class Game
         {
             // Fail
             SwitchPlayer();
-            return new GameState(gs.OpponentScore, gs.PlayerScore, 0, _totalDice, IsStartOfTurn: true);
+            return gs.Fail();
         }
         else if (rolledDice.UsesAllDice)
         {
-            // Roll Over
-            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, _totalDice, false);
+            return gs.RollOver(rolledDice.Score);
         }
         else
         {
-            // Gained score...
-            return new GameState(gs.PlayerScore, gs.OpponentScore, gs.CachedScore + rolledDice.Score, gs.DiceToRoll - rolledDice.ScoringDice, false);
+            return gs.AddRolledScore(rolledDice.Score, rolledDice.ScoringDice);
         }
     }
 }

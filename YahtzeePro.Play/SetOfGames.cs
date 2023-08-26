@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace YahtzeePro.Play
 {
@@ -27,7 +26,7 @@ namespace YahtzeePro.Play
 
             for (int set = 1; set <= totalSets; set++)
             {
-                var (player1WinCount, player2WinCount) = PlayGames(totalGames, logging);
+                var (player1WinCount, player2WinCount) = PlayGames(totalGames);
 
                 if (player1WinCount > player2WinCount)
                     player1SetWins++;
@@ -36,14 +35,13 @@ namespace YahtzeePro.Play
 
                 if (logging)
                 {
-                    var sb = new StringBuilder();
                     Console.Write($"\r{set,4} | {player1SetWins,4} : {player2SetWins,4}");
                 }
             }
             Console.WriteLine("\n");
         }
 
-        public Tuple<int, int> PlayGames(int totalGames, bool logging = false)
+        public Tuple<int, int> PlayGames(int totalGames)
         {
             int player1WinCount = 0;
             int player2WinCount = 0;

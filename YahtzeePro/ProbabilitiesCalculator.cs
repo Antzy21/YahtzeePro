@@ -164,9 +164,7 @@ namespace YahtzeePro
             if (gs.PlayerScore + gs.CachedScore >= _winningValue)
             {
                 if (gs.OpponentScore >= _winningValue)
-                {
                     throw new Exception("Both players are in a winning state.");
-                }
                 return 1;
             }
             else if (gs.OpponentScore >= _winningValue)
@@ -189,13 +187,7 @@ namespace YahtzeePro
             // Has to choose to reset cache or not!
             if (gs.IsStartOfTurn)
             {
-                var resetCacheGs = new GameState(
-                    PlayerScore: gs.PlayerScore,
-                    OpponentScore: gs.OpponentScore,
-                    CachedScore: 0,
-                    DiceToRoll: gs.DiceToRoll,
-                    IsStartOfTurn: false
-                );
+                var resetCacheGs = gs.ResetCache();
 
                 /// ###############
                 safePlayProbability = ProbabilityOfWinningIfRolling(resetCacheGs, rollsThisTurn, stackCounterToReturnKnownValue);
@@ -220,14 +212,9 @@ namespace YahtzeePro
 
         private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
         {
-            var newGs = new GameState(
-                PlayerScore: gs.OpponentScore,
-                OpponentScore: gs.PlayerScore + gs.CachedScore,
-                CachedScore: gs.CachedScore,
-                DiceToRoll: gs.DiceToRoll,
-                IsStartOfTurn: true
-                );
+            var newGs = gs.Bank();
 
+            // Goes to opponent.
             return 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
         }
 
@@ -241,42 +228,22 @@ namespace YahtzeePro
             {
                 foreach (var (score, probability) in scoreToProbabilities)
                 {
-                    // Fail!!
                     if (score.Value == 0)
                     {
-                        var newGs = new GameState(
-                            PlayerScore: gs.OpponentScore,
-                            OpponentScore: gs.PlayerScore,
-                            CachedScore: 0,
-                            DiceToRoll: _totalDice,
-                            IsStartOfTurn: true
-                        );
+                        var newGs = gs.Fail();
 
                         // Goes to opponent.
                         TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
                     else if (diceUsed.Value == gs.DiceToRoll)
                     {
-                        // Roll over!!!!
-                        var newGs = new GameState(
-                            PlayerScore: gs.PlayerScore,
-                            OpponentScore: gs.OpponentScore,
-                            CachedScore: gs.CachedScore + score.Value,
-                            DiceToRoll: _totalDice,
-                            IsStartOfTurn: false
-                        );
+                        var newGs = gs.RollOver(score.Value);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
                     else
                     {
-                        var newGs = new GameState(
-                            PlayerScore: gs.PlayerScore,
-                            OpponentScore: gs.OpponentScore,
-                            CachedScore: gs.CachedScore + score.Value,
-                            DiceToRoll: _totalDice - diceUsed.Value,
-                            IsStartOfTurn: false
-                        );
+                        var newGs = gs.AddRolledScore(score.Value, diceUsed.Value);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
