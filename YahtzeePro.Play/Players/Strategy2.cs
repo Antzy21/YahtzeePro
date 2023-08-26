@@ -6,21 +6,12 @@ using System.Threading.Tasks;
 
 namespace YahtzeePro.Play.Players
 {
-    internal class Strategy2 : IPlayer
+    internal class Strategy2 : SimpleStrategyBase, IPlayer
     {
-        public string Name => "800:1,500:2";
-
-        public PlayChoice GetMove(GameState gs)
+        public Strategy2()
         {
-            if (gs.CachedScore >= 800 || gs.DiceToRoll < 2)
-            {
-                return PlayChoice.Safe;
-            }
-            if (gs.CachedScore >= 500 || gs.DiceToRoll < 3)
-            {
-                return PlayChoice.Safe;
-            }
-            return PlayChoice.Risky;
+            WhenToBankWith1Dice = 500;
+            WhenToBankWith2Dice = 800;
         }
     }
 }

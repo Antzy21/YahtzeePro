@@ -17,7 +17,7 @@ internal class Game
 
     private IPlayer _currentPlayer;
 
-    public bool player1Won = false;
+    public bool firstPlayerWon = false;
 
     private GameState _gameState;
 
@@ -61,9 +61,9 @@ internal class Game
         }
 
         if (_currentPlayer == _player1)
-            player1Won = true;
+            firstPlayerWon = true;
         else
-            player1Won = false;
+            firstPlayerWon = false;
     }
 
     private void SwitchPlayer()
