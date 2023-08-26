@@ -1,12 +1,11 @@
-﻿using static YahtzeePro.RollPosibilities;
-
-namespace YahtzeePro
+﻿namespace YahtzeePro
 {
     public record DiceCombination(int NumberOfOnes, int NumberOfFives, int NumberOfOthers)
     {
         public static DiceCombination Generate(int numberOfDice, Random random)
         {
-            if (numberOfDice < 0) {
+            if (numberOfDice < 0)
+            {
                 throw new ArgumentOutOfRangeException();
             }
 

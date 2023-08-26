@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using YahtzeePro;
 using YahtzeePro.Play;
 
@@ -45,8 +44,9 @@ internal class Game
 
     public void Play()
     {
-        while (_gameState.PlayerScore < _winningValue) {
-            
+        while (_gameState.PlayerScore < _winningValue)
+        {
+
             var move = _currentPlayer.GetMove(_gameState);
 
             switch (move)

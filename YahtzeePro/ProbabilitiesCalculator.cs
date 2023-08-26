@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 
 namespace YahtzeePro
@@ -63,7 +62,7 @@ namespace YahtzeePro
             Console.WriteLine($"Writing data to {fileName}");
 
             Directory.CreateDirectory(_dir);
-            var file = File.CreateText(_dir+fileName);
+            var file = File.CreateText(_dir + fileName);
 
             foreach (var (gs, probability) in gameStateProbabilities)
             {
@@ -77,7 +76,7 @@ namespace YahtzeePro
 
         public void ReadDataFromFile(string fileName)
         {
-            var gsDataLines = File.ReadAllLines(_dir+fileName);
+            var gsDataLines = File.ReadAllLines(_dir + fileName);
 
             Console.WriteLine($"Reading data from {_dir + fileName}. {gsDataLines.Length} lines.");
 
@@ -114,7 +113,7 @@ namespace YahtzeePro
                     {
                         for (int diceCount = _totalDice; diceCount > 0; diceCount--)
                         {
-                            foreach (bool isStartOfTurn in new[]{ true, false })
+                            foreach (bool isStartOfTurn in new[] { true, false })
                             {
                                 // Impossible to have no cache not at start of turn
                                 if (cachedScore == 0 && !isStartOfTurn)
@@ -299,7 +298,8 @@ namespace YahtzeePro
 
         private bool ShouldRoll(GameState gs, out double probability)
         {
-            if (gameStateProbabilitiesRisky.TryGetValue(gs, out var probabilityRisky)){
+            if (gameStateProbabilitiesRisky.TryGetValue(gs, out var probabilityRisky))
+            {
                 if (gameStateProbabilitiesSafe.TryGetValue(gs, out var probabilitySafe))
                 {
                     probability = Math.Max(probabilityRisky, probabilitySafe);

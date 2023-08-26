@@ -11,7 +11,7 @@
 
         public PlayChoice GetMove(GameState gs)
         {
-            if (gs.CachedScore >= WhenToBankWith1Dice|| gs.DiceToRoll == 1)
+            if (gs.CachedScore >= WhenToBankWith1Dice || gs.DiceToRoll == 1)
             {
                 return PlayChoice.Safe;
             }

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play
 {
     internal class SetOfGames
     {
-        
+
         private readonly IPlayer _player1;
         private readonly IPlayer _player2;
 
@@ -30,7 +25,7 @@ namespace YahtzeePro.Play
             Console.WriteLine($"Games per set: {totalGames}\n");
             Console.WriteLine("Set |  P1  :  P2");
 
-            for (int i = 0; i < totalSets; i++)
+            for (int set = 1; set <= totalSets; set++)
             {
                 var (player1WinCount, player2WinCount) = PlayGames(totalGames, logging);
 
@@ -42,9 +37,10 @@ namespace YahtzeePro.Play
                 if (logging)
                 {
                     var sb = new StringBuilder();
-                    Console.Write($"\r{i,3} | {player1SetWins,4} : {player2SetWins,4}");
+                    Console.Write($"\r{set,4} | {player1SetWins,4} : {player2SetWins,4}");
                 }
             }
+            Console.WriteLine("\n");
         }
 
         public Tuple<int, int> PlayGames(int totalGames, bool logging = false)
