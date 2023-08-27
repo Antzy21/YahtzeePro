@@ -99,5 +99,10 @@
             _cachedScore += rolledScore;
             return this;
         }
+
+        public override string ToString()
+        {
+            return $"P:{_playerScore} | O:{_opponentScore} | C:{_cachedScore} | D:{_diceToRoll} | S:{_isStartOfTurn}";
+        }
     }
 }

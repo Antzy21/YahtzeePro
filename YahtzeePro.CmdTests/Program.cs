@@ -3,22 +3,29 @@ using YahtzeePro;
 
 Console.WriteLine("Hello, World!");
 
-var winningValue = 5000;
-var totalDice = 5;
-var initialStackCounterToReturnKnownValue = 4;
-var calculationIterations = 5;
+int winningValue = 5000;
+int totalDice = 5;
+int initialStackCounterToReturnKnownValue = 4;
+int calculationIterations = 5;
 
-var ProbabilitiesCalculator = new ProbabilitiesCalculator(
+ProbabilitiesCalculator ProbabilitiesCalculator = new(
     winningValue,
     totalDice,
     initialStackCounterToReturnKnownValue,
     calculationIterations,
     logAll: false);
 
-//ProbabilitiesCalculator.PopulateGameStateProbabilities();
+string fileName = "scores.txt";
 
-var fileName = "scores.txt";
+Console.WriteLine("Regenerate results? (y/n)");
+string regenerate = Console.ReadLine()!;
 
-//ProbabilitiesCalculator.WriteDataToFile(fileName);
-
-ProbabilitiesCalculator.ReadDataFromFile(fileName);
+if (regenerate == "y")
+{
+    ProbabilitiesCalculator.PopulateGameStateProbabilities();
+    ProbabilitiesCalculator.WriteDataToFile(fileName);
+}
+else
+{
+    ProbabilitiesCalculator.ReadDataFromFile(fileName);
+}

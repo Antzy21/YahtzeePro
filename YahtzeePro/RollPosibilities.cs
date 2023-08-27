@@ -9,7 +9,7 @@ namespace YahtzeePro
         public record Score(int Value);
         public record ValuableDiceCount(int Value);
 
-        private Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
+        private readonly Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
 
         private readonly Dictionary<ValuableDiceCount, Dictionary<Score, double>> _diceCountToScoresToProbabilities = new();
 
@@ -21,9 +21,9 @@ namespace YahtzeePro
 
             GenerateValues(_maxDiceCount, new DiceCombination(0, 0, 0));
 
-            foreach (var (diceCombo, probability) in _diceComboToProbabilities)
+            foreach ((DiceCombination diceCombo, double probability) in _diceComboToProbabilities)
             {
-                var valueableDiceCount = GetNumberOfValuableDice(diceCombo);
+                ValuableDiceCount valueableDiceCount = GetNumberOfValuableDice(diceCombo);
                 if (!_diceCountToScoresToProbabilities.ContainsKey(valueableDiceCount))
                 {
                     _diceCountToScoresToProbabilities[valueableDiceCount] = new();
@@ -32,7 +32,7 @@ namespace YahtzeePro
             }
         }
 
-        private ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
+        private static ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
         {
             return new(diceCombination.NumberOfFives + diceCombination.NumberOfOnes);
         }
@@ -41,7 +41,7 @@ namespace YahtzeePro
         {
             var stringBuilder = new StringBuilder();
 
-            foreach (var (diceCombo, probability) in _diceComboToProbabilities)
+            foreach ((DiceCombination diceCombo, double probability) in _diceComboToProbabilities)
             {
                 stringBuilder.AppendLine($"{diceCombo} - {diceCombo.Score} = {probability.ToString("#.###")}");
             }

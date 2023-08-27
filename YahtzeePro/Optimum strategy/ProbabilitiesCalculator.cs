@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
+using static YahtzeePro.RollPosibilities;
 
 namespace YahtzeePro
 {
-    public class ProbabilitiesCalculator
+    public class ProbabilitiesCalculator : OptimumStrategy
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
@@ -11,30 +13,25 @@ namespace YahtzeePro
         private readonly bool _logAll = false;
         private readonly int _winningValue;
         private readonly int _totalDice;
-        private readonly string _dir;
+
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
         private readonly int _initialStackCounterToReturnKnownValue;
         private readonly int _calculationIterations;
         private GameState? _currentCalculatingGs;
-        private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new() { };
-
-        public Dictionary<GameState, double> gameStateProbabilities = new() { };
-        public Dictionary<GameState, double> gameStateProbabilitiesRisky = new();
-        public Dictionary<GameState, double> gameStateProbabilitiesSafe = new();
+        private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new();
 
         public ProbabilitiesCalculator(
             int winningValue,
             int totalDice,
             int initialStackCounterToReturnKnownValue = 3,
             int calculationIterations = 10,
-            bool logAll = false)
+            bool logAll = false) : base(winningValue, totalDice)
         {
             _winningValue = winningValue;
             _totalDice = totalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             _logAll = logAll;
-            _dir = $"../../../../Win{_winningValue}/Dice{_totalDice}/";
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -50,7 +47,7 @@ namespace YahtzeePro
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
-            foreach (var (gs, _) in gameStateProbabilities)
+            foreach ((GameState gs, double _) in gameStateProbabilities)
             {
                 stringBuilder.AppendLine(GsDataToString(gs));
             }
@@ -62,11 +59,11 @@ namespace YahtzeePro
             Console.WriteLine($"Writing data to {fileName}");
 
             Directory.CreateDirectory(_dir);
-            var file = File.CreateText(_dir + fileName);
+            StreamWriter file = File.CreateText(_dir + fileName);
 
-            foreach (var (gs, probability) in gameStateProbabilities)
+            foreach ((GameState gs, double probability) in gameStateProbabilities)
             {
-                var gsSerialised = JsonSerializer.Serialize(gs);
+                string gsSerialised = JsonSerializer.Serialize(gs);
                 file.Write(gsSerialised);
                 file.WriteLine($"---{probability}---{gameStateProbabilitiesRisky[gs]}---{gameStateProbabilitiesSafe[gs]}");
             }
@@ -74,35 +71,12 @@ namespace YahtzeePro
             file.Close();
         }
 
-        public void ReadDataFromFile(string fileName)
-        {
-            var gsDataLines = File.ReadAllLines(_dir + fileName);
-
-            Console.WriteLine($"Reading data from {_dir + fileName}. {gsDataLines.Length} lines.");
-
-            foreach (var gsData in gsDataLines)
-            {
-                var gsSerialised = gsData.Split("---")[0];
-                var probability = gsData.Split("---")[1];
-                var rollProbability = gsData.Split("---")[2];
-                var bankProbability = gsData.Split("---")[3];
-
-                var gs = JsonSerializer.Deserialize<GameState>(gsSerialised)!;
-
-                gameStateProbabilities[gs] = double.Parse(probability);
-                gameStateProbabilitiesRisky[gs] = double.Parse(rollProbability);
-                gameStateProbabilitiesSafe[gs] = double.Parse(bankProbability);
-            }
-
-            Console.WriteLine("Finished reading");
-        }
-
         // The main function
         public void PopulateGameStateProbabilities()
         {
-            var timer = System.Diagnostics.Stopwatch.StartNew();
-            var LoggingInterval = new TimeSpan(0, 0, 1);
-            var NextLoggingTime = timer.Elapsed;
+            Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
+            TimeSpan LoggingInterval = new(0, 0, seconds: 1);
+            TimeSpan NextLoggingTime = timer.Elapsed;
             Console.WriteLine("\nBegin populating...\n");
 
             for (int playerScore = _winningValue - 50; playerScore >= 0; playerScore -= 50)
@@ -172,10 +146,9 @@ namespace YahtzeePro
                 return 0;
             }
 
-
             /// This is the risky play
             /// ####################
-            var rollScoreProbability = ProbabilityOfWinningIfRolling(gs, rollsThisTurn, stackCounterToReturnKnownValue);
+            double rollScoreProbability = ProbabilityOfWinningIfRolling(gs, rollsThisTurn, stackCounterToReturnKnownValue);
             /// ####################
 
             // This will either be:
@@ -187,7 +160,7 @@ namespace YahtzeePro
             // Has to choose to reset cache or not!
             if (gs.IsStartOfTurn)
             {
-                var resetCacheGs = gs.ResetCache();
+                GameState resetCacheGs = gs.ResetCache();
 
                 /// ###############
                 safePlayProbability = ProbabilityOfWinningIfRolling(resetCacheGs, rollsThisTurn, stackCounterToReturnKnownValue);
@@ -212,7 +185,7 @@ namespace YahtzeePro
 
         private double ProbabilityOfWinningIfBanking(GameState gs, int stackCounterToReturnKnownValue)
         {
-            var newGs = gs.Bank();
+            GameState newGs = gs.Bank();
 
             // Goes to opponent.
             return 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue: stackCounterToReturnKnownValue - 1);
@@ -222,28 +195,28 @@ namespace YahtzeePro
         {
             double TotalScore = 0;
 
-            var rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
+            RollPosibilities rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
 
-            foreach (var (diceUsed, scoreToProbabilities) in rollCalculator.ProbabilitiesOfScores)
+            foreach ((ValuableDiceCount diceUsed, Dictionary<Score, double> scoreToProbabilities) in rollCalculator.ProbabilitiesOfScores)
             {
-                foreach (var (score, probability) in scoreToProbabilities)
+                foreach ((Score score, double probability) in scoreToProbabilities)
                 {
                     if (score.Value == 0)
                     {
-                        var newGs = gs.Fail();
+                        GameState newGs = gs.Fail();
 
                         // Goes to opponent.
                         TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
                     else if (diceUsed.Value == gs.DiceToRoll)
                     {
-                        var newGs = gs.RollOver(score.Value);
+                        GameState newGs = gs.RollOver(score.Value);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
                     else
                     {
-                        var newGs = gs.AddRolledScore(score.Value, diceUsed.Value);
+                        GameState newGs = gs.AddRolledScore(score.Value, diceUsed.Value);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
@@ -256,7 +229,7 @@ namespace YahtzeePro
         // If the value doesnt exist in the dictionary, mock it at 0.5 to avoid infinite loops
         private double GetGameStateProbability(GameState gs)
         {
-            if (gameStateProbabilities.TryGetValue(gs, out var probability))
+            if (gameStateProbabilities.TryGetValue(gs, out double probability))
             {
                 return probability;
             }
@@ -265,9 +238,9 @@ namespace YahtzeePro
 
         private bool ShouldRoll(GameState gs, out double probability)
         {
-            if (gameStateProbabilitiesRisky.TryGetValue(gs, out var probabilityRisky))
+            if (gameStateProbabilitiesRisky.TryGetValue(gs, out double probabilityRisky))
             {
-                if (gameStateProbabilitiesSafe.TryGetValue(gs, out var probabilitySafe))
+                if (gameStateProbabilitiesSafe.TryGetValue(gs, out double probabilitySafe))
                 {
                     probability = Math.Max(probabilityRisky, probabilitySafe);
                     return probabilityRisky > probabilitySafe;
