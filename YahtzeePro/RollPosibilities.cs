@@ -1,4 +1,7 @@
 ﻿using System.Text;
+using Probability = System.Double;
+using Score = System.Int32;
+using ValuableDiceCount = System.Int32;
 
 namespace YahtzeePro
 {
@@ -6,14 +9,11 @@ namespace YahtzeePro
     {
         private readonly int _maxDiceCount;
 
-        public record Score(int Value);
-        public record ValuableDiceCount(int Value);
+        private readonly Dictionary<DiceCombination, Probability> _diceComboToProbabilities = new();
 
-        private readonly Dictionary<DiceCombination, double> _diceComboToProbabilities = new();
+        private readonly Dictionary<ValuableDiceCount, Dictionary<Score, Probability>> _diceCountToScoresToProbabilities = new();
 
-        private readonly Dictionary<ValuableDiceCount, Dictionary<Score, double>> _diceCountToScoresToProbabilities = new();
-
-        public Dictionary<ValuableDiceCount, Dictionary<Score, double>> ProbabilitiesOfScores => _diceCountToScoresToProbabilities;
+        public Dictionary<ValuableDiceCount, Dictionary<Score, Probability>> ProbabilitiesOfScores => _diceCountToScoresToProbabilities;
 
         public RollPosibilities(int maxDiceCount)
         {
@@ -28,13 +28,13 @@ namespace YahtzeePro
                 {
                     _diceCountToScoresToProbabilities[valueableDiceCount] = new();
                 }
-                _diceCountToScoresToProbabilities[valueableDiceCount].Add(new Score(diceCombo.Score), probability);
+                _diceCountToScoresToProbabilities[valueableDiceCount].Add(diceCombo.Score, probability);
             }
         }
 
         private static ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
         {
-            return new(diceCombination.NumberOfFives + diceCombination.NumberOfOnes);
+            return diceCombination.NumberOfFives + diceCombination.NumberOfOnes;
         }
 
         public override string ToString()

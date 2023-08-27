@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
-using static YahtzeePro.RollPosibilities;
 
 namespace YahtzeePro
 {
@@ -197,26 +196,26 @@ namespace YahtzeePro
 
             RollPosibilities rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
 
-            foreach ((ValuableDiceCount diceUsed, Dictionary<Score, double> scoreToProbabilities) in rollCalculator.ProbabilitiesOfScores)
+            foreach ((int diceUsed, Dictionary<int, double> scoreToProbabilities) in rollCalculator.ProbabilitiesOfScores)
             {
-                foreach ((Score score, double probability) in scoreToProbabilities)
+                foreach ((int score, double probability) in scoreToProbabilities)
                 {
-                    if (score.Value == 0)
+                    if (score == 0)
                     {
                         GameState newGs = gs.Fail();
 
                         // Goes to opponent.
                         TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
                     }
-                    else if (diceUsed.Value == gs.DiceToRoll)
+                    else if (diceUsed == gs.DiceToRoll)
                     {
-                        GameState newGs = gs.RollOver(score.Value);
+                        GameState newGs = gs.RollOver(score);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
                     else
                     {
-                        GameState newGs = gs.AddRolledScore(score.Value, diceUsed.Value);
+                        GameState newGs = gs.AddRolledScore(score, diceUsed);
 
                         TotalScore += ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn + 1) * probability;
                     }
