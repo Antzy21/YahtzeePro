@@ -74,8 +74,8 @@ namespace YahtzeePro
         // The main function
         public void PopulateGameStateProbabilities()
         {
-            Stopwatch timer = System.Diagnostics.Stopwatch.StartNew();
-            TimeSpan LoggingInterval = new(0, 0, seconds: 1);
+            Stopwatch timer = Stopwatch.StartNew();
+            TimeSpan LoggingInterval = new(0, 0, seconds: 2);
             TimeSpan NextLoggingTime = timer.Elapsed;
             Console.WriteLine("\nBegin populating...\n");
 

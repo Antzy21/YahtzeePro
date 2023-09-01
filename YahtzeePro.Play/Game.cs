@@ -109,13 +109,13 @@ internal class Game
             SwitchPlayer();
             return gs.Fail();
         }
-        else if (rolledDice.UsesAllDice)
+        else if (rolledDice.AllDiceAreScoring)
         {
             return gs.RollOver(rolledDice.Score);
         }
         else
         {
-            return gs.AddRolledScore(rolledDice.Score, rolledDice.ScoringDice);
+            return gs.AddRolledScore(rolledDice.Score, rolledDice.NumberOfScoringDice);
         }
     }
 }
