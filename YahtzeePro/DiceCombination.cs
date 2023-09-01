@@ -11,12 +11,15 @@ namespace YahtzeePro
         private readonly int _fivesCount;
         private readonly int _sixesCount;
 
+        private readonly int[] _dice;
+
         public int Score { get; init; }
         public int NumberOfScoringDice { get; init; }
         public bool AllDiceAreScoring { get; init; }
 
         public DiceCombination(params int[] dice)
         {
+            _dice = dice;
             foreach (var die in dice)
             {
                 switch (die)
@@ -48,7 +51,7 @@ namespace YahtzeePro
             AllDiceAreScoring = NumberOfScoringDice == _onesCount + _twosCount + _threesCount + _foursCount + _fivesCount + _sixesCount;
         }
 
-        public DiceCombination Generate(int numberOfDice, Random random)
+        public static DiceCombination Generate(int numberOfDice, Random random)
         {
             if (numberOfDice < 0)
                 throw new ArgumentOutOfRangeException($"number of dice give {numberOfDice} is negative.");
@@ -62,6 +65,12 @@ namespace YahtzeePro
             return new DiceCombination(dice.ToArray());
         }
 
+        public DiceCombination AddDie(int dieValue)
+        {
+            var newDiceCombo = _dice.Append(dieValue).ToArray();
+            return new DiceCombination(newDiceCombo);
+        }
+
         private int CalculateScore()
         {
             int score = 0;
@@ -70,17 +79,17 @@ namespace YahtzeePro
             else
                 score += 100 * _onesCount;
             if (_twosCount >= 3)
-                score += 2 * (int)Math.Pow(10, _twosCount);
+                score += 2 * (int)Math.Pow(10, _twosCount - 1);
             if (_threesCount >= 3)
-                score += 3 * (int)Math.Pow(10, _threesCount);
+                score += 3 * (int)Math.Pow(10, _threesCount - 1);
             if (_foursCount >= 3)
-                score += 4 * (int)Math.Pow(10, _foursCount);
+                score += 4 * (int)Math.Pow(10, _foursCount - 1);
             if (_fivesCount >= 3)
-                score += 5 * (int)Math.Pow(10, _fivesCount);
+                score += 5 * (int)Math.Pow(10, _fivesCount - 1);
             else
                 score += 50 * _fivesCount;
             if (_sixesCount >= 3)
-                score += 6 * (int)Math.Pow(10, _sixesCount);
+                score += 6 * (int)Math.Pow(10, _sixesCount - 1);
             return score;
         }
 
@@ -101,17 +110,17 @@ namespace YahtzeePro
         public override string ToString()
         {
             var sb = new StringBuilder();
-            for (int i = 0; i <= _onesCount; i++)
+            for (int i = 0; i < _onesCount; i++)
                 sb.Append("1,");
-            for (int i = 0; i <= _twosCount; i++)
+            for (int i = 0; i < _twosCount; i++)
                 sb.Append("2,");
-            for (int i = 0; i <= _threesCount; i++)
+            for (int i = 0; i < _threesCount; i++)
                 sb.Append("3,");
-            for (int i = 0; i <= _foursCount; i++)
+            for (int i = 0; i < _foursCount; i++)
                 sb.Append("4,");
-            for (int i = 0; i <= _fivesCount; i++)
+            for (int i = 0; i < _fivesCount; i++)
                 sb.Append("5,");
-            for (int i = 0; i <= _sixesCount; i++)
+            for (int i = 0; i < _sixesCount; i++)
                 sb.Append("6,");
 
             return sb.ToString();

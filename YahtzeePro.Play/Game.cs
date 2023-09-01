@@ -10,7 +10,7 @@ internal class Game
     private readonly IPlayer _player1;
     private readonly IPlayer _player2;
 
-    private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
+    private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
 
     private readonly Random _random = new();
 
@@ -29,7 +29,7 @@ internal class Game
 
         for (int i = 1; i <= _totalDice; i++)
         {
-            _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
+            _rollPosibilitiesDictionary.Add(i, new RollPossibilities(i));
         }
 
         _currentPlayer = _player1;

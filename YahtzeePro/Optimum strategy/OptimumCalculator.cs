@@ -8,7 +8,7 @@ namespace YahtzeePro
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
-        private readonly Dictionary<int, RollPosibilities> _rollPosibilitiesDictionary = new();
+        private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
         private readonly bool _logAll = false;
         private readonly int _winningValue;
         private readonly int _totalDice;
@@ -39,7 +39,7 @@ namespace YahtzeePro
 
             for (int i = 1; i <= _totalDice; i++)
             {
-                _rollPosibilitiesDictionary[i] = new RollPosibilities(i);
+                _rollPosibilitiesDictionary[i] = new RollPossibilities(i);
             }
             _calculationIterations = calculationIterations;
         }
@@ -199,7 +199,7 @@ namespace YahtzeePro
         {
             double TotalScore = 0;
 
-            RollPosibilities rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
+            RollPossibilities rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
 
             foreach ((int diceUsed, Dictionary<int, double> scoreToProbabilities) in rollCalculator.DiceCountToScoresToProbabilities)
             {
