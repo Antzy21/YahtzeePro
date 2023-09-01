@@ -8,7 +8,7 @@ namespace YahtzeePro.tests
         [Fact]
         public void RollPosibilitiesForZeroDice()
         {
-            var rp = new RollPosibilities(0);
+            var rp = new RollPossibilities(0);
             Assert.Single(rp.DiceCountToScoresToProbabilities);
         }
 
@@ -18,7 +18,7 @@ namespace YahtzeePro.tests
         [Fact]
         public void RollPosibilitiesForOneDice()
         {
-            var rp = new RollPosibilities(1);
+            var rp = new RollPossibilities(1);
             Assert.Equal(2, rp.DiceCountToScoresToProbabilities.Count);
 
             Dictionary<int, double> zeroScoringDiceProbability = rp.DiceCountToScoresToProbabilities[0];
@@ -30,7 +30,7 @@ namespace YahtzeePro.tests
         {
             for (int i = 0; i < 5; i++)
             {
-                var rp = new RollPosibilities(i);
+                var rp = new RollPossibilities(i);
                 Assert.Equal(i + 1, rp.DiceCountToScoresToProbabilities.Count);
             }
         }

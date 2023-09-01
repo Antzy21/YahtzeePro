@@ -1,19 +1,19 @@
+using Xunit;
+
 namespace YahtzeePro.tests
 {
     public class ProbabilitiesCalculatorTests
     {
-        //[Fact]
-        //public void ProbabilityOfFailingWith1Dice()
-        //{
-        //    var result = YahtzeePro.ProbabilitiesCalculator.FailProbability(1);
-        //    Assert.Equal(0.666666, result, 5);
-        //}
+        private readonly int _winningValue = 50;
+        private readonly int _totalDice = 1;
 
-        //[Fact]
-        //public void ProbabilityOfFailingWith5Dice()
-        //{
-        //    var result = YahtzeePro.ProbabilitiesCalculator.FailProbability(5);
-        //    Assert.Equal(0.13169, result, 5);
-        //}
+        [Fact]
+        public void SimpleCaseCheckSizeOfResults()
+        {
+            var calculator = new OptimumCalculator(_winningValue, _totalDice);
+            calculator.PopulateGameStateProbabilities();
+            var result = calculator.gameStateProbabilitiesRisky;
+            Assert.Equal(2, result.Count);
+        }
     }
 }
