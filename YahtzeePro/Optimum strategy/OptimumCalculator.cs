@@ -100,7 +100,7 @@ namespace YahtzeePro
                                 // New gs to test
                                 _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn);
 
-                                // Assume bank to start with.
+                                // Assume safe strategy at gs is better to start with.
                                 gameStateProbabilitiesRisky[_currentCalculatingGs] = 0;
                                 gameStateProbabilitiesSafe[_currentCalculatingGs] = 1;
 
