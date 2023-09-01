@@ -93,6 +93,10 @@ namespace YahtzeePro
                                 if (cachedScore == 0 && !isStartOfTurn)
                                 { continue; }
 
+                                // Impossible to have a cache larger than opponent's score at the start of turn
+                                if (cachedScore > opponentScore && isStartOfTurn)
+                                { continue; }
+
                                 // New gs to test
                                 _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn);
 
