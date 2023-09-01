@@ -12,8 +12,7 @@ namespace YahtzeePro
         private readonly Dictionary<DiceCombination, Probability> _diceComboToProbabilities = new();
 
         private readonly Dictionary<ValuableDiceCount, Dictionary<Score, Probability>> _diceCountToScoresToProbabilities = new();
-
-        public Dictionary<ValuableDiceCount, Dictionary<Score, Probability>> ProbabilitiesOfScores => _diceCountToScoresToProbabilities;
+        public Dictionary<ValuableDiceCount, Dictionary<Score, Probability>> DiceCountToScoresToProbabilities => _diceCountToScoresToProbabilities;
 
         public RollPosibilities(int maxDiceCount)
         {
@@ -30,23 +29,6 @@ namespace YahtzeePro
                 }
                 _diceCountToScoresToProbabilities[valueableDiceCount].Add(diceCombo.Score, probability);
             }
-        }
-
-        private static ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
-        {
-            return diceCombination.NumberOfFives + diceCombination.NumberOfOnes;
-        }
-
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-
-            foreach ((DiceCombination diceCombo, double probability) in _diceComboToProbabilities)
-            {
-                stringBuilder.AppendLine($"{diceCombo} - {diceCombo.Score} = {probability.ToString("#.###")}");
-            }
-
-            return stringBuilder.ToString();
         }
 
         private void GenerateValues(int diceCount, DiceCombination currentCombination, double probability = 1)
@@ -77,6 +59,23 @@ namespace YahtzeePro
                 currentCombination.NumberOfFives,
                 currentCombination.NumberOfOthers + 1);
             GenerateValues(diceCount - 1, comboWithExtraOther, probability * 4 / 6);
+        }
+
+        private static ValuableDiceCount GetNumberOfValuableDice(DiceCombination diceCombination)
+        {
+            return diceCombination.NumberOfFives + diceCombination.NumberOfOnes;
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+
+            foreach ((DiceCombination diceCombo, double probability) in _diceComboToProbabilities)
+            {
+                stringBuilder.AppendLine($"({diceCombo}) => Score:{diceCombo.Score} = Prob:{probability.ToString("#.###")}");
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

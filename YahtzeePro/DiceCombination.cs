@@ -6,16 +6,16 @@
         {
             if (numberOfDice < 0)
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"number of dice give {numberOfDice} is negative.");
             }
 
-            var ones = 0;
-            var fives = 0;
-            var others = 0;
+            int ones = 0;
+            int fives = 0;
+            int others = 0;
 
             for (int i = 0; i < numberOfDice; i++)
             {
-                var diceValue = random.Next(5) + 1;
+                int diceValue = random.Next(5) + 1;
                 if (diceValue == 1)
                 {
                     ones++;
@@ -37,5 +37,10 @@
         public int ScoringDice => NumberOfOnes + NumberOfFives;
 
         public bool UsesAllDice => NumberOfOthers == 0;
+
+        public override string ToString()
+        {
+            return $"1s:{NumberOfOnes} | 5s:{NumberOfFives} | 2-6s:{NumberOfOthers}";
+        }
     }
 }

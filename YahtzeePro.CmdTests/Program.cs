@@ -3,17 +3,17 @@ using YahtzeePro;
 
 Console.WriteLine("Hello, World!");
 
-int winningValue = 5000;
-int totalDice = 5;
-int initialStackCounterToReturnKnownValue = 4;
-int calculationIterations = 5;
+int winningValue = 2000;
+int totalDice = 3;
+int initialStackCounterToReturnKnownValue = 2;
+int calculationIterations = 3;
 
-ProbabilitiesCalculator ProbabilitiesCalculator = new(
+OptimumCalculator ProbabilitiesCalculator = new(
     winningValue,
     totalDice,
     initialStackCounterToReturnKnownValue,
     calculationIterations,
-    logAll: false);
+    logAll: true);
 
 string fileName = "scores.txt";
 

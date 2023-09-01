@@ -1,15 +1,7 @@
 ﻿namespace YahtzeePro
 {
-    public class GameState
+    public struct GameState
     {
-        private readonly int _totalDice;
-
-        private int _playerScore;
-        private int _opponentScore;
-        private int _cachedScore;
-        private int _diceToRoll;
-        private bool _isStartOfTurn;
-
         public GameState(
             int playerScore,
             int opponentScore,
@@ -17,29 +9,52 @@
             int diceToRoll,
             bool isStartOfTurn)
         {
-            _playerScore = playerScore;
-            _opponentScore = opponentScore;
-            _cachedScore = cachedScore;
-            _isStartOfTurn = isStartOfTurn;
-            _diceToRoll = diceToRoll;
-            _totalDice = diceToRoll;
+            PlayerScore = playerScore;
+            OpponentScore = opponentScore;
+            CachedScore = cachedScore;
+            IsStartOfTurn = isStartOfTurn;
+            DiceToRoll = diceToRoll;
+            TotalDice = diceToRoll;
         }
 
-        public int PlayerScore => _playerScore;
-        public int OpponentScore => _opponentScore;
-        public int CachedScore => _cachedScore;
-        public int DiceToRoll => _diceToRoll;
-        public bool IsStartOfTurn => _isStartOfTurn;
+        // Allows private setting of total dice
+        private GameState(
+            int playerScore,
+            int opponentScore,
+            int cachedScore,
+            int diceToRoll,
+            bool isStartOfTurn,
+            int totalDice)
+        {
+            PlayerScore = playerScore;
+            OpponentScore = opponentScore;
+            CachedScore = cachedScore;
+            IsStartOfTurn = isStartOfTurn;
+            DiceToRoll = diceToRoll;
+            TotalDice = totalDice;
+        }
+
+        public readonly int PlayerScore { get; init; }
+        public readonly int OpponentScore { get; init; }
+        public readonly int CachedScore { get; init; }
+        public readonly int DiceToRoll { get; init; }
+        public readonly int TotalDice { get; init; }
+        public readonly bool IsStartOfTurn { get; init; }
 
         /// <summary>
         /// Reset the cached score and make it no longer start of turn.
         /// </summary>
         /// <returns></returns>
-        public GameState ResetCache()
+        public readonly GameState ResetCache()
         {
-            _cachedScore = 0;
-            _isStartOfTurn = false;
-            return this;
+            return new GameState(
+                playerScore: OpponentScore,
+                opponentScore: PlayerScore,
+                cachedScore: 0,
+                isStartOfTurn: true,
+                diceToRoll: TotalDice,
+                totalDice: TotalDice
+            );
         }
 
         /// <summary>
@@ -47,24 +62,32 @@
         /// Keep the cached score and the dice to roll.
         /// </summary>
         /// <returns></returns>
-        public GameState Bank()
+        public readonly GameState Bank()
         {
-            (_opponentScore, _playerScore) = (_playerScore + _cachedScore, _opponentScore);
-            _isStartOfTurn = true;
-            return this;
+            return new GameState(
+                playerScore: OpponentScore,
+                opponentScore: PlayerScore + CachedScore,
+                cachedScore: 0,
+                isStartOfTurn: true,
+                diceToRoll: TotalDice,
+                totalDice: TotalDice
+            );
         }
 
         /// <summary>
         /// Switch to opponent, reset the cached score and the dice to roll.
         /// </summary>
         /// <returns></returns>
-        public GameState Fail()
+        public readonly GameState Fail()
         {
-            (_opponentScore, _playerScore) = (_playerScore, _opponentScore);
-            _isStartOfTurn = true;
-            _diceToRoll = _totalDice;
-            _cachedScore = 0;
-            return this;
+            return new GameState(
+                playerScore: OpponentScore,
+                opponentScore: PlayerScore,
+                cachedScore: 0,
+                isStartOfTurn: true,
+                diceToRoll: TotalDice,
+                totalDice: TotalDice
+            );
         }
 
         /// <summary>
@@ -72,12 +95,16 @@
         /// </summary>
         /// <param name="rolledScore"></param>
         /// <returns></returns>
-        public GameState RollOver(int rolledScore)
+        public readonly GameState RollOver(int rolledScore)
         {
-            _isStartOfTurn = false;
-            _diceToRoll = _totalDice;
-            _cachedScore += rolledScore;
-            return this;
+            return new GameState(
+                playerScore: PlayerScore,
+                opponentScore: OpponentScore,
+                cachedScore: CachedScore + rolledScore,
+                isStartOfTurn: false,
+                diceToRoll: TotalDice,
+                totalDice: TotalDice
+            );
         }
 
         /// <summary>
@@ -87,22 +114,28 @@
         /// <param name="usedDice"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public GameState AddRolledScore(int rolledScore, int usedDice)
+        public readonly GameState AddRolledScore(int rolledScore, int usedDice)
         {
-            if (usedDice >= _diceToRoll)
+            if (usedDice >= DiceToRoll)
+            {
                 throw new ArgumentOutOfRangeException(
-                    $"Only had {_diceToRoll} dice to roll, but told {usedDice} have been used"
+                    $"Only had {DiceToRoll} dice to roll, but told {usedDice} have been used"
                 );
+            }
 
-            _isStartOfTurn = false;
-            _diceToRoll -= usedDice;
-            _cachedScore += rolledScore;
-            return this;
+            return new GameState(
+                playerScore: PlayerScore,
+                opponentScore: OpponentScore,
+                cachedScore: CachedScore + rolledScore,
+                isStartOfTurn: false,
+                diceToRoll: DiceToRoll - usedDice,
+                totalDice: TotalDice
+            );
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
-            return $"P:{_playerScore} | O:{_opponentScore} | C:{_cachedScore} | D:{_diceToRoll} | S:{_isStartOfTurn}";
+            return $"P:{PlayerScore} | O:{OpponentScore} | C:{CachedScore} | D:{DiceToRoll} | S:{IsStartOfTurn}";
         }
     }
 }

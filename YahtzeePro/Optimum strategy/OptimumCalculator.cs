@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace YahtzeePro
 {
-    public class ProbabilitiesCalculator : OptimumStrategy
+    public class OptimumCalculator : OptimumStrategy
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
@@ -16,10 +16,10 @@ namespace YahtzeePro
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
         private readonly int _initialStackCounterToReturnKnownValue;
         private readonly int _calculationIterations;
-        private GameState? _currentCalculatingGs;
+        private GameState _currentCalculatingGs;
         private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new();
 
-        public ProbabilitiesCalculator(
+        public OptimumCalculator(
             int winningValue,
             int totalDice,
             int initialStackCounterToReturnKnownValue = 3,
@@ -31,6 +31,7 @@ namespace YahtzeePro
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             _logAll = logAll;
+            _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true);
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -38,7 +39,7 @@ namespace YahtzeePro
 
             for (int i = 1; i <= _totalDice; i++)
             {
-                _rollPosibilitiesDictionary.Add(i, new RollPosibilities(i));
+                _rollPosibilitiesDictionary[i] = new RollPosibilities(i);
             }
             _calculationIterations = calculationIterations;
         }
@@ -172,7 +173,7 @@ namespace YahtzeePro
                 /// ###############
             }
 
-            if (gs == _currentCalculatingGs)
+            if (gs.Equals(_currentCalculatingGs))
             {
                 gameStateProbabilitiesSafe[gs] = safePlayProbability;
                 gameStateProbabilitiesRisky[gs] = rollScoreProbability;
@@ -196,7 +197,7 @@ namespace YahtzeePro
 
             RollPosibilities rollCalculator = _rollPosibilitiesDictionary[gs.DiceToRoll];
 
-            foreach ((int diceUsed, Dictionary<int, double> scoreToProbabilities) in rollCalculator.ProbabilitiesOfScores)
+            foreach ((int diceUsed, Dictionary<int, double> scoreToProbabilities) in rollCalculator.DiceCountToScoresToProbabilities)
             {
                 foreach ((int score, double probability) in scoreToProbabilities)
                 {
@@ -253,7 +254,7 @@ namespace YahtzeePro
             return $" {gs.DiceToRoll} Dice, New turn: {gs.IsStartOfTurn,5}" +
                 $" | {gs.PlayerScore,4} + {gs.CachedScore,4} : {gs.OpponentScore,4}" +
                 $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
-                $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key == gs).Value,6:#.####}";
+                $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####}";
         }
     }
 }
