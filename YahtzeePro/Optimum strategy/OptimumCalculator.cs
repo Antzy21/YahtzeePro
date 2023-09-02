@@ -179,6 +179,11 @@ namespace YahtzeePro
 
             if (gs.Equals(_currentCalculatingGs))
             {
+                if (safePlayProbability > 1 || safePlayProbability < 0)
+                    throw new Exception($"Probability for safe play {safePlayProbability} is out of bounds for gs:{_currentCalculatingGs}");
+                if (rollScoreProbability > 1 || rollScoreProbability < 0)
+                    throw new Exception($"Probability for rolling {rollScoreProbability} is out of bounds for gs:{_currentCalculatingGs}");
+
                 gameStateProbabilitiesSafe[gs] = safePlayProbability;
                 gameStateProbabilitiesRisky[gs] = rollScoreProbability;
                 gameStateProbabilities[gs] = Math.Max(safePlayProbability, rollScoreProbability);
@@ -210,7 +215,7 @@ namespace YahtzeePro
                         GameState newGs = gs.Fail();
 
                         // Goes to opponent.
-                        TotalScore += 1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0) * probability;
+                        TotalScore += (1 - ProbabilityOfWinningFromGs(newGs, stackCounterToReturnKnownValue - 1, rollsThisTurn: 0)) * probability;
                     }
                     else if (diceUsed == gs.DiceToRoll)
                     {
