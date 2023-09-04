@@ -2,7 +2,7 @@ using Xunit;
 
 namespace YahtzeePro.tests
 {
-    public class ProbabilitiesCalculatorTests
+    public class OptimumCalculatorTests
     {
         private readonly int _winningValue = 50;
         private readonly int _totalDice = 1;
