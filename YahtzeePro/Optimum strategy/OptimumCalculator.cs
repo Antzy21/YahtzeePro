@@ -93,6 +93,10 @@ namespace YahtzeePro
                                 if (cachedScore == 0 && !isStartOfTurn)
                                 { continue; }
 
+                                // Impossible to have cache at start of turn if all dice are available
+                                if (cachedScore != 0 && isStartOfTurn && diceCount == _totalDice)
+                                { continue; }
+
                                 // Impossible to have a cache larger than opponent's score at the start of turn
                                 if (cachedScore > opponentScore && isStartOfTurn)
                                 { continue; }
