@@ -5,7 +5,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
+        Console.WriteLine("Hello, World!\n");
 
         int winningValue = 5000;
         int totalDice = 5;
@@ -43,7 +43,7 @@ internal class Program
 
         string fileName = "scores.txt";
 
-        Console.WriteLine("Regenerate results? (y/n)");
+        Console.WriteLine("\nRegenerate results? (y/n)");
         string regenerate = Console.ReadLine()!;
 
         if (regenerate == "y")

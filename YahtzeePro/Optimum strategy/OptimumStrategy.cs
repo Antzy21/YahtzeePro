@@ -16,7 +16,17 @@ namespace YahtzeePro
 
         public void ReadDataFromFile(string fileName)
         {
-            string[] gsDataLines = File.ReadAllLines(_dir + fileName);
+            string[] gsDataLines;
+
+            try
+            {
+                gsDataLines = File.ReadAllLines(_dir + fileName);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;
+            }
 
             Console.WriteLine($"Reading data from {_dir + fileName}. {gsDataLines.Length} lines.");
 
