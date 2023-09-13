@@ -45,7 +45,7 @@ internal class Game
 
     public void Play()
     {
-        while (_gameState.PlayerScore < _winningValue)
+        while (_gameState.PlayerScore + _gameState.CachedScore < _winningValue)
         {
 
             var move = _currentPlayer.GetMove(_gameState);
