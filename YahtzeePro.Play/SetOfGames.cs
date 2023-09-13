@@ -5,13 +5,17 @@ namespace YahtzeePro.Play
     internal class SetOfGames
     {
 
+        private readonly int _winningValue;
+        private readonly int _totalDice;
         private readonly IPlayer _player1;
         private readonly IPlayer _player2;
 
-        public SetOfGames(IPlayer player1, IPlayer player2)
+        public SetOfGames(IPlayer player1, IPlayer player2, int winningValue, int totalDice)
         {
             _player1 = player1;
             _player2 = player2;
+            _winningValue = winningValue;
+            _totalDice = totalDice;
         }
 
         public void PlaySetOfSets(int totalGames, int totalSets, bool logging = false)
@@ -26,7 +30,7 @@ namespace YahtzeePro.Play
 
             for (int set = 1; set <= totalSets; set++)
             {
-                var (player1WinCount, player2WinCount) = PlayGames(totalGames);
+                (int player1WinCount, int player2WinCount) = PlayGames(totalGames);
 
                 if (player1WinCount > player2WinCount)
                     player1SetWins++;
@@ -49,7 +53,7 @@ namespace YahtzeePro.Play
             // Player 1 first
             for (int i = 0; i < totalGames / 2; i++)
             {
-                var game = new Game(winningValue: 5000, totalDice: 5, _player1, _player2);
+                var game = new Game(_winningValue, _totalDice, _player1, _player2);
                 game.Play();
                 if (game.firstPlayerWon)
                     player1WinCount++;
@@ -60,7 +64,7 @@ namespace YahtzeePro.Play
             // Player 2 first
             for (int i = 0; i < totalGames / 2; i++)
             {
-                var game = new Game(winningValue: 5000, totalDice: 5, _player2, _player1);
+                var game = new Game(_winningValue, _totalDice, _player2, _player1);
                 game.Play();
                 if (game.firstPlayerWon)
                     player2WinCount++;
