@@ -11,7 +11,7 @@ namespace YahtzeePro
 
         public OptimumStrategy(int winningValue, int totalDice)
         {
-            _dir = $"../../../../Win{winningValue}/Dice{totalDice}/";
+            _dir = $"../../../../Data/Win{winningValue}/Dice{totalDice}/";
         }
 
         public void ReadDataFromFile(string fileName)
