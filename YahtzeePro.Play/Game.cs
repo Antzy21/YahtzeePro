@@ -35,11 +35,12 @@ internal class Game
         _currentPlayer = _player1;
 
         _gameState = new(
-            playerScore: 0,
-            opponentScore: 0,
-            cachedScore: 0,
-            diceToRoll: totalDice,
-            isStartOfTurn: true);
+            PlayerScore: 0,
+            OpponentScore: 0,
+            CachedScore: 0,
+            DiceToRoll: totalDice,
+            IsStartOfTurn: true,
+            TotalDice: _totalDice);
     }
 
     public void Play()

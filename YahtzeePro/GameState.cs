@@ -1,46 +1,7 @@
 ﻿namespace YahtzeePro
 {
-    public struct GameState
+    public readonly record struct GameState(int PlayerScore, int OpponentScore, int CachedScore, int DiceToRoll, bool IsStartOfTurn, int TotalDice)
     {
-        public GameState(
-            int playerScore,
-            int opponentScore,
-            int cachedScore,
-            int diceToRoll,
-            bool isStartOfTurn)
-        {
-            PlayerScore = playerScore;
-            OpponentScore = opponentScore;
-            CachedScore = cachedScore;
-            IsStartOfTurn = isStartOfTurn;
-            DiceToRoll = diceToRoll;
-            TotalDice = diceToRoll;
-        }
-
-        // Allows private setting of total dice
-        private GameState(
-            int playerScore,
-            int opponentScore,
-            int cachedScore,
-            int diceToRoll,
-            bool isStartOfTurn,
-            int totalDice)
-        {
-            PlayerScore = playerScore;
-            OpponentScore = opponentScore;
-            CachedScore = cachedScore;
-            IsStartOfTurn = isStartOfTurn;
-            DiceToRoll = diceToRoll;
-            TotalDice = totalDice;
-        }
-
-        public readonly int PlayerScore { get; init; }
-        public readonly int OpponentScore { get; init; }
-        public readonly int CachedScore { get; init; }
-        public readonly int DiceToRoll { get; init; }
-        public readonly int TotalDice { get; init; }
-        public readonly bool IsStartOfTurn { get; init; }
-
         /// <summary>
         /// Reset the cached score and make it no longer start of turn.
         /// </summary>
@@ -48,12 +9,12 @@
         public readonly GameState ResetCache()
         {
             return new GameState(
-                playerScore: OpponentScore,
-                opponentScore: PlayerScore,
-                cachedScore: 0,
-                isStartOfTurn: true,
-                diceToRoll: TotalDice,
-                totalDice: TotalDice
+                PlayerScore: OpponentScore,
+                OpponentScore: PlayerScore,
+                CachedScore: 0,
+                IsStartOfTurn: true,
+                DiceToRoll: TotalDice,
+                TotalDice: TotalDice
             );
         }
 
@@ -65,12 +26,12 @@
         public readonly GameState Bank()
         {
             return new GameState(
-                playerScore: OpponentScore,
-                opponentScore: PlayerScore + CachedScore,
-                cachedScore: 0,
-                isStartOfTurn: true,
-                diceToRoll: TotalDice,
-                totalDice: TotalDice
+                PlayerScore: OpponentScore,
+                OpponentScore: PlayerScore + CachedScore,
+                CachedScore: 0,
+                IsStartOfTurn: true,
+                DiceToRoll: TotalDice,
+                TotalDice: TotalDice
             );
         }
 
@@ -81,12 +42,12 @@
         public readonly GameState Fail()
         {
             return new GameState(
-                playerScore: OpponentScore,
-                opponentScore: PlayerScore,
-                cachedScore: 0,
-                isStartOfTurn: true,
-                diceToRoll: TotalDice,
-                totalDice: TotalDice
+                PlayerScore: OpponentScore,
+                OpponentScore: PlayerScore,
+                CachedScore: 0,
+                IsStartOfTurn: true,
+                DiceToRoll: TotalDice,
+                TotalDice: TotalDice
             );
         }
 
@@ -98,12 +59,12 @@
         public readonly GameState RollOver(int rolledScore)
         {
             return new GameState(
-                playerScore: PlayerScore,
-                opponentScore: OpponentScore,
-                cachedScore: CachedScore + rolledScore,
-                isStartOfTurn: false,
-                diceToRoll: TotalDice,
-                totalDice: TotalDice
+                PlayerScore: PlayerScore,
+                OpponentScore: OpponentScore,
+                CachedScore: CachedScore + rolledScore,
+                IsStartOfTurn: false,
+                DiceToRoll: TotalDice,
+                TotalDice: TotalDice
             );
         }
 
@@ -124,12 +85,12 @@
             }
 
             return new GameState(
-                playerScore: PlayerScore,
-                opponentScore: OpponentScore,
-                cachedScore: CachedScore + rolledScore,
-                isStartOfTurn: false,
-                diceToRoll: DiceToRoll - usedDice,
-                totalDice: TotalDice
+                PlayerScore: PlayerScore,
+                OpponentScore: OpponentScore,
+                CachedScore: CachedScore + rolledScore,
+                IsStartOfTurn: false,
+                DiceToRoll: DiceToRoll - usedDice,
+                TotalDice: TotalDice
             );
         }
 

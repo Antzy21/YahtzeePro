@@ -20,7 +20,7 @@ namespace YahtzeePro
         public DiceCombination(params int[] dice)
         {
             _dice = dice;
-            foreach (var die in dice)
+            foreach (int die in dice)
             {
                 switch (die)
                 {
@@ -67,7 +67,7 @@ namespace YahtzeePro
 
         public DiceCombination AddDie(int dieValue)
         {
-            var newDiceCombo = _dice.Append(dieValue).ToArray();
+            int[] newDiceCombo = _dice.Append(dieValue).ToArray();
             return new DiceCombination(newDiceCombo);
         }
 

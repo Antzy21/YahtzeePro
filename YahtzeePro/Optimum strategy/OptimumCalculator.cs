@@ -31,7 +31,7 @@ namespace YahtzeePro
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             _logAll = logAll;
-            _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true);
+            _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, _totalDice);
 
             Console.WriteLine("New Probabilities Calculator created.");
             Console.WriteLine($"Win Value: {_winningValue}");
@@ -102,7 +102,7 @@ namespace YahtzeePro
                                 { continue; }
 
                                 // New gs to test
-                                _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn);
+                                _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn, _totalDice);
 
                                 // Assume safe strategy at gs is better to start with.
                                 gameStateProbabilitiesRisky[_currentCalculatingGs] = 0;
