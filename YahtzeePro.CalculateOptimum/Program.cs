@@ -5,7 +5,7 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!\n");
+        Console.WriteLine("Calculate Optimum YatzeePro Strategy...\n");
 
         int winningValue = 5000;
         int totalDice = 5;

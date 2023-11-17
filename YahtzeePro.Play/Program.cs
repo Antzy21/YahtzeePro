@@ -7,8 +7,6 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!\n");
-
         int winningValue = 1000;
         int totalDice = 5;
 
@@ -19,6 +17,10 @@ internal class Program
         if (args.Length > 1)
         {
             totalDice = int.Parse(args[1]);
+        }
+        if (args.Length > 2)
+        {
+            Console.WriteLine("Too many arguements passed. Expecting 'winningValue' and 'totalDice'");
         }
 
         Console.WriteLine("Duel!");

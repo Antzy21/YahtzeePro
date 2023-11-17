@@ -1,4 +1,43 @@
+# YahtzeePro
+A dice game where players choose between banking and rolling to try get to a winning score first.
+
+## CalculateOptimum
+```Powershell
+.\YahtzeePro.CalculateOptimum\bin\Debug\net7.0\YahtzeePro.CalculateOptimum.exe
+```
+By default this will attempt to calculate the optimum strategy for the game, where the default game values are used.
+The calculation method parameters for `initialStackCounterToReturnKnownValue` and `calculationIterations` will also use defaults.
+
+ e.g.
+- Win at 5000
+- 5 total dice
+- 2 for `initialStackCounterToReturnKnownValue`
+- 3 for `calculationIterations`
+
+---
+
+```Powershell
+.\YahtzeePro.CalculateOptimum\bin\Debug\net7.0\YahtzeePro.CalculateOptimum.exe 1000 3 5 4 true
+```
+This call will calculate with the following:
+- Win at 1000
+- 3 total dice
+- 5 for `initialStackCounterToReturnKnownValue`
+- 4 for `calculationIterations`
+- loggin all calculations to the console
+
+## Play
+Get two players to play a few games (or lots of sets of matches!)
+
+```
+.\YahtzeePro.Play\bin\Debug\net7.0\YahtzeePro.Play.exe
+```
+
+Pass a given winning score and total dice as the optional first and second arguments.
+
 ## Yahtzee Pro analysis
+
+*These are notes made at the start of the project*
 
 Assume 1v1
 
