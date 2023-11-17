@@ -41,19 +41,28 @@ internal class Program
             calculationIterations,
             logAll);
 
-        string fileName = "scores.txt";
+        string regenerate = "y";
 
-        Console.WriteLine("\nRegenerate results? (y/n)");
-        string regenerate = Console.ReadLine()!;
+        if (ProbabilitiesCalculator.CalculationExists())
+        {
+            Console.WriteLine("Scores exist for this configuration.");
+            Console.WriteLine("\nRegenerate results? (y/n)");
+            regenerate = Console.ReadLine()!;
 
-        if (regenerate == "y")
+        }
+
+        if (regenerate == "n")
+        {
+            ProbabilitiesCalculator.ReadDataFromFile();
+        }
+        else if (regenerate == "y")
         {
             ProbabilitiesCalculator.PopulateGameStateProbabilities();
-            ProbabilitiesCalculator.WriteDataToFile(fileName);
+            ProbabilitiesCalculator.WriteDataToFile();
         }
         else
         {
-            ProbabilitiesCalculator.ReadDataFromFile(fileName);
+            Console.WriteLine("Unexpected input.");
         }
     }
 }

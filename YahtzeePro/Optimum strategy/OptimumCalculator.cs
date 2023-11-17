@@ -54,12 +54,12 @@ namespace YahtzeePro
             return stringBuilder.ToString();
         }
 
-        public void WriteDataToFile(string fileName)
+        public void WriteDataToFile()
         {
-            Console.WriteLine($"Writing data to {fileName}");
+            Console.WriteLine($"Writing data to {_fileName}");
 
             Directory.CreateDirectory(_dir);
-            StreamWriter file = File.CreateText(_dir + fileName);
+            StreamWriter file = File.CreateText(_fileName);
 
             foreach ((GameState gs, double probability) in gameStateProbabilities)
             {
@@ -269,5 +269,7 @@ namespace YahtzeePro
                 $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
                 $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####}";
         }
+
+        public bool CalculationExists() => Directory.Exists(_dir);
     }
 }

@@ -4,6 +4,7 @@ namespace YahtzeePro
     public class OptimumStrategy
     {
         private protected readonly string _dir;
+        private protected readonly string _fileName;
 
         public Dictionary<GameState, double> gameStateProbabilities = new();
         public Dictionary<GameState, double> gameStateProbabilitiesRisky = new();
@@ -11,16 +12,18 @@ namespace YahtzeePro
 
         public OptimumStrategy(int winningValue, int totalDice)
         {
-            _dir = $"../../../../Data/Win{winningValue}/Dice{totalDice}/";
+            var localappdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            _dir = $"{localappdata}/Antzy21/YahtzeePro/Data/Win{winningValue}/Dice{totalDice}";
+            _fileName = $"{_dir}/scores.txt";
         }
 
-        public void ReadDataFromFile(string fileName)
+        public void ReadDataFromFile()
         {
             string[] gsDataLines;
 
             try
             {
-                gsDataLines = File.ReadAllLines(_dir + fileName);
+                gsDataLines = File.ReadAllLines(_fileName);
             }
             catch (DirectoryNotFoundException ex)
             {
@@ -28,7 +31,7 @@ namespace YahtzeePro
                 return;
             }
 
-            Console.WriteLine($"Reading data from {_dir + fileName}. {gsDataLines.Length} lines.");
+            Console.WriteLine($"Reading data from {_fileName}. {gsDataLines.Length} lines.");
 
             foreach (string gsData in gsDataLines)
             {

@@ -26,7 +26,7 @@ internal class Program
         Console.WriteLine("Duel!");
 
         IPlayer player1 = new RollToWin();
-        IPlayer player2 = new OptimumPlayer("scores.txt", winningValue, totalDice);
+        IPlayer player2 = new OptimumPlayer(winningValue, totalDice);
 
         var setOfGames = new SetOfGames(player1, player2, winningValue, totalDice);
 
