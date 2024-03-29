@@ -13,8 +13,8 @@ namespace YahtzeePro
         public OptimumStrategy(int winningValue, int totalDice)
         {
             var localappdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            _dir = $"{localappdata}/Antzy21/YahtzeePro/Data/Win{winningValue}/Dice{totalDice}";
-            _fileName = $"{_dir}/scores.txt";
+            _dir = Path.Combine(localappdata, "Antzy21", "YahtzeePro", "Data", $"Win{winningValue}", $"Dice{totalDice}");
+            _fileName = Path.Combine(_dir, "scores.txt");
         }
 
         public void ReadDataFromFile()
