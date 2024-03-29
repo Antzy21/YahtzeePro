@@ -23,10 +23,10 @@ namespace YahtzeePro.Play
             int player1SetWins = 0;
             int player2SetWins = 0;
 
-            Console.WriteLine($"PLayer 1 \"{_player1.Name}\"");
+            Console.WriteLine($"Player 1 \"{_player1.Name}\"");
             Console.WriteLine($"Player 2 \"{_player2.Name}\"");
             Console.WriteLine($"Games per set: {totalGames}\n");
-            Console.WriteLine("Set |  P1  :  P2");
+            Console.WriteLine("Set | P1 : P2");
 
             for (int set = 1; set <= totalSets; set++)
             {
@@ -39,7 +39,7 @@ namespace YahtzeePro.Play
 
                 if (logging)
                 {
-                    Console.Write($"\r{set,4} | {player1SetWins,4} : {player2SetWins,4}");
+                    Console.Write($"\r{set,3} |{player1SetWins,3} :{player2SetWins,3}");
                 }
             }
             Console.WriteLine("\n");

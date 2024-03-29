@@ -30,12 +30,9 @@ internal class Program
 
         var setOfGames = new SetOfGames(player1, player2, winningValue, totalDice);
 
-        for (int i = 0; i < 5; i++)
-        {
-            setOfGames.PlaySetOfSets(
-                totalGames: 10000,
-                totalSets: 1000,
-                logging: true);
-        }
+        setOfGames.PlaySetOfSets(
+            totalGames: 100,
+            totalSets: 100,
+            logging: true);
     }
 }
