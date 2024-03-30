@@ -11,6 +11,7 @@ services:
   server:
     build:
       context: .
+      dockerfile: ./YahtzeePro.CalculateOptimum.Api/Dockerfile
       target: final
     ports:
       - 8080:8080
