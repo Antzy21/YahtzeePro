@@ -11,9 +11,8 @@ namespace YahtzeePro.tests
         public void SimpleCaseCheckSizeOfResults()
         {
             var calculator = new OptimumCalculator(_winningValue, _totalDice);
-            calculator.PopulateGameStateProbabilities();
-            var result = calculator.gameStateProbabilitiesRisky;
-            Assert.Equal(2, result.Count);
+            var result = calculator.Calculate();
+            Assert.Equal(2, result.GameStateProbabilities.Count);
         }
     }
 }

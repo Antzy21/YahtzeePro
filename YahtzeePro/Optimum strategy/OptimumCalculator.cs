@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace YahtzeePro
 {
-    public class OptimumCalculator : OptimumStrategy
+    public class OptimumCalculator
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
@@ -12,6 +12,11 @@ namespace YahtzeePro
         private readonly bool _logAll = false;
         private readonly int _winningValue;
         private readonly int _totalDice;
+
+        private readonly Dictionary<GameState, double> gameStateProbabilities = [];
+        private readonly Dictionary<GameState, double> gameStateProbabilitiesRisky = [];
+        private readonly Dictionary<GameState, double> gameStateProbabilitiesSafe = [];
+
 
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
         private readonly int _initialStackCounterToReturnKnownValue;
@@ -24,7 +29,7 @@ namespace YahtzeePro
             int totalDice,
             int initialStackCounterToReturnKnownValue = 3,
             int calculationIterations = 10,
-            bool logAll = false) : base(winningValue, totalDice)
+            bool logAll = false)
         {
             _winningValue = winningValue;
             _totalDice = totalDice;
@@ -44,40 +49,15 @@ namespace YahtzeePro
             _calculationIterations = calculationIterations;
         }
 
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-            foreach ((GameState gs, double _) in gameStateProbabilities)
-            {
-                stringBuilder.AppendLine(GsDataToString(gs));
-            }
-            return stringBuilder.ToString();
-        }
-
-        public void WriteDataToFile()
-        {
-            Console.WriteLine($"Writing data to {_fileName}");
-
-            Directory.CreateDirectory(_dir);
-            StreamWriter file = File.CreateText(_fileName);
-
-            foreach ((GameState gs, double probability) in gameStateProbabilities)
-            {
-                string gsSerialised = JsonSerializer.Serialize(gs);
-                file.Write(gsSerialised);
-                file.WriteLine($"---{probability}---{gameStateProbabilitiesRisky[gs]}---{gameStateProbabilitiesSafe[gs]}");
-            }
-
-            file.Close();
-        }
-
         // The main function
-        public void PopulateGameStateProbabilities()
+        public OptimumStrategyData Calculate()
         {
             Stopwatch timer = Stopwatch.StartNew();
             TimeSpan LoggingInterval = new(0, 0, seconds: 5);
             TimeSpan NextLoggingTime = timer.Elapsed;
             Console.WriteLine("\nBegin populating...\n");
+
+            Dictionary<GameState, GameStateProbabilities> GameStateProbabilities = [];
 
             for (int playerScore = _winningValue - 50; playerScore >= 0; playerScore -= 50)
             {
@@ -118,6 +98,11 @@ namespace YahtzeePro
                                 }
 
                                 _gameStateThatHaveBeenCalculated.Add(_currentCalculatingGs);
+                                GameStateProbabilities.Add(_currentCalculatingGs, new GameStateProbabilities(
+                                    gameStateProbabilitiesRisky[_currentCalculatingGs] > gameStateProbabilitiesSafe[_currentCalculatingGs],
+                                    gameStateProbabilitiesRisky[_currentCalculatingGs],
+                                    gameStateProbabilitiesSafe[_currentCalculatingGs]
+                                ));
 
                                 if (_logAll || timer.Elapsed > NextLoggingTime)
                                 {
@@ -131,6 +116,7 @@ namespace YahtzeePro
             }
 
             Console.WriteLine("\nFinished populating\n");
+            return new OptimumStrategyData(GameStateProbabilities);
         }
 
         private double ProbabilityOfWinningFromGs(GameState gs, int stackCounterToReturnKnownValue, int rollsThisTurn = 0)
@@ -269,7 +255,5 @@ namespace YahtzeePro
                 $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
                 $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####}";
         }
-
-        public bool CalculationExists() => Directory.Exists(_dir);
     }
 }

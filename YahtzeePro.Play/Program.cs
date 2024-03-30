@@ -1,4 +1,5 @@
 ﻿using System;
+using YahtzeePro;
 using YahtzeePro.Optimum_strategy;
 using YahtzeePro.Play;
 using YahtzeePro.Play.Players;
@@ -26,7 +27,10 @@ internal class Program
         Console.WriteLine("Duel!");
 
         IPlayer player1 = new RollToWin();
-        IPlayer player2 = new OptimumPlayer(winningValue, totalDice);
+
+        IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage();
+        var optimumStrategyData = optimumStrategyRepository.Get(winningValue, totalDice);
+        IPlayer player2 = new OptimumPlayer(optimumStrategyData);
 
         var setOfGames = new SetOfGames(player1, player2, winningValue, totalDice);
 

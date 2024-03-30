@@ -2,18 +2,20 @@
 
 namespace YahtzeePro.Optimum_strategy
 {
-    internal class OptimumPlayer : OptimumStrategy, IPlayer
+    internal class OptimumPlayer : IPlayer
     {
-        public OptimumPlayer(int winningValue = 5000, int totalDice = 5) : base(winningValue, totalDice)
+        private readonly OptimumStrategyData _optimumStrategyData;
+
+        public OptimumPlayer(OptimumStrategyData optimumStrategyData)
         {
-            ReadDataFromFile();
+            _optimumStrategyData = optimumStrategyData;
         }
 
         public string Name => "Best";
 
         public PlayChoice GetMove(GameState gs)
         {
-            if (gameStateProbabilitiesRisky[gs] > gameStateProbabilitiesSafe[gs])
+            if (_optimumStrategyData.GameStateProbabilities[gs].RiskyPlay)
             {
                 return PlayChoice.Risky;
             }
