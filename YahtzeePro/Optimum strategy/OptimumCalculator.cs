@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace YahtzeePro
 {
@@ -9,9 +8,10 @@ namespace YahtzeePro
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
-        private readonly bool _logAll = false;
         private readonly int _winningValue;
         private readonly int _totalDice;
+
+        private readonly ILogger _logger;
 
         private readonly Dictionary<GameState, double> gameStateProbabilities = [];
         private readonly Dictionary<GameState, double> gameStateProbabilitiesRisky = [];
@@ -27,20 +27,20 @@ namespace YahtzeePro
         public OptimumCalculator(
             int winningValue,
             int totalDice,
+            ILogger<OptimumCalculator> logger,
             int initialStackCounterToReturnKnownValue = 3,
-            int calculationIterations = 10,
-            bool logAll = false)
+            int calculationIterations = 10)
         {
+            _logger = logger;
             _winningValue = winningValue;
             _totalDice = totalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
-            _logAll = logAll;
             _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, _totalDice);
 
-            Console.WriteLine("New Probabilities Calculator created.");
-            Console.WriteLine($"Win Value: {_winningValue}");
-            Console.WriteLine($"Total Dice: {_totalDice}");
+            _logger.LogInformation("New Probabilities Calculator created.");
+            _logger.LogInformation($"Win Value: {_winningValue}");
+            _logger.LogInformation($"Total Dice: {_totalDice}");
 
             for (int i = 1; i <= _totalDice; i++)
             {
@@ -55,7 +55,7 @@ namespace YahtzeePro
             Stopwatch timer = Stopwatch.StartNew();
             TimeSpan LoggingInterval = new(0, 0, seconds: 5);
             TimeSpan NextLoggingTime = timer.Elapsed;
-            Console.WriteLine("\nBegin populating...\n");
+            _logger.LogInformation("\nBegin populating...\n");
 
             Dictionary<GameState, GameStateProbabilities> GameStateProbabilities = [];
 
@@ -103,19 +103,22 @@ namespace YahtzeePro
                                     gameStateProbabilitiesRisky[_currentCalculatingGs],
                                     gameStateProbabilitiesSafe[_currentCalculatingGs]
                                 ));
-
-                                if (_logAll || timer.Elapsed > NextLoggingTime)
+                                
+                                if (timer.Elapsed > NextLoggingTime)
                                 {
                                     NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                    Console.WriteLine(GsDataToString(_currentCalculatingGs));
+                                    _logger.LogInformation(GsDataToString(_currentCalculatingGs));
                                 }
+                                else {
+                                    _logger.LogDebug(GsDataToString(_currentCalculatingGs));
+                                } 
                             }
                         }
                     }
                 }
             }
 
-            Console.WriteLine("\nFinished populating\n");
+            _logger.LogInformation("\nFinished populating\n");
             return new OptimumStrategyData(GameStateProbabilities);
         }
 

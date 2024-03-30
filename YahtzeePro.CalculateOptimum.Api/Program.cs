@@ -5,8 +5,11 @@ internal class Program
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Logging.AddConsole();
+
         var app = builder.Build();
-        
+
         IOptimumStrategyRepository _optimumStrategyRepository = new OptimumStrategyFileStorage();
 
         app.MapGet("/", () => _optimumStrategyRepository.Get());
