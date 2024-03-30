@@ -34,31 +34,36 @@ internal class Program
             logAll = bool.Parse(args[4]);
         }
 
-        OptimumCalculator ProbabilitiesCalculator = new(
-            winningValue,
-            totalDice,
-            initialStackCounterToReturnKnownValue,
-            calculationIterations,
-            logAll);
+        IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage();
 
         string regenerate = "y";
 
-        if (ProbabilitiesCalculator.CalculationExists())
+        var optimumStrategies = optimumStrategyRepository.Get();
+
+        if (optimumStrategies.Contains($"//Win{winningValue}//Dice{totalDice}"))
         {
             Console.WriteLine("Scores exist for this configuration.");
             Console.WriteLine("\nRegenerate results? (y/n)");
             regenerate = Console.ReadLine()!;
-
         }
 
         if (regenerate == "n")
         {
-            ProbabilitiesCalculator.ReadDataFromFile();
+            optimumStrategyRepository.Get(winningValue, totalDice);
+            Console.WriteLine("Finished reading");
         }
         else if (regenerate == "y")
         {
-            ProbabilitiesCalculator.PopulateGameStateProbabilities();
-            ProbabilitiesCalculator.WriteDataToFile();
+            OptimumCalculator ProbabilitiesCalculator = new(
+                winningValue,
+                totalDice,
+                initialStackCounterToReturnKnownValue,
+                calculationIterations,
+                logAll);
+
+            var gameStateProbabilities = ProbabilitiesCalculator.Calculate();
+            
+            optimumStrategyRepository.Save(winningValue, totalDice, gameStateProbabilities);
         }
         else
         {
