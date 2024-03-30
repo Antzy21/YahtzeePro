@@ -4,8 +4,15 @@ namespace YahtzeePro;
 
 public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 {
-    private readonly string _optimumStrategyDirectory =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Antzy21", "YahtzeePro", "Data");
+    private readonly string _optimumStrategyDirectory;
+
+    public OptimumStrategyFileStorage()
+    {
+        _optimumStrategyDirectory =
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Antzy21", "YahtzeePro", "Data");
+        
+        Directory.CreateDirectory(_optimumStrategyDirectory);
+    }
 
     public List<string> Get()
     {
