@@ -3,13 +3,13 @@ using Microsoft.Extensions.Logging;
 
 namespace YahtzeePro
 {
-    public class OptimumCalculator
+    public class OptimumCalculator : IOptimumCalculator
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
-        private readonly int _winningValue;
-        private readonly int _totalDice;
+        private int _winningValue;
+        private int _totalDice;
 
         private readonly ILogger _logger;
 
@@ -19,23 +19,28 @@ namespace YahtzeePro
 
 
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
-        private readonly int _initialStackCounterToReturnKnownValue;
-        private readonly int _calculationIterations;
+        private int _initialStackCounterToReturnKnownValue;
+        private int _calculationIterations;
         private GameState _currentCalculatingGs;
         private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new();
 
-        public OptimumCalculator(
-            int winningValue,
-            int totalDice,
-            ILogger<OptimumCalculator> logger,
-            int initialStackCounterToReturnKnownValue = 3,
-            int calculationIterations = 10)
+        public OptimumCalculator(ILogger<OptimumCalculator> logger)
         {
             _logger = logger;
+        }
+
+        // The main function
+        public OptimumStrategyData Calculate(
+            int winningValue,
+            int totalDice,
+            int initialStackCounterToReturnKnownValue = 2,
+            int calculationIterations = 3)
+        {
             _winningValue = winningValue;
             _totalDice = totalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
+            
             _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, _totalDice);
 
             _logger.LogInformation("New Probabilities Calculator created.");
@@ -46,12 +51,7 @@ namespace YahtzeePro
             {
                 _rollPosibilitiesDictionary[i] = new RollPossibilities(i);
             }
-            _calculationIterations = calculationIterations;
-        }
 
-        // The main function
-        public OptimumStrategyData Calculate()
-        {
             Stopwatch timer = Stopwatch.StartNew();
             TimeSpan LoggingInterval = new(0, 0, seconds: 5);
             TimeSpan NextLoggingTime = timer.Elapsed;
