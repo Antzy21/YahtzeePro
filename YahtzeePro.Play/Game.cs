@@ -5,8 +5,7 @@ using YahtzeePro.Play;
 
 internal class Game
 {
-    private readonly int _winningValue;
-    private readonly int _totalDice;
+    private readonly GameConfiguration _gameConfiguration;
     private readonly IPlayer _player1;
     private readonly IPlayer _player2;
 
@@ -20,14 +19,13 @@ internal class Game
 
     private GameState _gameState;
 
-    public Game(int winningValue, int totalDice, IPlayer player1, IPlayer player2)
+    public Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
     {
-        _winningValue = winningValue;
         _player1 = player1;
         _player2 = player2;
-        _totalDice = totalDice;
+        _gameConfiguration = gameConfiguration;
 
-        for (int i = 1; i <= _totalDice; i++)
+        for (int i = 1; i <= _gameConfiguration.TotalDice; i++)
         {
             _rollPosibilitiesDictionary.Add(i, new RollPossibilities(i));
         }
@@ -38,14 +36,14 @@ internal class Game
             PlayerScore: 0,
             OpponentScore: 0,
             CachedScore: 0,
-            DiceToRoll: totalDice,
+            DiceToRoll: _gameConfiguration.TotalDice,
             IsStartOfTurn: true,
-            TotalDice: _totalDice);
+            TotalDice: _gameConfiguration.TotalDice);
     }
 
     public void Play()
     {
-        while (_gameState.PlayerScore + _gameState.CachedScore < _winningValue)
+        while (_gameState.PlayerScore + _gameState.CachedScore < _gameConfiguration.WinningValue)
         {
 
             var move = _currentPlayer.GetMove(_gameState);
@@ -91,7 +89,7 @@ internal class Game
         if (gs.IsStartOfTurn)
         {
             // Roll at start of turn
-            var rolledDice = DiceCombination.Generate(_totalDice, _random);
+            var rolledDice = DiceCombination.Generate(_gameConfiguration.TotalDice, _random);
             return ResolveRolledDice(rolledDice, gs);
         }
         else

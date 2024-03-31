@@ -3,6 +3,6 @@ namespace YahtzeePro;
 public interface IOptimumStrategyRepository
 {
     public List<string> Get();
-    public OptimumStrategyData? Get(int winningValue, int totalDice);
-    public void Save(int winningValue, int totalDice, OptimumStrategyData optimumStrategyData);
+    public OptimumStrategyData? Get(GameConfiguration gameConfiguration);
+    public void Save(GameConfiguration gameConfiguration, OptimumStrategyData optimumStrategyData);
 }

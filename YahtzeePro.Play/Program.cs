@@ -25,6 +25,8 @@ internal class Program
             Console.WriteLine("Too many arguements passed. Expecting 'winningValue' and 'totalDice'");
         }
 
+        GameConfiguration gameConfiguration = new (winningValue, totalDice);
+
         Console.WriteLine("Duel!");
 
         IPlayer player1 = new RollToWin();
@@ -35,10 +37,10 @@ internal class Program
         var logger = factory.CreateLogger<IOptimumStrategyRepository>();
 
         IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage(logger);
-        var optimumStrategyData = optimumStrategyRepository.Get(winningValue, totalDice);
+        var optimumStrategyData = optimumStrategyRepository.Get(gameConfiguration);
         IPlayer player2 = new OptimumPlayer(optimumStrategyData);
 
-        var setOfGames = new SetOfGames(player1, player2, winningValue, totalDice);
+        var setOfGames = new SetOfGames(player1, player2, gameConfiguration);
 
         setOfGames.PlaySetOfSets(
             totalGames: 100,
