@@ -72,6 +72,8 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
             optimumStrategyData.Add(gs, gameStateProbabilities);
         }
 
+        _logger.LogInformation("Finished reading");
+
         return new OptimumStrategyData(optimumStrategyData);
     }
 

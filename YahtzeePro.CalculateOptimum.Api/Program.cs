@@ -18,8 +18,7 @@ internal class Program
         app.MapGet("/", () => optimumStrategyRepository.Get());
 
         app.MapGet("/calculate", (int winningValue = 1000, int diceCount = 5, bool forceRecalculation = false) => {
-            Console.WriteLine("Calculate Optimum YatzeePro Strategy...\n");
-
+            
             int initialStackCounterToReturnKnownValue = 2;
             int calculationIterations = 3;
 
@@ -28,7 +27,6 @@ internal class Program
             if (!forceRecalculation && optimumStrategies.Contains($"//Win{winningValue}//Dice{diceCount}"))
             {
                 optimumStrategyRepository.Get(winningValue, diceCount);
-                Console.WriteLine("Finished reading");
                 return "Scores exist for this configuration.";
             }
             else
