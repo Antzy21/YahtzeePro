@@ -1,17 +1,17 @@
 ﻿using System.Diagnostics;
-using System.Text;
-using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace YahtzeePro
 {
-    public class OptimumCalculator
+    public class OptimumCalculator : IOptimumCalculator
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.
         private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
-        private readonly bool _logAll = false;
-        private readonly int _winningValue;
-        private readonly int _totalDice;
+        private int _winningValue;
+        private int _totalDice;
+
+        private readonly ILogger _logger;
 
         private readonly Dictionary<GameState, double> gameStateProbabilities = [];
         private readonly Dictionary<GameState, double> gameStateProbabilitiesRisky = [];
@@ -19,43 +19,44 @@ namespace YahtzeePro
 
 
         // To avoid infinite loops, once this counter reaches zero on the stack, return the known existing value.
-        private readonly int _initialStackCounterToReturnKnownValue;
-        private readonly int _calculationIterations;
+        private int _initialStackCounterToReturnKnownValue;
+        private int _calculationIterations;
         private GameState _currentCalculatingGs;
         private readonly HashSet<GameState> _gameStateThatHaveBeenCalculated = new();
 
-        public OptimumCalculator(
+        public OptimumCalculator(ILogger<OptimumCalculator> logger)
+        {
+            _logger = logger;
+        }
+
+        // The main function
+        public OptimumStrategyData Calculate(
             int winningValue,
             int totalDice,
-            int initialStackCounterToReturnKnownValue = 3,
-            int calculationIterations = 10,
-            bool logAll = false)
+            int initialStackCounterToReturnKnownValue = 2,
+            int calculationIterations = 3)
         {
+            _logger.LogInformation("Calculate Optimum YatzeePro Strategy...");
+
             _winningValue = winningValue;
             _totalDice = totalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
-            _logAll = logAll;
+            
             _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, _totalDice);
-
-            Console.WriteLine("New Probabilities Calculator created.");
-            Console.WriteLine($"Win Value: {_winningValue}");
-            Console.WriteLine($"Total Dice: {_totalDice}");
+            
+            _logger.LogInformation($"Win Value: {_winningValue}");
+            _logger.LogInformation($"Total Dice: {_totalDice}");
 
             for (int i = 1; i <= _totalDice; i++)
             {
                 _rollPosibilitiesDictionary[i] = new RollPossibilities(i);
             }
-            _calculationIterations = calculationIterations;
-        }
 
-        // The main function
-        public OptimumStrategyData Calculate()
-        {
             Stopwatch timer = Stopwatch.StartNew();
             TimeSpan LoggingInterval = new(0, 0, seconds: 5);
             TimeSpan NextLoggingTime = timer.Elapsed;
-            Console.WriteLine("\nBegin populating...\n");
+            _logger.LogInformation("Begin populating");
 
             Dictionary<GameState, GameStateProbabilities> GameStateProbabilities = [];
 
@@ -103,19 +104,22 @@ namespace YahtzeePro
                                     gameStateProbabilitiesRisky[_currentCalculatingGs],
                                     gameStateProbabilitiesSafe[_currentCalculatingGs]
                                 ));
-
-                                if (_logAll || timer.Elapsed > NextLoggingTime)
+                                
+                                if (timer.Elapsed > NextLoggingTime)
                                 {
                                     NextLoggingTime = timer.Elapsed + LoggingInterval;
-                                    Console.WriteLine(GsDataToString(_currentCalculatingGs));
+                                    _logger.LogInformation(GsDataToString(_currentCalculatingGs));
                                 }
+                                else {
+                                    _logger.LogDebug(GsDataToString(_currentCalculatingGs));
+                                } 
                             }
                         }
                     }
                 }
             }
 
-            Console.WriteLine("\nFinished populating\n");
+            _logger.LogInformation("Finished populating");
             return new OptimumStrategyData(GameStateProbabilities);
         }
 
@@ -252,7 +256,6 @@ namespace YahtzeePro
         {
             return $" {gs.DiceToRoll} Dice, New turn: {gs.IsStartOfTurn,5}" +
                 $" | {gs.PlayerScore,4} + {gs.CachedScore,4} : {gs.OpponentScore,4}" +
-                $" | Best: {(ShouldRoll(gs, out _) ? 'R' : 'S')}" +
                 $" | R {gameStateProbabilitiesRisky.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####} | S {gameStateProbabilitiesSafe.FirstOrDefault(kvp => kvp.Key.Equals(gs)).Value,6:#.####}";
         }
     }

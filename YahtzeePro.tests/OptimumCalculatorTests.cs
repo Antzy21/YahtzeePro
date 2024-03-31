@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace YahtzeePro.tests
@@ -10,8 +11,8 @@ namespace YahtzeePro.tests
         [Fact]
         public void SimpleCaseCheckSizeOfResults()
         {
-            var calculator = new OptimumCalculator(_winningValue, _totalDice);
-            var result = calculator.Calculate();
+            var calculator = new OptimumCalculator(NullLogger<OptimumCalculator>.Instance);
+            var result = calculator.Calculate(_winningValue, _totalDice);
             Assert.Equal(2, result.GameStateProbabilities.Count);
         }
     }
