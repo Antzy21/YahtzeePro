@@ -19,6 +19,7 @@ internal class Program
 
         app.MapGet("/calculate", (int winningValue = 1000, int diceCount = 5, bool forceRecalculation = false) => {
             
+            var gameConfiguration = new GameConfiguration(winningValue, diceCount);
             int initialStackCounterToReturnKnownValue = 2;
             int calculationIterations = 3;
 
@@ -26,14 +27,14 @@ internal class Program
 
             if (!forceRecalculation && optimumStrategies.Contains($"//Win{winningValue}//Dice{diceCount}"))
             {
-                optimumStrategyRepository.Get(winningValue, diceCount);
+                optimumStrategyRepository.Get(gameConfiguration);
                 return "Scores exist for this configuration.";
             }
             else
             {
-                var gameStateProbabilities = optimumCalculator.Calculate(winningValue, diceCount, initialStackCounterToReturnKnownValue, calculationIterations);
+                var gameStateProbabilities = optimumCalculator.Calculate(gameConfiguration, initialStackCounterToReturnKnownValue, calculationIterations);
 
-                optimumStrategyRepository.Save(winningValue, diceCount, gameStateProbabilities);
+                optimumStrategyRepository.Save(gameConfiguration, gameStateProbabilities);
 
                 return $"Saved //Win{winningValue}//Dice{diceCount}";
             }

@@ -30,9 +30,9 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         return listOfOptimumStrats;
     }
 
-    public OptimumStrategyData? Get(int winningValue, int totalDice)
+    public OptimumStrategyData? Get(GameConfiguration gameConfiguration)
     {
-        string fileName = GetFileName(winningValue, totalDice);
+        string fileName = GetFileName(gameConfiguration);
 
         string[] gsDataLines;
 
@@ -72,9 +72,9 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         return new OptimumStrategyData(optimumStrategyData);
     }
 
-    public void Save(int winningValue, int totalDice, OptimumStrategyData optimumStrategyData)
+    public void Save(GameConfiguration gameConfiguration, OptimumStrategyData optimumStrategyData)
     {
-        var fileName = GetFileName(winningValue, totalDice);
+        var fileName = GetFileName(gameConfiguration);
 
         _logger.LogInformation("Writing data to {fileName}", fileName);
 
@@ -90,8 +90,8 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         file.Close();
     }
 
-    private string GetFileName(int winningValue, int totalDice)
+    private string GetFileName(GameConfiguration gameConfiguration)
     {
-        return Path.Combine(_optimumStrategyDirectory, $"win{winningValue}_dice{totalDice}_scores.txt");
+        return Path.Combine(_optimumStrategyDirectory, $"win{gameConfiguration.WinningValue}_dice{gameConfiguration.TotalDice}_scores.txt");
     }
 }

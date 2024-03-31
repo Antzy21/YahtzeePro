@@ -5,14 +5,13 @@ namespace YahtzeePro.tests
 {
     public class OptimumCalculatorTests
     {
-        private readonly int _winningValue = 50;
-        private readonly int _totalDice = 1;
+        private readonly GameConfiguration _gameConfiguration = new(WinningValue: 50, TotalDice: 1);
 
         [Fact]
         public void SimpleCaseCheckSizeOfResults()
         {
             var calculator = new OptimumCalculator(NullLogger<OptimumCalculator>.Instance);
-            var result = calculator.Calculate(_winningValue, _totalDice);
+            var result = calculator.Calculate(_gameConfiguration);
             Assert.Equal(2, result.GameStateProbabilities.Count);
         }
     }

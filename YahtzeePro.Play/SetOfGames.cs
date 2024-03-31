@@ -5,17 +5,15 @@ namespace YahtzeePro.Play
     internal class SetOfGames
     {
 
-        private readonly int _winningValue;
-        private readonly int _totalDice;
+        private readonly GameConfiguration _gameConfiguration;
         private readonly IPlayer _player1;
         private readonly IPlayer _player2;
 
-        public SetOfGames(IPlayer player1, IPlayer player2, int winningValue, int totalDice)
+        public SetOfGames(IPlayer player1, IPlayer player2, GameConfiguration gameConfiguration)
         {
             _player1 = player1;
             _player2 = player2;
-            _winningValue = winningValue;
-            _totalDice = totalDice;
+            _gameConfiguration = gameConfiguration;
         }
 
         public void PlaySetOfSets(int totalGames, int totalSets, bool logging = false)
@@ -53,7 +51,7 @@ namespace YahtzeePro.Play
             // Player 1 first
             for (int i = 0; i < totalGames / 2; i++)
             {
-                var game = new Game(_winningValue, _totalDice, _player1, _player2);
+                var game = new Game(_gameConfiguration, _player1, _player2);
                 game.Play();
                 if (game.firstPlayerWon)
                     player1WinCount++;
@@ -64,7 +62,7 @@ namespace YahtzeePro.Play
             // Player 2 first
             for (int i = 0; i < totalGames / 2; i++)
             {
-                var game = new Game(_winningValue, _totalDice, _player2, _player1);
+                var game = new Game(_gameConfiguration, _player2, _player1);
                 game.Play();
                 if (game.firstPlayerWon)
                     player2WinCount++;

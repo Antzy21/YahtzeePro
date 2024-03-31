@@ -31,15 +31,14 @@ namespace YahtzeePro
 
         // The main function
         public OptimumStrategyData Calculate(
-            int winningValue,
-            int totalDice,
+            GameConfiguration gameConfiguration,
             int initialStackCounterToReturnKnownValue = 2,
             int calculationIterations = 3)
         {
             _logger.LogInformation("Calculate Optimum YatzeePro Strategy...");
 
-            _winningValue = winningValue;
-            _totalDice = totalDice;
+            _winningValue = gameConfiguration.WinningValue;
+            _totalDice = gameConfiguration.TotalDice;
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             
