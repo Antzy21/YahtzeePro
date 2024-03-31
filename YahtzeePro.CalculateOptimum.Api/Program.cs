@@ -22,8 +22,6 @@ internal class Program
 
             int initialStackCounterToReturnKnownValue = 2;
             int calculationIterations = 3;
-            
-            IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage();
 
             var optimumStrategies = optimumStrategyRepository.Get();
 

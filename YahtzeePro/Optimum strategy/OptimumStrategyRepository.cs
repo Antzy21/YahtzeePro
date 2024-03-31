@@ -1,13 +1,17 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace YahtzeePro;
 
 public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 {
     private readonly string _optimumStrategyDirectory;
+    private readonly ILogger _logger;
 
-    public OptimumStrategyFileStorage()
+    public OptimumStrategyFileStorage(ILogger<IOptimumStrategyRepository> logger)
     {
+        _logger = logger;
+
         _optimumStrategyDirectory =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Antzy21", "YahtzeePro", "Data");
         
@@ -40,11 +44,11 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         try
         {
             gsDataLines = File.ReadAllLines(fileName);
-            Console.WriteLine($"Reading data from {fileName}. {gsDataLines.Length} lines.");
+            _logger.LogInformation("Reading data from {fileName}. {gsDataLinesLength} lines.", fileName, gsDataLines.Length);
         }
         catch (DirectoryNotFoundException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogWarning("Optimum Strategy File not found: {message}", ex.Message);
             return null;
         }
 
@@ -77,7 +81,7 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
     
         var fileName = Path.Combine(dir, "scores.txt");
 
-        Console.WriteLine($"Writing data to {fileName}");
+        _logger.LogInformation("Writing data to {fileName}", fileName);
 
         Directory.CreateDirectory(dir);
         StreamWriter file = File.CreateText(fileName);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using YahtzeePro;
 using YahtzeePro.Optimum_strategy;
 using YahtzeePro.Play;
@@ -28,7 +29,12 @@ internal class Program
 
         IPlayer player1 = new RollToWin();
 
-        IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage();
+        // Create an ILoggerFactory
+        ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
+        // Create an ILogger for OptimumStrategyFileStorage
+        var logger = factory.CreateLogger<IOptimumStrategyRepository>();
+
+        IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage(logger);
         var optimumStrategyData = optimumStrategyRepository.Get(winningValue, totalDice);
         IPlayer player2 = new OptimumPlayer(optimumStrategyData);
 
