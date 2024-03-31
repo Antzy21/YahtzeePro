@@ -13,7 +13,7 @@ namespace YahtzeePro.Optimum_strategy
 
         public string Name => "Best";
 
-        public PlayChoice GetMove(GameState gs)
+        public PlayChoice GetMove(GameState gs, GameConfiguration gc)
         {
             if (_optimumStrategyData.GameStateProbabilities[gs].RiskyPlay)
             {

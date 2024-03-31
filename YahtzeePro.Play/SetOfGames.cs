@@ -4,7 +4,6 @@ namespace YahtzeePro.Play
 {
     internal class SetOfGames
     {
-
         private readonly GameConfiguration _gameConfiguration;
         private readonly IPlayer _player1;
         private readonly IPlayer _player2;

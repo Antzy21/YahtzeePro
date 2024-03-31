@@ -9,7 +9,7 @@
 
         public string Name => $"1->{WhenToBankWith1Dice}, 2->{WhenToBankWith2Dice}";
 
-        public PlayChoice GetMove(GameState gs)
+        public PlayChoice GetMove(GameState gs, GameConfiguration gc)
         {
             if (gs.CachedScore >= WhenToBankWith1Dice || gs.DiceToRoll == 1)
             {
