@@ -22,12 +22,9 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
     {
         List<string> listOfOptimumStrats = [];
 
-        foreach (var winDir in Directory.GetDirectories(_optimumStrategyDirectory))
+        foreach (var strategyFile in Directory.GetFiles(_optimumStrategyDirectory))
         {
-            foreach (var diceDir in Directory.GetDirectories(winDir))
-            {
-                listOfOptimumStrats.Add(diceDir.Replace(_optimumStrategyDirectory, ""));
-            }
+            listOfOptimumStrats.Add(strategyFile.Replace(_optimumStrategyDirectory, ""));
         }
 
         return listOfOptimumStrats;
@@ -35,9 +32,7 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 
     public OptimumStrategyData? Get(int winningValue, int totalDice)
     {
-        var dir = Path.Combine(_optimumStrategyDirectory, $"Win{winningValue}", $"Dice{totalDice}");
-    
-        var fileName = Path.Combine(dir, "scores.txt");
+        string fileName = GetFileName(winningValue, totalDice);
 
         string[] gsDataLines;
 
@@ -79,13 +74,10 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 
     public void Save(int winningValue, int totalDice, OptimumStrategyData optimumStrategyData)
     {
-        var dir = Path.Combine(_optimumStrategyDirectory, $"Win{winningValue}", $"Dice{totalDice}");
-    
-        var fileName = Path.Combine(dir, "scores.txt");
+        var fileName = GetFileName(winningValue, totalDice);
 
         _logger.LogInformation("Writing data to {fileName}", fileName);
 
-        Directory.CreateDirectory(dir);
         StreamWriter file = File.CreateText(fileName);
 
         foreach ((GameState gs, GameStateProbabilities probabilities) in optimumStrategyData.GameStateProbabilities)
@@ -96,5 +88,10 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         }
 
         file.Close();
+    }
+
+    private string GetFileName(int winningValue, int totalDice)
+    {
+        return Path.Combine(_optimumStrategyDirectory, $"win{winningValue}_dice{totalDice}_scores.txt");
     }
 }
