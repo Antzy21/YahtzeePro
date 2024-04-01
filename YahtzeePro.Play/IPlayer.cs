@@ -1,4 +1,6 @@
-﻿namespace YahtzeePro.Play;
+﻿using YahtzeePro.models;
+
+namespace YahtzeePro.Play;
 
 internal interface IPlayer
 {

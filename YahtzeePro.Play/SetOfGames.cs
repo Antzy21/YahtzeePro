@@ -1,4 +1,5 @@
 ﻿using System;
+using YahtzeePro.models;
 
 namespace YahtzeePro.Play
 {

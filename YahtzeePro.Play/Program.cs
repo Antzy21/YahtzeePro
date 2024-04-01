@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using YahtzeePro.models;
 using YahtzeePro.Play.Players;
 using YahtzeePro.Play.Players.SimpleStrategy;
 

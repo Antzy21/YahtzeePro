@@ -1,4 +1,6 @@
-namespace YahtzeePro;
+using YahtzeePro.models;
+
+namespace YahtzeePro.Optimum;
 
 public interface IOptimumStrategyRepository
 {

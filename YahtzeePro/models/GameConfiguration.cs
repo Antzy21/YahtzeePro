@@ -1,7 +1,7 @@
-﻿namespace YahtzeePro;
+﻿namespace YahtzeePro.models;
 
-public record GameConfiguration
-(
+[Serializable]
+public record GameConfiguration(
     int WinningValue,
     int TotalDice
 );
