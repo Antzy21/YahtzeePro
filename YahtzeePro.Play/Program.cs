@@ -67,8 +67,10 @@ internal class Program
         };
         var getOptimumStrategyResponse = await httpClient.GetAsync($"getOptimumStrategy?winningValue={gc.WinningValue}&diceCount={gc.TotalDice}");
 
-        if (!getOptimumStrategyResponse.IsSuccessStatusCode) {
-            throw new KeyNotFoundException($"No optimum calculation found for game configuration {gc}");
+        if (getOptimumStrategyResponse.StatusCode == System.Net.HttpStatusCode.NotFound) {
+            Console.WriteLine($"No optimum has been calculated for {gc}. Calculating request sent");
+            await httpClient.GetAsync($"calculate?winningValue={gc.WinningValue}&diceCount={gc.TotalDice}");
+            throw new Exception($"No optimum calculation found for game configuration {gc}");
         }
         var optimumStrategy = new OptimumStrategyData(await getOptimumStrategyResponse.Content.ReadFromJsonAsync<List<KeyValuePair<GameState, GameStateProbabilities>>>());
         return new OptimumPlayer(optimumStrategy);
