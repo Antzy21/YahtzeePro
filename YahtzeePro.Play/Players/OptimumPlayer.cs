@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using YahtzeePro.models;
 
 namespace YahtzeePro.Play.Players
 {

@@ -1,4 +1,6 @@
-﻿namespace YahtzeePro.Play.Players
+﻿using YahtzeePro.models;
+
+namespace YahtzeePro.Play.Players
 {
     internal class RollToWin : IPlayer
     {

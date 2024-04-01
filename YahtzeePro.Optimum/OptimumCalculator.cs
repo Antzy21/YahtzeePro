@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using YahtzeePro.models;
 
-namespace YahtzeePro
+namespace YahtzeePro.Optimum
 {
-    public class OptimumCalculator : IOptimumCalculator
+public class OptimumCalculator : IOptimumCalculator 
     {
         // For different quantities of dice to roll, there will be different scores and probabilities.
         // The RollProbabilities class generates the scores and probabilities for each.

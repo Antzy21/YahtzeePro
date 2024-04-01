@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\YahtzeePro.Optimum\YahtzeePro.Optimum.csproj" />
     <ProjectReference Include="..\YahtzeePro\YahtzeePro.csproj" />
   </ItemGroup>
 

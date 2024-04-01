@@ -1,3 +1,5 @@
+using YahtzeePro.models;
+
 namespace YahtzeePro
 {
     public static class GameStateExtensions

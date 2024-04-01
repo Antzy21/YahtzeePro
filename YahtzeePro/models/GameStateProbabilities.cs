@@ -1,4 +1,4 @@
-namespace YahtzeePro;
+namespace YahtzeePro.models;
 
 [Serializable]
 public record GameStateProbabilities(

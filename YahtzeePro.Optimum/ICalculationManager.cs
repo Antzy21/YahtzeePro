@@ -1,4 +1,5 @@
 using YahtzeePro;
+using YahtzeePro.models;
 
 internal interface ICalculationManager
 {

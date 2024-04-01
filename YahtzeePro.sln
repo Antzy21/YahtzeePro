@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.Play", "YahtzeeP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.CalculateOptimum.Api", "YahtzeePro.CalculateOptimum.Api\YahtzeePro.CalculateOptimum.Api.csproj", "{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum", "YahtzeePro.Optimum\YahtzeePro.Optimum.csproj", "{DFA537B4-51CE-400D-83C9-273B6ED29AEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFA537B4-51CE-400D-83C9-273B6ED29AEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFA537B4-51CE-400D-83C9-273B6ED29AEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFA537B4-51CE-400D-83C9-273B6ED29AEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFA537B4-51CE-400D-83C9-273B6ED29AEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

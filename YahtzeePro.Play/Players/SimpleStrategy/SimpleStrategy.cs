@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using YahtzeePro.models;
 
 namespace YahtzeePro.Play.Players.SimpleStrategy
 {

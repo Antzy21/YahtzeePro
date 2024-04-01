@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using YahtzeePro.models;
 
-namespace YahtzeePro;
+namespace YahtzeePro.Optimum;
 
 public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 {
