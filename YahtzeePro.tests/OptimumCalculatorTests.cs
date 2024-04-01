@@ -12,7 +12,7 @@ namespace YahtzeePro.tests
         {
             var calculator = new OptimumCalculator(NullLogger<OptimumCalculator>.Instance);
             var result = calculator.Calculate(_gameConfiguration);
-            Assert.Equal(2, result.GameStateProbabilities.Count);
+            Assert.Equal(2, result.Count);
         }
     }
 }

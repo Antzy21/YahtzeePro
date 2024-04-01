@@ -1,10 +1,12 @@
-﻿namespace YahtzeePro.Play.Players
+﻿using System.Collections.Generic;
+
+namespace YahtzeePro.Play.Players
 {
     internal class OptimumPlayer : IPlayer
     {
-        private readonly OptimumStrategyData _optimumStrategyData;
+        private readonly Dictionary<GameState, GameStateProbabilities> _optimumStrategyData;
 
-        public OptimumPlayer(OptimumStrategyData optimumStrategyData)
+        public OptimumPlayer(Dictionary<GameState, GameStateProbabilities> optimumStrategyData)
         {
             _optimumStrategyData = optimumStrategyData;
         }
@@ -13,7 +15,7 @@
 
         public PlayChoice GetMove(GameState gs, GameConfiguration gc)
         {
-            if (_optimumStrategyData.GameStateProbabilities[gs].RiskyPlay)
+            if (_optimumStrategyData[gs].RiskyPlay)
             {
                 return PlayChoice.Risky;
             }

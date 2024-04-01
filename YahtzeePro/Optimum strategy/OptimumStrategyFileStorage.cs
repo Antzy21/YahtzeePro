@@ -30,7 +30,7 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
         return listOfOptimumStrats;
     }
 
-    public OptimumStrategyData? Get(GameConfiguration gameConfiguration)
+    public Dictionary<GameState, GameStateProbabilities>? Get(GameConfiguration gameConfiguration)
     {
         string fileName = GetFileName(gameConfiguration);
 
@@ -69,10 +69,10 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 
         _logger.LogInformation("Finished reading");
 
-        return new OptimumStrategyData(optimumStrategyData);
+        return optimumStrategyData;
     }
 
-    public void Save(GameConfiguration gameConfiguration, OptimumStrategyData optimumStrategyData)
+    public void Save(GameConfiguration gameConfiguration, Dictionary<GameState, GameStateProbabilities> optimumStrategyData)
     {
         var fileName = GetFileName(gameConfiguration);
 
@@ -80,7 +80,7 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
 
         StreamWriter file = File.CreateText(fileName);
 
-        foreach ((GameState gs, GameStateProbabilities probabilities) in optimumStrategyData.GameStateProbabilities)
+        foreach ((GameState gs, GameStateProbabilities probabilities) in optimumStrategyData)
         {
             string gsSerialised = JsonSerializer.Serialize(gs);
             file.Write(gsSerialised);

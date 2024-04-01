@@ -2,7 +2,7 @@ namespace YahtzeePro
 {
     public interface IOptimumCalculator
     {
-        OptimumStrategyData Calculate(
+        Dictionary<GameState, GameStateProbabilities> Calculate(
             GameConfiguration gameConfiguration,
             int initialStackCounterToReturnKnownValue,
             int calculationIterations);

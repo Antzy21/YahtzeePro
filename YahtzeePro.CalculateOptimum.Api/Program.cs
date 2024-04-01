@@ -42,7 +42,7 @@ internal class Program
                 return Results.NotFound();
             }
             
-            return Results.Json(optimumStrategy.MakeSerializable());
+            return Results.Json(optimumStrategy.ToList());
         });
 
         app.Run();

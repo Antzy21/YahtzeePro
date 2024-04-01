@@ -30,7 +30,7 @@ namespace YahtzeePro
         }
 
         // The main function
-        public OptimumStrategyData Calculate(
+        public Dictionary<GameState, GameStateProbabilities> Calculate(
             GameConfiguration gameConfiguration,
             int initialStackCounterToReturnKnownValue = 2,
             int calculationIterations = 3)
@@ -119,7 +119,7 @@ namespace YahtzeePro
             }
 
             _logger.LogInformation("Finished populating");
-            return new OptimumStrategyData(GameStateProbabilities);
+            return GameStateProbabilities;
         }
 
         private double ProbabilityOfWinningFromGs(GameState gs, int stackCounterToReturnKnownValue, int rollsThisTurn = 0)

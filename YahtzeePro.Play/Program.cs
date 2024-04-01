@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -72,7 +73,7 @@ internal class Program
             await httpClient.GetAsync($"calculate?winningValue={gc.WinningValue}&diceCount={gc.TotalDice}");
             throw new Exception($"No optimum calculation found for game configuration {gc}");
         }
-        var optimumStrategy = new OptimumStrategyData(await getOptimumStrategyResponse.Content.ReadFromJsonAsync<List<KeyValuePair<GameState, GameStateProbabilities>>>());
-        return new OptimumPlayer(optimumStrategy);
+        var optimumStrategyData = await getOptimumStrategyResponse.Content.ReadFromJsonAsync<List<KeyValuePair<GameState, GameStateProbabilities>>>();
+        return new OptimumPlayer(optimumStrategyData.ToDictionary(x => x.Key, x => x.Value));
     }
 }
