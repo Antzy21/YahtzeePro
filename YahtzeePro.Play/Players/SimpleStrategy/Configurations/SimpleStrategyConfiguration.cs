@@ -6,5 +6,5 @@ namespace YahtzeePro.Play;
 [Serializable]
 public class SimpleStrategyConfiguration
 {
-    public readonly Dictionary<int, int> WhenToBankWithNumberOfDice;
+    public Dictionary<int, int> WhenToBankWithNumberOfDice {get; set;}
 }
