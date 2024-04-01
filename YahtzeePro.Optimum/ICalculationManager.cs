@@ -1,7 +1,8 @@
-using YahtzeePro;
 using YahtzeePro.models;
 
-internal interface ICalculationManager
+namespace YahtzeePro.Optimum;
+
+public interface ICalculationManager
 {
     public void QueueCalculation(GameConfiguration gc);
 }

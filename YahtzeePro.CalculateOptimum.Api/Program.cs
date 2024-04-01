@@ -1,5 +1,3 @@
-using System.Text.Json;
-using YahtzeePro;
 using YahtzeePro.models;
 using YahtzeePro.Optimum;
 
@@ -12,6 +10,7 @@ internal class Program
         builder.Logging.AddConsole();
         builder.Services.AddScoped<IOptimumStrategyRepository, OptimumStrategyFileStorage>();
         builder.Services.AddScoped<IOptimumCalculator, OptimumCalculator>();
+        builder.Services.AddScoped<ICalculationManager, CalculationManager>();
 
         var app = builder.Build();
 
