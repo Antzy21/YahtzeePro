@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using YahtzeePro.Play.Players;
 using YahtzeePro.Play.Players.SimpleStrategy;
@@ -8,7 +13,7 @@ namespace YahtzeePro.Play;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         int winningValue = 1000;
         int totalDice = 5;
@@ -26,31 +31,17 @@ internal class Program
             Console.WriteLine("Too many arguements passed. Expecting 'winningValue' and 'totalDice'");
         }
 
-        GameConfiguration gameConfiguration = new (winningValue, totalDice);
+        GameConfiguration gameConfiguration = new(winningValue, totalDice);
 
         Console.WriteLine("Duel!");
 
         IPlayer rollToWinPlayer = new RollToWin();
 
-        // Create an ILoggerFactory
-        ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
-        // Create an ILogger for OptimumStrategyFileStorage
-        var logger = factory.CreateLogger<IOptimumStrategyRepository>();
+        IPlayer optimumPlayer = await GetOptimumStrategyPlayer(gameConfiguration);
 
-        IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage(logger);
-        var optimumStrategyData = optimumStrategyRepository.Get(gameConfiguration);
-        IPlayer optimumPlayer = new OptimumPlayer(optimumStrategyData);
+        IPlayer strategy1Player = GetSimpleStrategyPlayer("Players/SimpleStrategy/Configurations/strategy1.json");
 
-        var strategy1Json = System.IO.File.ReadAllText("Players/SimpleStrategy/Configurations/strategy1.json");
-        var strategy1 = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(strategy1Json);
-        Console.WriteLine(strategy1Json);
-        Console.WriteLine(strategy1.WhenToBankWithNumberOfDice);
-        var strategy1Player = new SimpleStrategy(strategy1);
-
-        var strategy2Json = System.IO.File.ReadAllText("Players/SimpleStrategy/Configurations/strategy2.json");
-        var strategy2 = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(strategy2Json);
-        
-        var strategy2Player = new SimpleStrategy(strategy2);
+        IPlayer strategy2Player = GetSimpleStrategyPlayer("Players/SimpleStrategy/Configurations/strategy2.json");
 
         var setOfGames = new SetOfGames(strategy1Player, strategy2Player, gameConfiguration);
 
@@ -58,5 +49,28 @@ internal class Program
             totalGames: 100,
             totalSets: 100,
             logging: true);
+    }
+
+    private static SimpleStrategy GetSimpleStrategyPlayer(string file)
+    {
+        var strategy1Json = File.ReadAllText(file);
+        var strategy1 = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(strategy1Json);
+        var strategy1Player = new SimpleStrategy(strategy1);
+        return strategy1Player;
+    }
+
+    private static async Task<IPlayer> GetOptimumStrategyPlayer(GameConfiguration gc)
+    {
+        var httpClient = new HttpClient
+        {
+            BaseAddress = new Uri("http://localhost:8080/")
+        };
+        var getOptimumStrategyResponse = await httpClient.GetAsync($"getOptimumStrategy?winningValue={gc.WinningValue}&diceCount={gc.TotalDice}");
+
+        if (!getOptimumStrategyResponse.IsSuccessStatusCode) {
+            throw new KeyNotFoundException($"No optimum calculation found for game configuration {gc}");
+        }
+        var optimumStrategy = new OptimumStrategyData(await getOptimumStrategyResponse.Content.ReadFromJsonAsync<List<KeyValuePair<GameState, GameStateProbabilities>>>());
+        return new OptimumPlayer(optimumStrategy);
     }
 }
