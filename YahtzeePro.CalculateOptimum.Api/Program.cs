@@ -42,7 +42,7 @@ internal class Program
                 return Results.NotFound();
             }
             
-            return Results.Json(JsonSerializer.Serialize(optimumStrategy.GameStateProbabilities.AsEnumerable()));
+            return Results.Json(optimumStrategy.MakeSerializable());
         });
 
         app.Run();
