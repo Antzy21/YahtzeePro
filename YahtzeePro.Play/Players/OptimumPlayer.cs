@@ -1,6 +1,4 @@
-﻿using YahtzeePro.Play;
-
-namespace YahtzeePro.Optimum_strategy
+﻿namespace YahtzeePro.Play.Players
 {
     internal class OptimumPlayer : IPlayer
     {

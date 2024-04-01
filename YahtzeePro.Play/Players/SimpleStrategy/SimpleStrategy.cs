@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace YahtzeePro.Play.Players
+namespace YahtzeePro.Play.Players.SimpleStrategy
 {
     internal class SimpleStrategy : IPlayer
     {

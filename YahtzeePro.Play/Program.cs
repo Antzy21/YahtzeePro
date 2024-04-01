@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using YahtzeePro;
-using YahtzeePro.Optimum_strategy;
-using YahtzeePro.Play;
 using YahtzeePro.Play.Players;
+using YahtzeePro.Play.Players.SimpleStrategy;
+
+namespace YahtzeePro.Play;
 
 internal class Program
 {
