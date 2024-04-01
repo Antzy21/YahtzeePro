@@ -1,3 +1,4 @@
+using System.Text.Json;
 using YahtzeePro;
 
 internal class Program
@@ -23,21 +24,25 @@ internal class Program
             int initialStackCounterToReturnKnownValue = 2;
             int calculationIterations = 3;
 
-            var optimumStrategies = optimumStrategyRepository.Get();
+            var gameStateProbabilities = optimumCalculator.Calculate(gameConfiguration, initialStackCounterToReturnKnownValue, calculationIterations);
 
-            if (!forceRecalculation && optimumStrategies.Contains($"//Win{winningValue}//Dice{diceCount}"))
+            optimumStrategyRepository.Save(gameConfiguration, gameStateProbabilities);
+
+            return $"Calculated optimum for: Win{winningValue} Dice{diceCount}";
+        });
+
+        app.MapGet("/getOptimumStrategy", (int winningValue = 1000, int diceCount = 5) => {
+            
+            var gameConfiguration = new GameConfiguration(winningValue, diceCount);
+
+            var optimumStrategy = optimumStrategyRepository.Get(gameConfiguration);
+
+            if (optimumStrategy is null)
             {
-                optimumStrategyRepository.Get(gameConfiguration);
-                return "Scores exist for this configuration.";
+                return Results.NotFound();
             }
-            else
-            {
-                var gameStateProbabilities = optimumCalculator.Calculate(gameConfiguration, initialStackCounterToReturnKnownValue, calculationIterations);
-
-                optimumStrategyRepository.Save(gameConfiguration, gameStateProbabilities);
-
-                return $"Saved //Win{winningValue}//Dice{diceCount}";
-            }
+            
+            return Results.Json(JsonSerializer.Serialize(optimumStrategy.GameStateProbabilities.AsEnumerable()));
         });
 
         app.Run();
