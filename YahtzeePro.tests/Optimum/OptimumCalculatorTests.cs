@@ -3,7 +3,7 @@ using Xunit;
 using YahtzeePro.models;
 using YahtzeePro.Optimum;
 
-namespace YahtzeePro.tests
+namespace YahtzeePro.tests.Optimum
 {
     public class OptimumCalculatorTests
     {
