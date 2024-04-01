@@ -41,7 +41,7 @@ public class OptimumStrategyFileStorage : IOptimumStrategyRepository
             gsDataLines = File.ReadAllLines(fileName);
             _logger.LogInformation("Reading data from {fileName}. {gsDataLinesLength} lines.", fileName, gsDataLines.Length);
         }
-        catch (DirectoryNotFoundException ex)
+        catch (FileNotFoundException ex)
         {
             _logger.LogWarning("Optimum Strategy File not found: {message}", ex.Message);
             return null;

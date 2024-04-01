@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using YahtzeePro;
-using YahtzeePro.Play;
+
+namespace YahtzeePro.Play;
 
 internal class Game
 {
