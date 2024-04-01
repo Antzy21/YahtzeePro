@@ -4,9 +4,9 @@
     {
         public string Name => "RollToWin";
 
-        public PlayChoice GetMove(GameState gs)
+        public PlayChoice GetMove(GameState gs, GameConfiguration gc)
         {
-            if (gs.CachedScore >= 5000)
+            if (gs.CachedScore >= gc.WinningValue)
             {
                 return PlayChoice.Safe;
             }
