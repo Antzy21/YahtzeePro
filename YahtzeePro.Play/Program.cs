@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using YahtzeePro;
 using YahtzeePro.Optimum_strategy;
@@ -29,7 +30,7 @@ internal class Program
 
         Console.WriteLine("Duel!");
 
-        IPlayer player1 = new RollToWin();
+        IPlayer rollToWinPlayer = new RollToWin();
 
         // Create an ILoggerFactory
         ILoggerFactory factory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -38,9 +39,20 @@ internal class Program
 
         IOptimumStrategyRepository optimumStrategyRepository = new OptimumStrategyFileStorage(logger);
         var optimumStrategyData = optimumStrategyRepository.Get(gameConfiguration);
-        IPlayer player2 = new OptimumPlayer(optimumStrategyData);
+        IPlayer optimumPlayer = new OptimumPlayer(optimumStrategyData);
 
-        var setOfGames = new SetOfGames(player1, player2, gameConfiguration);
+        var strategy1Json = System.IO.File.ReadAllText("Players/SimpleStrategy/Configurations/strategy1.json");
+        var strategy1 = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(strategy1Json);
+        Console.WriteLine(strategy1Json);
+        Console.WriteLine(strategy1.WhenToBankWithNumberOfDice);
+        var strategy1Player = new SimpleStrategy(strategy1);
+
+        var strategy2Json = System.IO.File.ReadAllText("Players/SimpleStrategy/Configurations/strategy2.json");
+        var strategy2 = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(strategy2Json);
+        
+        var strategy2Player = new SimpleStrategy(strategy2);
+
+        var setOfGames = new SetOfGames(strategy1Player, strategy2Player, gameConfiguration);
 
         setOfGames.PlaySetOfSets(
             totalGames: 100,
