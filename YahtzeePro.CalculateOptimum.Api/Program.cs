@@ -15,21 +15,17 @@ internal class Program
         var app = builder.Build();
 
         var optimumStrategyRepository = app.Services.GetRequiredService<IOptimumStrategyRepository>();
-        var optimumCalculator = app.Services.GetRequiredService<IOptimumCalculator>();
+        var calculationManager = app.Services.GetRequiredService<ICalculationManager>();
 
         app.MapGet("/", () => optimumStrategyRepository.Get());
 
         app.MapGet("/calculate", (int winningValue = 1000, int diceCount = 5, bool forceRecalculation = false) => {
             
             var gameConfiguration = new GameConfiguration(winningValue, diceCount);
-            int initialStackCounterToReturnKnownValue = 2;
-            int calculationIterations = 3;
 
-            var gameStateProbabilities = optimumCalculator.Calculate(gameConfiguration, initialStackCounterToReturnKnownValue, calculationIterations);
+            calculationManager.QueueCalculation(gameConfiguration);
 
-            optimumStrategyRepository.Save(gameConfiguration, gameStateProbabilities);
-
-            return $"Calculated optimum for: Win{winningValue} Dice{diceCount}";
+            return $"Calculating optimum queued for: Win{winningValue} Dice{diceCount}";
         });
 
         app.MapGet("/getOptimumStrategy", (int winningValue = 1000, int diceCount = 5) => {
