@@ -19,6 +19,8 @@ internal class Program
 
         app.MapGet("/", () => optimumStrategyRepository.Get());
 
+        app.MapGet("/queued", () => calculationManager.Queue);
+
         app.MapGet("/calculate", (int winningValue = 1000, int diceCount = 5, bool forceRecalculation = false) => {
             
             var gameConfiguration = new GameConfiguration(winningValue, diceCount);
