@@ -6,7 +6,7 @@ namespace YahtzeePro.Optimum
     {
         Dictionary<GameState, GameStateProbabilities> Calculate(
             GameConfiguration gameConfiguration,
-            int initialStackCounterToReturnKnownValue,
-            int calculationIterations);
+            int initialStackCounterToReturnKnownValue = 3,
+            int calculationIterations = 2);
     }
 }
