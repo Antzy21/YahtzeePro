@@ -7,10 +7,12 @@ public class CalculationManager : ICalculationManager
     private readonly IOptimumCalculator _optimumCalculator;
     private readonly Queue<GameConfiguration> _queue = new();
     private readonly SemaphoreSlim _semaphoreSlim = new(1);
+    private IOptimumStrategyRepository _optimumStrategyRepository;
 
-    public CalculationManager(IOptimumCalculator optimumCalculator)
+    public CalculationManager(IOptimumCalculator optimumCalculator, IOptimumStrategyRepository optimumStrategyRepository)
     {
         _optimumCalculator = optimumCalculator;
+        _optimumStrategyRepository = optimumStrategyRepository;
     }
 
     public IEnumerable<GameConfiguration> Queue => _queue;
@@ -29,7 +31,8 @@ public class CalculationManager : ICalculationManager
         while (_queue.Count > 0)
         {
             var gc = _queue.Dequeue();
-            _optimumCalculator.Calculate(gc);
+            var optimum = _optimumCalculator.Calculate(gc);
+            _optimumStrategyRepository.Save(gc, optimum);
         }
         _semaphoreSlim.Release();
         return Task.CompletedTask;

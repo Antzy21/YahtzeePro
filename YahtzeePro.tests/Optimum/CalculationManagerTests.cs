@@ -13,7 +13,8 @@ namespace YahtzeePro.tests.Optimum
         {
             // Arrange
             var mockOptimumCalculator = GetMockOptimumCalculator();
-            var calculationManager = new CalculationManager(mockOptimumCalculator.Object);
+            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+            var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration = new GameConfiguration(500, 5);
             
             // Act
@@ -35,7 +36,8 @@ namespace YahtzeePro.tests.Optimum
             // Arrange
             var mockOptimumCalculator = GetMockOptimumCalculator();
             
-            var calculationManager = new CalculationManager(mockOptimumCalculator.Object);
+            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+            var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration1 = new GameConfiguration(500, 5);
             var gameConfiguration2 = new GameConfiguration(500, 3);
             
@@ -68,7 +70,8 @@ namespace YahtzeePro.tests.Optimum
         {
             // Arrange
             var mockOptimumCalculator = GetMockOptimumCalculator();
-            var calculationManager = new CalculationManager(mockOptimumCalculator.Object);
+            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+            var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             
             // Act
             calculationManager.QueueCalculation(new GameConfiguration(500, 5));
@@ -85,7 +88,8 @@ namespace YahtzeePro.tests.Optimum
         {
             // Arrange
             var mockOptimumCalculator = GetMockOptimumCalculator();
-            var calculationManager = new CalculationManager(mockOptimumCalculator.Object);
+            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+            var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration1 = new GameConfiguration(500, 5);
             var gameConfiguration2 = new GameConfiguration(500, 3);
             
