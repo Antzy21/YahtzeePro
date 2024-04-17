@@ -8,13 +8,21 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  calculate-optimum-server:
     build:
       context: .
       dockerfile: ./YahtzeePro.CalculateOptimum.Api/Dockerfile
       target: final
     ports:
-      - 8080:8080
+      - 8091:8080
+
+  play-server:
+    build:
+      context: .
+      dockerfile: ./YahtzeePro.Play.Api/Dockerfile
+      target: final
+    ports:
+      - 8090:8080
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
