@@ -43,7 +43,7 @@ public class OptimumCalculator : IOptimumCalculator
             _initialStackCounterToReturnKnownValue = initialStackCounterToReturnKnownValue;
             _calculationIterations = calculationIterations;
             
-            _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, _totalDice);
+            _currentCalculatingGs = new GameState(_winningValue, _winningValue, 0, _totalDice, true, gameConfiguration);
             
             _logger.LogInformation($"Win Value: {_winningValue}");
             _logger.LogInformation($"Total Dice: {_totalDice}");
@@ -83,7 +83,7 @@ public class OptimumCalculator : IOptimumCalculator
                                 { continue; }
 
                                 // New gs to test
-                                _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn, _totalDice);
+                                _currentCalculatingGs = new GameState(playerScore, opponentScore, cachedScore, diceCount, isStartOfTurn, gameConfiguration);
 
                                 // Assume safe strategy at gs is better to start with.
                                 gameStateProbabilitiesRisky[_currentCalculatingGs] = 0;

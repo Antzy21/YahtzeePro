@@ -15,8 +15,8 @@ namespace YahtzeePro
                 OpponentScore: gs.PlayerScore,
                 CachedScore: 0,
                 IsStartOfTurn: true,
-                DiceToRoll: gs.TotalDice,
-                TotalDice: gs.TotalDice
+                DiceToRoll: gs.GameConfiguration.TotalDice,
+                GameConfiguration: gs.GameConfiguration
             );
         }
 
@@ -32,8 +32,8 @@ namespace YahtzeePro
                 OpponentScore: gs.PlayerScore + gs.CachedScore,
                 CachedScore: 0,
                 IsStartOfTurn: true,
-                DiceToRoll: gs.TotalDice,
-                TotalDice: gs.TotalDice
+                DiceToRoll: gs.GameConfiguration.TotalDice,
+                GameConfiguration: gs.GameConfiguration
             );
         }
 
@@ -48,8 +48,8 @@ namespace YahtzeePro
                 OpponentScore: gs.PlayerScore,
                 CachedScore: 0,
                 IsStartOfTurn: true,
-                DiceToRoll: gs.TotalDice,
-                TotalDice: gs.TotalDice
+                DiceToRoll: gs.GameConfiguration.TotalDice,
+                GameConfiguration: gs.GameConfiguration
             );
         }
 
@@ -65,8 +65,8 @@ namespace YahtzeePro
                 OpponentScore: gs.OpponentScore,
                 CachedScore: gs.CachedScore + rolledScore,
                 IsStartOfTurn: false,
-                DiceToRoll: gs.TotalDice,
-                TotalDice: gs.TotalDice
+                DiceToRoll: gs.GameConfiguration.TotalDice,
+                GameConfiguration: gs.GameConfiguration
             );
         }
 
@@ -91,8 +91,8 @@ namespace YahtzeePro
                 OpponentScore: gs.OpponentScore,
                 CachedScore: gs.CachedScore + rolledScore,
                 IsStartOfTurn: false,
-                DiceToRoll: gs.DiceToRoll - usedDice,
-                TotalDice: gs.TotalDice
+                DiceToRoll: gs.GameConfiguration.TotalDice - usedDice,
+                GameConfiguration: gs.GameConfiguration
             );
         }
     }
