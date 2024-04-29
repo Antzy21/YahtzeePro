@@ -39,7 +39,7 @@ internal class Game
             CachedScore: 0,
             DiceToRoll: _gameConfiguration.TotalDice,
             IsStartOfTurn: true,
-            TotalDice: _gameConfiguration.TotalDice);
+            GameConfiguration: _gameConfiguration);
     }
 
     public void Play()

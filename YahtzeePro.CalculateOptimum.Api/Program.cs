@@ -21,20 +21,28 @@ internal class Program
 
         app.MapGet("/queued", () => calculationManager.Queue);
 
-        app.MapGet("/calculate", (int winningValue = 1000, int diceCount = 5, bool forceRecalculation = false) => {
+        app.MapPost("/calculate", (GameConfiguration gameConfiguration, bool forceRecalculation = false) => {
             
-            var gameConfiguration = new GameConfiguration(winningValue, diceCount);
-
             calculationManager.QueueCalculation(gameConfiguration);
 
-            return $"Calculating optimum queued for: Win{winningValue} Dice{diceCount}";
+            return $"Calculating optimum queued for: Win{gameConfiguration.WinningValue} Dice{gameConfiguration.TotalDice}";
         });
 
-        app.MapGet("/getOptimumStrategy", (int winningValue = 1000, int diceCount = 5) => {
+        app.MapPost("/getStrategy", (GameConfiguration gameConfiguration) => {
             
-            var gameConfiguration = new GameConfiguration(winningValue, diceCount);
-
             var optimumStrategy = optimumStrategyRepository.Get(gameConfiguration);
+
+            if (optimumStrategy is null)
+            {
+                return Results.NotFound();
+            }
+            
+            return Results.Json(optimumStrategy.ToList());
+        });
+
+        app.MapPost("/getMove", (GameState gameState) => {
+            
+            var optimumStrategy = optimumStrategyRepository.Get(gameState.GameConfiguration);
 
             if (optimumStrategy is null)
             {
