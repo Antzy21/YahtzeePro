@@ -11,11 +11,9 @@ internal class Program
         
         app.MapGet("/", () => "Hello World!");
 
+        app.MapPost("/newgame", (int winningValue = 5000, int diceCount = 5) => gameManager.CreateNewGame(winningValue, diceCount));
 
-        app.MapGet("/newgame", (int winningValue = 5000, int diceCount = 5) =>
-        {
-            gameManager.CreateNewGame(winningValue, diceCount);
-        });
+        app.MapGet("/games", () => gameManager.GetGameIds());
 
         app.Run();
     }
