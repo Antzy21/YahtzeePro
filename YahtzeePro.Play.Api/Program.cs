@@ -8,8 +8,8 @@ internal class Program
 
         var app = builder.Build();
         var gameManager = app.Services.GetRequiredService<GameManager>();
-        
-        app.MapGet("/", () => "Hello World!");
+
+        app.MapGet("/", () => "Yahtzee Pro Game Api");
 
         app.MapPost("/newgame", (int winningValue = 5000, int diceCount = 5) => gameManager.CreateNewGame(winningValue, diceCount));
 
