@@ -23,4 +23,12 @@ internal class GameManager
     {
         return games.Keys;
     }
+
+    internal GameState? GetGame(Guid guid)
+    {
+        if(!games.TryGetValue(guid, out GameState gameState)) {
+            return null;
+        };
+        return gameState;
+    }
 }

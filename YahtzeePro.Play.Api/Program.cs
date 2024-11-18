@@ -15,6 +15,16 @@ internal class Program
 
         app.MapGet("/games", () => gameManager.GetGameIds());
 
+        app.MapGet("/games/{guid}", (Guid guid) =>
+        {
+            var gameState = gameManager.GetGame(guid);
+            if (gameState is not null)
+            {
+                return Results.Ok(gameState);
+            }
+            return Results.NotFound();
+        });
+
         app.Run();
     }
 }
