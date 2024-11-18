@@ -1,3 +1,5 @@
+using YahtzeePro.Play.Api.requests;
+
 internal class Program
 {
     private static void Main(string[] args)
@@ -15,14 +17,24 @@ internal class Program
 
         app.MapGet("/games", () => gameManager.GetGameIds());
 
-        app.MapGet("/games/{guid}", (Guid guid) =>
+        app.MapGet("/games/{guid}", (Guid gameId) =>
         {
-            var gameState = gameManager.GetGame(guid);
+            var gameState = gameManager.GetGame(gameId);
             if (gameState is not null)
             {
                 return Results.Ok(gameState);
             }
             return Results.NotFound();
+        });
+
+        app.MapPost("/move", (MoveRequest moveRequest) => 
+        {
+            var gameState = gameManager.GetGame(moveRequest.GameId);
+            if (gameState is null)
+            {
+                return Results.NotFound();
+            }
+            throw new NotImplementedException();
         });
 
         app.Run();
