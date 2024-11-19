@@ -21,6 +21,7 @@ namespace YahtzeePro.tests.Optimum
             calculationManager.QueueCalculation(gameConfiguration);
 
             taskCompletionSource.SetResult();
+            Thread.Sleep(50);
 
             // Assert
             mockOptimumCalculator.Verify(
@@ -45,7 +46,7 @@ namespace YahtzeePro.tests.Optimum
             calculationManager.QueueCalculation(new GameConfiguration(500, 4));
             calculationManager.QueueCalculation(new GameConfiguration(500, 3));
             calculationManager.QueueCalculation(new GameConfiguration(500, 2));
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
             // Assert
             Assert.Equal(3, calculationManager.Queue.Count());
@@ -55,7 +56,7 @@ namespace YahtzeePro.tests.Optimum
         public void QueueCalculation_WithItemInQueue_DoesntDuplicate()
         {
             // Arrange
-            var mockOptimumCalculator = GetMockOptimumCalculator(out var taskCompletionSource);
+            var mockOptimumCalculator = GetMockOptimumCalculator(out var _);
             var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration1 = new GameConfiguration(500, 5);
@@ -87,7 +88,7 @@ namespace YahtzeePro.tests.Optimum
             // Act
             calculationManager.QueueCalculation(gameConfiguration1);
             taskCompletionSource.SetResult();
-            Thread.Sleep(10);
+            Thread.Sleep(50);
 
             // Assert
             mockOptimumRepo.Verify(
