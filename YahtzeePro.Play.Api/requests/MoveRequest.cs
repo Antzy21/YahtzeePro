@@ -1,3 +1,3 @@
-namespace YahtzeePro.Play.Api.requests;
+namespace YahtzeePro.Play.Api.Requests;
 
-public record MoveRequest(Guid GameId, string Move);
+public record MoveRequest(Guid GameId, MoveType Move);

@@ -1,4 +1,4 @@
-using YahtzeePro.Play.Api.requests;
+using YahtzeePro.Play.Api.Requests;
 
 internal class Program
 {
@@ -31,10 +31,10 @@ internal class Program
         {
             var gameState = gameManager.GetGame(moveRequest.GameId);
             if (gameState is null)
-            {
                 return Results.NotFound();
-            }
-            throw new NotImplementedException();
+
+            var newGameState = gameManager.MakeMove(moveRequest.GameId, moveRequest.Move);
+            return Results.Ok(newGameState);
         });
 
         app.Run();

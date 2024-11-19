@@ -1,4 +1,3 @@
-
 using YahtzeePro.models;
 
 internal class GameManager
@@ -30,5 +29,11 @@ internal class GameManager
             return null;
         };
         return gameState;
+    }
+
+    internal GameState MakeMove(Guid gameId, MoveType moveType)
+    {
+        var game = games[gameId];
+        throw new NotImplementedException();
     }
 }
