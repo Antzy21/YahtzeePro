@@ -20,6 +20,8 @@ namespace YahtzeePro.tests.Optimum
             // Act
             calculationManager.QueueCalculation(gameConfiguration);
             
+            Thread.Sleep(20);
+            
             // Assert
             mockOptimumCalculator.Verify(
                 m => m.Calculate(
