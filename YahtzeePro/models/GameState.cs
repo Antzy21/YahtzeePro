@@ -7,5 +7,5 @@ public readonly record struct GameState(
     int CachedScore, 
     int DiceToRoll, 
     bool IsStartOfTurn, 
-    int TotalDice
+    GameConfiguration GameConfiguration
 );
