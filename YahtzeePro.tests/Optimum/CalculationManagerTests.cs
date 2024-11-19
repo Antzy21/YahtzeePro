@@ -90,7 +90,7 @@ namespace YahtzeePro.tests.Optimum
             // Act
             calculationManager.QueueCalculation(gameConfiguration1);
             taskCompletionSource.SetResult();
-            saveTask.Task.Wait();
+            saveTask.Task.Wait(timeout: TimeSpan.FromSeconds(2));
 
             // Assert
             mockOptimumRepo.Verify(
