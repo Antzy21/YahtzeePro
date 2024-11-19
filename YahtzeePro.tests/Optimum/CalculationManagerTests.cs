@@ -88,7 +88,7 @@ namespace YahtzeePro.tests.Optimum
             // Act
             calculationManager.QueueCalculation(gameConfiguration1);
             taskCompletionSource.SetResult();
-            Thread.Sleep(50);
+            Thread.Sleep(200);
 
             // Assert
             mockOptimumRepo.Verify(
