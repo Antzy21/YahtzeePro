@@ -78,17 +78,19 @@ namespace YahtzeePro.tests.Optimum
             // Arrange
             var gameConfiguration1 = new GameConfiguration(500, 5);
             var mockOptimumCalculator = GetMockOptimumCalculator(out var taskCompletionSource);
+
+            var saveTask = new TaskCompletionSource();
             var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
             mockOptimumRepo.Setup(r => r.Save(
                 gameConfiguration1,
                 It.IsAny<Dictionary<GameState, GameStateProbabilities>>()
-            ));
+            )).Callback(saveTask.SetResult);
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
 
             // Act
             calculationManager.QueueCalculation(gameConfiguration1);
             taskCompletionSource.SetResult();
-            Thread.Sleep(200);
+            saveTask.Task.Wait();
 
             // Assert
             mockOptimumRepo.Verify(
