@@ -74,10 +74,10 @@ namespace YahtzeePro
         private int CalculateScore()
         {
             int score = 0;
-            if (_onesCount >= 3)
-                score += (int)Math.Pow(10, _onesCount);
-            else
+            if (_onesCount < 3)
                 score += 100 * _onesCount;
+            else
+                score += 1 * (int)Math.Pow(10, _onesCount - 1);
             if (_twosCount >= 3)
                 score += 2 * (int)Math.Pow(10, _twosCount - 1);
             if (_threesCount >= 3)
