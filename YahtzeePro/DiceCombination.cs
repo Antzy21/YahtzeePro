@@ -74,9 +74,14 @@ namespace YahtzeePro
         private int CalculateScore()
         {
             int score = 0;
-            if (_onesCount < 3)
+
+            if (_onesCount <= 3)
                 score += 100 * _onesCount;
-            else
+
+            if (_fivesCount <= 2)
+                score += 50 * _fivesCount;
+
+            if (_onesCount >= 3)
                 score += 1 * (int)Math.Pow(10, _onesCount - 1);
             if (_twosCount >= 3)
                 score += 2 * (int)Math.Pow(10, _twosCount - 1);
@@ -86,8 +91,6 @@ namespace YahtzeePro
                 score += 4 * (int)Math.Pow(10, _foursCount - 1);
             if (_fivesCount >= 3)
                 score += 5 * (int)Math.Pow(10, _fivesCount - 1);
-            else
-                score += 50 * _fivesCount;
             if (_sixesCount >= 3)
                 score += 6 * (int)Math.Pow(10, _sixesCount - 1);
             return score;
