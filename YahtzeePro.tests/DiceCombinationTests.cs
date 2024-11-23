@@ -51,5 +51,12 @@ namespace YahtzeePro.tests
             var diceCombo = new DiceCombination(dice);
             Assert.Equal(expectedBool, diceCombo.AllDiceAreScoring);
         }
+
+        [Fact]
+        public void AddDie_CreatesNewDiceCombination_WithNewDie() {
+            var diceCombo = new DiceCombination(1,2);
+            var newDiceCombo = diceCombo.AddDie(6);
+            Assert.Equal("1,2,6,", newDiceCombo.ToString());
+        }
     }
 }
