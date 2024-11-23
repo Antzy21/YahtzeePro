@@ -24,29 +24,10 @@ namespace YahtzeePro
             _dice = dice;
             foreach (int die in dice)
             {
-                switch (die)
-                {
-                    case 1:
-                        diceCount[1]++;
-                        break;
-                    case 2:
-                        diceCount[2]++;
-                        break;
-                    case 3:
-                        diceCount[3]++;
-                        break;
-                    case 4:
-                        diceCount[4]++;
-                        break;
-                    case 5:
-                        diceCount[5]++;
-                        break;
-                    case 6:
-                        diceCount[6]++;
-                        break;
-                    default:
-                        throw new ArgumentException($"Unable to accept dice with value {die}");
-                }
+                if(die > 6)
+                    throw new ArgumentException($"Unable to accept dice with value {die}");
+                
+                diceCount[die]++;
             }
             Score = CalculateScore();
             NumberOfScoringDice = CalculateNumberOfScoringDice();
