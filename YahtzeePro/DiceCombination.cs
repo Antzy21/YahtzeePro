@@ -4,12 +4,14 @@ namespace YahtzeePro
 {
     public readonly record struct DiceCombination
     {
-        private readonly int _onesCount;
-        private readonly int _twosCount;
-        private readonly int _threesCount;
-        private readonly int _foursCount;
-        private readonly int _fivesCount;
-        private readonly int _sixesCount;
+        private readonly Dictionary<int, int> diceCount = new() {
+            {1, 0},
+            {2, 0},
+            {3, 0},
+            {4, 0},
+            {5, 0},
+            {6, 0},
+        };
 
         private readonly int[] _dice;
 
@@ -22,33 +24,14 @@ namespace YahtzeePro
             _dice = dice;
             foreach (int die in dice)
             {
-                switch (die)
-                {
-                    case 1:
-                        _onesCount++;
-                        break;
-                    case 2:
-                        _twosCount++;
-                        break;
-                    case 3:
-                        _threesCount++;
-                        break;
-                    case 4:
-                        _foursCount++;
-                        break;
-                    case 5:
-                        _fivesCount++;
-                        break;
-                    case 6:
-                        _sixesCount++;
-                        break;
-                    default:
-                        throw new ArgumentException($"Unable to accept dice with value {die}");
-                }
+                if(die > 6)
+                    throw new ArgumentException($"Unable to accept dice with value {die}");
+                
+                diceCount[die]++;
             }
             Score = CalculateScore();
             NumberOfScoringDice = CalculateNumberOfScoringDice();
-            AllDiceAreScoring = NumberOfScoringDice == _onesCount + _twosCount + _threesCount + _foursCount + _fivesCount + _sixesCount;
+            AllDiceAreScoring = NumberOfScoringDice == diceCount[1] + diceCount[2] + diceCount[3] + diceCount[4] + diceCount[5] + diceCount[6];
         }
 
         public static DiceCombination Generate(int numberOfDice, Random random)
@@ -67,60 +50,62 @@ namespace YahtzeePro
 
         public DiceCombination AddDie(int dieValue)
         {
-            int[] newDiceCombo = _dice.Append(dieValue).ToArray();
-            return new DiceCombination(newDiceCombo);
+            return new DiceCombination([.. _dice, dieValue]);
         }
 
         private int CalculateScore()
         {
             int score = 0;
-            if (_onesCount >= 3)
-                score += (int)Math.Pow(10, _onesCount);
-            else
-                score += 100 * _onesCount;
-            if (_twosCount >= 3)
-                score += 2 * (int)Math.Pow(10, _twosCount - 1);
-            if (_threesCount >= 3)
-                score += 3 * (int)Math.Pow(10, _threesCount - 1);
-            if (_foursCount >= 3)
-                score += 4 * (int)Math.Pow(10, _foursCount - 1);
-            if (_fivesCount >= 3)
-                score += 5 * (int)Math.Pow(10, _fivesCount - 1);
-            else
-                score += 50 * _fivesCount;
-            if (_sixesCount >= 3)
-                score += 6 * (int)Math.Pow(10, _sixesCount - 1);
+
+            if (diceCount[1] <= 3)
+                score += 100 * diceCount[1];
+
+            if (diceCount[5] <= 2)
+                score += 50 * diceCount[5];
+
+            if (diceCount[1] >= 3)
+                score += 1 * (int)Math.Pow(10, diceCount[1] - 1);
+            if (diceCount[2] >= 3)
+                score += 2 * (int)Math.Pow(10, diceCount[2] - 1);
+            if (diceCount[3] >= 3)
+                score += 3 * (int)Math.Pow(10, diceCount[3] - 1);
+            if (diceCount[4] >= 3)
+                score += 4 * (int)Math.Pow(10, diceCount[4] - 1);
+            if (diceCount[5] >= 3)
+                score += 5 * (int)Math.Pow(10, diceCount[5] - 1);
+            if (diceCount[6] >= 3)
+                score += 6 * (int)Math.Pow(10, diceCount[6] - 1);
             return score;
         }
 
         private int CalculateNumberOfScoringDice()
         {
-            int scoringDiceCount = _onesCount + _fivesCount;
-            if (_twosCount >= 3)
-                scoringDiceCount += _twosCount;
-            if (_threesCount >= 3)
-                scoringDiceCount += _threesCount;
-            if (_foursCount >= 3)
-                scoringDiceCount += _foursCount;
-            if (_sixesCount >= 3)
-                scoringDiceCount += _sixesCount;
+            int scoringDiceCount = diceCount[1] + diceCount[5];
+            if (diceCount[2] >= 3)
+                scoringDiceCount += diceCount[2];
+            if (diceCount[3] >= 3)
+                scoringDiceCount += diceCount[3];
+            if (diceCount[4] >= 3)
+                scoringDiceCount += diceCount[4];
+            if (diceCount[6] >= 3)
+                scoringDiceCount += diceCount[6];
             return scoringDiceCount;
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < _onesCount; i++)
+            for (int i = 0; i < diceCount[1]; i++)
                 sb.Append("1,");
-            for (int i = 0; i < _twosCount; i++)
+            for (int i = 0; i < diceCount[2]; i++)
                 sb.Append("2,");
-            for (int i = 0; i < _threesCount; i++)
+            for (int i = 0; i < diceCount[3]; i++)
                 sb.Append("3,");
-            for (int i = 0; i < _foursCount; i++)
+            for (int i = 0; i < diceCount[4]; i++)
                 sb.Append("4,");
-            for (int i = 0; i < _fivesCount; i++)
+            for (int i = 0; i < diceCount[5]; i++)
                 sb.Append("5,");
-            for (int i = 0; i < _sixesCount; i++)
+            for (int i = 0; i < diceCount[6]; i++)
                 sb.Append("6,");
 
             return sb.ToString();
