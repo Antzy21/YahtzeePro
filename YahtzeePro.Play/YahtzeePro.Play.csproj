@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\YahtzeePro\YahtzeePro.csproj" />
+    <ProjectReference Include="..\YahtzeePro\YahtzeePro.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
