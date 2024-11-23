@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.tests", "Yahtzee
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.Play", "YahtzeePro.Play\YahtzeePro.Play.csproj", "{34D99571-5A5A-4BE3-87B9-DC192C5FDBAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.CalculateOptimum.Api", "YahtzeePro.CalculateOptimum.Api\YahtzeePro.CalculateOptimum.Api.csproj", "{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum.Api", "YahtzeePro.Optimum.Api\YahtzeePro.Optimum.Api.csproj", "{6DBB11F6-F99F-4DBA-8684-9EFEE445EF0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum", "YahtzeePro.Optimum\YahtzeePro.Optimum.csproj", "{DFA537B4-51CE-400D-83C9-273B6ED29AEC}"
 EndProject
