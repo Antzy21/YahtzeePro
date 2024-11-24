@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum", "YahtzeePro.Optimum\YahtzeePro.Optimum.csproj", "{DFA537B4-51CE-400D-83C9-273B6ED29AEC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Play.Api", "YahtzeePro.Play.Api\YahtzeePro.Play.Api.csproj", "{E134BBE1-349C-4B09-BFC7-9FBDE30FB600}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum.Cli", "YahtzeePro.Optimum.Cli\YahtzeePro.Optimum.Cli.csproj", "{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{E134BBE1-349C-4B09-BFC7-9FBDE30FB600}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E134BBE1-349C-4B09-BFC7-9FBDE30FB600}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E134BBE1-349C-4B09-BFC7-9FBDE30FB600}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
