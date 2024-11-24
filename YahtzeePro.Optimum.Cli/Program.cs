@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using YahtzeePro.Optimum;
+using YahtzeePro.Optimum.Cli;
 
 internal class Program
 {
