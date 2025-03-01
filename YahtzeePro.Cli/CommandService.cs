@@ -17,7 +17,7 @@ public class CommandService(IOptimumCalculator optimumCalculator, IOptimumStrate
             Console.WriteLine("Yahtzee Optimum CLI");
         });
 
-        _rootCommand.Add(new CalculateCommand(_optimumCalculator));
+        _rootCommand.Add(new CalculateCommand(_optimumCalculator, _optimumRepository));
         _rootCommand.Add(new GetCommand(_optimumRepository));
 
         _rootCommand.Invoke(args);

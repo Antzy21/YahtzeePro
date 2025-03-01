@@ -6,8 +6,8 @@ namespace YahtzeePro.Cli.Commands;
 
 public class CalculateCommand : Command
 {
-    public CalculateCommand(IOptimumCalculator optimumCalculator)
-        : base("calculate", "Calculate the optimum for a gameConfiguration")
+    public CalculateCommand(IOptimumCalculator optimumCalculator, IOptimumStrategyRepository optimumStrategyRepository)
+        : base("calculate", "Calculate and save the optimum for a gameConfiguration")
     {
         var winningValueArg = new Argument<int>("Winning value");
         var totalDiceArg = new Argument<int>("Total dice");
@@ -18,7 +18,9 @@ public class CalculateCommand : Command
         {
             var gameConfiguration = new GameConfiguration(winningValue, totalDice);
 
-            optimumCalculator.Calculate(gameConfiguration);
+            var result = optimumCalculator.Calculate(gameConfiguration);
+
+            optimumStrategyRepository.Save(gameConfiguration, result);
 
             Console.WriteLine($"Calculated optimum for {gameConfiguration}");
 
