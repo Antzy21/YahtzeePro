@@ -1,7 +1,8 @@
 using System.CommandLine;
-using YahtzeePro.Optimum.Cli.Commands;
+using YahtzeePro.Optimum;
+using YahtzeePro.Cli.Commands;
 
-namespace YahtzeePro.Optimum.Cli;
+namespace YahtzeePro.Cli;
 
 public class CommandService(IOptimumCalculator optimumCalculator, IOptimumStrategyRepository optimumRepository)
 {
@@ -16,8 +17,8 @@ public class CommandService(IOptimumCalculator optimumCalculator, IOptimumStrate
             Console.WriteLine("Yahtzee Optimum CLI");
         });
 
-        _rootCommand.Add(new CalculateCommand(_optimumCalculator));
-        _rootCommand.Add(new GetCommand(_optimumRepository));
+        _rootCommand.Add(new OptimumCommand(_optimumCalculator, _optimumRepository));
+        _rootCommand.Add(new PlayCommand());
 
         _rootCommand.Invoke(args);
     }

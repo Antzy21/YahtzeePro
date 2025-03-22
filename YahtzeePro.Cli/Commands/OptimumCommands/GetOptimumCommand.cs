@@ -1,11 +1,12 @@
 using System.CommandLine;
 using YahtzeePro.models;
+using YahtzeePro.Optimum;
 
-namespace YahtzeePro.Optimum.Cli.Commands;
+namespace YahtzeePro.Cli.Commands.OptimumCommands;
 
-public class GetCommand : Command
+public class GetOptimumCommand : Command
 {
-    public GetCommand(IOptimumStrategyRepository optimumRepository)
+    public GetOptimumCommand(IOptimumStrategyRepository optimumRepository)
         : base("get", "Get the optimum for a gameConfiguration if it has been calculated")
     {
         var winningValueArg = new Argument<int>("Winning value");
