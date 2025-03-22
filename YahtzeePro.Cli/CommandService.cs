@@ -18,6 +18,7 @@ public class CommandService(IOptimumCalculator optimumCalculator, IOptimumStrate
         });
 
         _rootCommand.Add(new OptimumCommand(_optimumCalculator, _optimumRepository));
+        _rootCommand.Add(new PlayCommand());
 
         _rootCommand.Invoke(args);
     }
