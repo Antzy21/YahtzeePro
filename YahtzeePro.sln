@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum", "Yahtz
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Play.Api", "YahtzeePro.Play.Api\YahtzeePro.Play.Api.csproj", "{E134BBE1-349C-4B09-BFC7-9FBDE30FB600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Optimum.Cli", "YahtzeePro.Optimum.Cli\YahtzeePro.Optimum.Cli.csproj", "{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YahtzeePro.Cli", "YahtzeePro.Cli\YahtzeePro.Cli.csproj", "{3DD0DCD9-1AFF-4092-AE9C-5D4574211880}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

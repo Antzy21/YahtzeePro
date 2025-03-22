@@ -1,7 +1,8 @@
 using System.CommandLine;
 using YahtzeePro.models;
+using YahtzeePro.Optimum;
 
-namespace YahtzeePro.Optimum.Cli.Commands;
+namespace YahtzeePro.Cli.Commands;
 
 public class GetCommand : Command
 {
