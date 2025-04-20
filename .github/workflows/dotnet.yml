@@ -4,8 +4,6 @@
 name: .NET
 
 on:
-  push:
-    branches: [ "*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -24,5 +22,9 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
+    - name: Run Tests
       run: dotnet test --no-build --verbosity normal
+    - name: Test Optimum.Api Docker Build
+      run: docker build . -f ./YahtzeePro.Optimum.Api/Dockerfile --tag yahtzeepro-optimum-api:latest
+    - name: Test Play.Api Docker Build
+      run: docker build . -f ./YahtzeePro.Play.Api/Dockerfile --tag yahtzeepro-play-api:latest
