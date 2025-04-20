@@ -18,7 +18,7 @@ internal class Program
         services.AddLogging();
 
         // The service for command handlers in commands
-        services.AddScoped<ICommandService, LocalCommandService>();
+        services.AddScoped<ICommandService, ApiCommandService>();
 
         // The services required for the local command service to run
         services.AddScoped<IOptimumStrategyRepository, OptimumStrategyFileStorage>();
