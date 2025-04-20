@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using YahtzeePro.Optimum;
-using YahtzeePro.Cli;
+using YahtzeePro.Cli.Services;
+using System.CommandLine;
+using YahtzeePro.Cli.Commands;
 
 internal class Program
 {
@@ -8,15 +10,20 @@ internal class Program
     {
         var services = new ServiceCollection();
         services.AddLogging();
+
+        // The service for command handlers in commands
+        services.AddScoped<ICommandService, LocalCommandService>();
+
+        // The services required for the local command service to run
         services.AddScoped<IOptimumStrategyRepository, OptimumStrategyFileStorage>();
         services.AddScoped<IOptimumCalculator, OptimumCalculator>();
         services.AddScoped<ICalculationManager, CalculationManager>();
-        services.AddSingleton<CommandService, CommandService>();
-        
+
         var serviceProvider = services.BuildServiceProvider();
 
-        var commandService = serviceProvider.GetRequiredService<CommandService>();
-        
-        commandService.Invoke(args);
+        var commandService = serviceProvider.GetRequiredService<ICommandService>();
+        RootCommand rootCommand = new YahtzeeProCommand(commandService);
+
+        rootCommand.Invoke(args);
     }
 }

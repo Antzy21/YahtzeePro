@@ -1,16 +1,16 @@
 using System.CommandLine;
 using YahtzeePro.Cli.Commands.OptimumCommands;
-using YahtzeePro.Optimum;
+using YahtzeePro.Cli.Services;
 
 namespace YahtzeePro.Cli.Commands;
 
 public class OptimumCommand : Command
 {
-    public OptimumCommand(IOptimumCalculator optimumCalculator, IOptimumStrategyRepository optimumepository)
+    public OptimumCommand(ICommandService commandService)
         : base("optimum", "View and create calculated Optimum stragies")
     {
-        Add(new CalculateOptimumCommand(optimumCalculator, optimumepository));
-        Add(new GetOptimumCommand(optimumepository));
-        Add(new ListOptimumCommand(optimumepository));
+        Add(new CalculateOptimumCommand(commandService));
+        Add(new GetOptimumCommand(commandService));
+        Add(new ListOptimumCommand(commandService));
     }
 }
