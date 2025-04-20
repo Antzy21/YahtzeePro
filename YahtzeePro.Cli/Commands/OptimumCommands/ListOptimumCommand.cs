@@ -1,22 +1,13 @@
 using System.CommandLine;
-using YahtzeePro.Optimum;
+using YahtzeePro.Cli.Services;
 
 namespace YahtzeePro.Cli.Commands.OptimumCommands;
 
 public class ListOptimumCommand : Command
 {
-    public ListOptimumCommand(IOptimumStrategyRepository optimumRepository)
+    public ListOptimumCommand(ICommandService commandService)
         : base("list", "List all optimums that have been calculated")
     {
-        this.SetHandler(() =>
-        {
-            var optimums = optimumRepository.Get();
-
-            foreach (var optimum in optimums)
-            {
-                Console.WriteLine(optimum);
-            }
-
-        });
+        this.SetHandler(commandService.ListOptimums);
     }
 }
