@@ -22,12 +22,24 @@ public class ApiCommandService : ICommandService
     
     public void Status()
     {
-        Console.WriteLine("Not yet Implemented.");
+        var response = _client.GetAsync("/status");
+        if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Connected to YatzeePro API server!");
+        }
+        else
+        {
+            Console.WriteLine("Unable to reach YatzeePro API server");
+        }
     }
 
     public void CalculateOptimum(int winningValue, int totalDice)
     {
-        Console.WriteLine("Not yet Implemented.");
+        var gameConfiguration = new GameConfiguration(winningValue, totalDice);
+        var content = JsonContent.Create(gameConfiguration);
+        var response = _client.PostAsync("/calculate", content);
+
+        Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
     }
 
     public void GetOptimum(int winningValue, int totalDice)

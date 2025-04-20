@@ -17,6 +17,8 @@ internal class Program
         var optimumStrategyRepository = app.Services.GetRequiredService<IOptimumStrategyRepository>();
         var calculationManager = app.Services.GetRequiredService<ICalculationManager>();
 
+        app.MapGet("/status", () => optimumStrategyRepository.Get());
+
         app.MapGet("/", () => optimumStrategyRepository.Get());
 
         app.MapGet("/queued", () => calculationManager.Queue);
