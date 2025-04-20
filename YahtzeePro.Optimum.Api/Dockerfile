@@ -15,7 +15,7 @@ ARG TARGETARCH
 
 COPY . /source
 
-WORKDIR /source/YahtzeePro.CalculateOptimum.Api
+WORKDIR /source/YahtzeePro.Optimum.Api
 
 # Build the application.
 # Leverage a cache mount to /root/.nuget/packages so that subsequent builds don't have to re-download packages.
@@ -35,4 +35,4 @@ WORKDIR /app
 # Copy everything needed to run the app from the "build" stage.
 COPY --from=build /app .
 
-ENTRYPOINT ["dotnet", "YahtzeePro.CalculateOptimum.Api.dll"]
+ENTRYPOINT ["dotnet", "YahtzeePro.Optimum.Api.dll"]
