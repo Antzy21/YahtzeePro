@@ -1,32 +1,26 @@
 # YahtzeePro
-A dice game where players choose between banking and rolling to try get to a winning score first.
+Yahtzee Pro is a dice game where players roll dice and bank scores to a winning total.
+The game is played with any number of players. For simplicity, this project assumes two players.
 
-## CalculateOptimum
-```Powershell
-.\YahtzeePro.CalculateOptimum\bin\Debug\net7.0\YahtzeePro.CalculateOptimum.exe
+This project provides an interface to play the game, and calculate an optimum strategy for the game.
+
+## API servies
+There are two containerised API services, Play & Optimum.
+Run these with...
+```powershell
+docker compose up -d
 ```
-By default this will attempt to calculate the optimum strategy for the game, where the default game values are used.
-The calculation method parameters for `initialStackCounterToReturnKnownValue` and `calculationIterations` will also use defaults.
+The best way to interact with these services is via the CLI tool.
 
- e.g.
-- Win at 5000
-- 5 total dice
-- 2 for `initialStackCounterToReturnKnownValue`
-- 3 for `calculationIterations`
+## CLI tool
+The Cli tool is the primary way to interact with the project.
+It is used to play a game, and calculate optimum strategies.
+
+[View the Cli readme for a demo of how to use.](./YahtzeePro.Cli/readme.md)
 
 ---
 
-```Powershell
-.\YahtzeePro.CalculateOptimum\bin\Debug\net7.0\YahtzeePro.CalculateOptimum.exe 1000 3 5 4 true
-```
-This call will calculate with the following:
-- Win at 1000
-- 3 total dice
-- 5 for `initialStackCounterToReturnKnownValue`
-- 4 for `calculationIterations`
-- loggin all calculations to the console
-
-## Play
+## YahtzeePro.Play
 Get two players to play a few games (or lots of sets of matches!)
 
 ```
@@ -34,6 +28,26 @@ Get two players to play a few games (or lots of sets of matches!)
 ```
 
 Pass a given winning score and total dice as the optional first and second arguments.
+
+## YahtzeePro.Optimum
+
+This will attempt to calculate the optimum strategy for a game of Yahtzee Pro.
+The calculation method parameters for `initialStackCounterToReturnKnownValue` and `calculationIterations` will also use defaults.
+
+e.g.
+- Win at 5000
+- 5 total dice
+- 2 for `initialStackCounterToReturnKnownValue`
+- 3 for `calculationIterations`
+
+---
+
+This call will calculate with the following:
+- Win at 1000
+- 3 total dice
+- 5 for `initialStackCounterToReturnKnownValue`
+- 4 for `calculationIterations`
+- logging all calculations to the console
 
 ## Yahtzee Pro analysis
 
