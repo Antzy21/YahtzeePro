@@ -6,6 +6,7 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Logging.AddConsole();
         builder.Services.AddSingleton<GameManager>();
 
         var app = builder.Build();
