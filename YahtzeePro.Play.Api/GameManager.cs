@@ -1,11 +1,14 @@
 using YahtzeePro.models;
 
-internal class GameManager
+internal class GameManager(ILogger<GameManager> logger)
 {
+    private readonly ILogger<GameManager> _logger = logger;
     private readonly Dictionary<Guid, GameState> games = new();
 
     internal Guid CreateNewGame(int winningValue, int diceCount)
     {
+        _logger.LogInformation("Creating a new game with winning value {winningValue} and dice count {diceCount}", winningValue, diceCount);
+
         var newGameConfiguration = new GameConfiguration(winningValue, diceCount);
         var newGameGuid = Guid.NewGuid();
         games.Add(newGameGuid, new GameState(){
@@ -26,14 +29,17 @@ internal class GameManager
     internal GameState? GetGame(Guid guid)
     {
         if(!games.TryGetValue(guid, out GameState gameState)) {
+            _logger.LogInformation("Unable to find game for with id: {guid}", guid);
             return null;
         };
+        _logger.LogInformation("Retrieved game: {game}", gameState);
         return gameState;
     }
 
     internal GameState MakeMove(Guid gameId, MoveType moveType)
     {
-        var game = games[gameId];
+        var game = GetGame(gameId);
+        _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
         throw new NotImplementedException();
     }
 }
