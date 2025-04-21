@@ -6,30 +6,48 @@ namespace YahtzeePro.Cli.Services;
 
 public class ApiCommandService : ICommandService
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _optimumClient;
+    private readonly HttpClient _playClient;
 
     public ApiCommandService(
         IConfiguration configuration
     ) {
-        var baseAddress = configuration["OptimumStrategyRepository"];
-        if (string.IsNullOrEmpty(baseAddress))
+        var baseOptimumAddress = configuration["OptimumApiUrl"];
+        if (string.IsNullOrEmpty(baseOptimumAddress))
         {
-            throw new ArgumentException("OptimumStrategyRepository URL is not configured.");
+            throw new ArgumentException("Optimum API URL is not configured.");
+        }
+        
+        var basePlayAddress = configuration["PlayApiUrl"];
+        if (string.IsNullOrEmpty(basePlayAddress))
+        {
+            throw new ArgumentException("Play API URL is not configured.");
         }
 
-        _client = new HttpClient { BaseAddress = new Uri(baseAddress) };
+        _optimumClient = new HttpClient { BaseAddress = new Uri(baseOptimumAddress) };
+        _playClient = new HttpClient { BaseAddress = new Uri(basePlayAddress) };
     }
     
     public void Status()
     {
-        var response = _client.GetAsync("/status");
-        if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+        var optimumApiResponse = _optimumClient.GetAsync("/status");
+        if (optimumApiResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Connected to YatzeePro API server!");
+            Console.WriteLine("Connected to YatzeePro Optimum API server!");
         }
         else
         {
-            Console.WriteLine("Unable to reach YatzeePro API server");
+            Console.WriteLine("Unable to reach YatzeePro Optimum API server");
+        }
+
+        var playApiResponse = _playClient.GetAsync("/");
+        if (playApiResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Connected to YatzeePro Play API server!");
+        }
+        else
+        {
+            Console.WriteLine("Unable to reach YatzeePro Play API server");
         }
     }
 
@@ -37,7 +55,7 @@ public class ApiCommandService : ICommandService
     {
         var gameConfiguration = new GameConfiguration(winningValue, totalDice);
         var content = JsonContent.Create(gameConfiguration);
-        var response = _client.PostAsync("/calculate", content);
+        var response = _optimumClient.PostAsync("/calculate", content);
 
         Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
     }
@@ -46,7 +64,7 @@ public class ApiCommandService : ICommandService
     {
         var gameConfiguration = new GameConfiguration(winningValue, totalDice);
         var content = JsonContent.Create(gameConfiguration);
-        var response = _client.PostAsync("/getStrategy", content);
+        var response = _optimumClient.PostAsync("/getStrategy", content);
 
         Console.WriteLine(response.Result.Content);
 
@@ -56,7 +74,7 @@ public class ApiCommandService : ICommandService
 
     public void ListOptimums()
     {
-        var response = _client.GetAsync("");
+        var response = _optimumClient.GetAsync("");
         var optimums = response.Result.Content.ReadFromJsonAsync<List<string>>().Result ?? [];
 
         foreach (var optimum in optimums)
