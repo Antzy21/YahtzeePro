@@ -54,4 +54,19 @@ public class LocalCommandService(
             Console.WriteLine(optimum);
         }
     }
+
+    public void ListGames()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void NewGame(int winningValue, int totalDice)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Move(Guid guid)
+    {
+        throw new NotImplementedException();
+    }
 }

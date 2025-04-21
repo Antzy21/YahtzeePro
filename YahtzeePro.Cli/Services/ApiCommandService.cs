@@ -82,4 +82,48 @@ public class ApiCommandService : ICommandService
             Console.WriteLine(optimum);
         }
     }
+
+    public void ListGames()
+    {
+        var response = _playClient.GetAsync("/games");
+
+        var games = response.Result.Content.ReadFromJsonAsync<List<Guid>>().Result ?? [];
+
+        foreach (var game in games)
+        {
+            Console.WriteLine(game);
+        }
+    }
+
+    public void NewGame(int winningValue, int totalDice)
+    {
+        var gameConfiguration = new GameConfiguration(winningValue, totalDice);
+        var content = JsonContent.Create(gameConfiguration);
+        var response = _playClient.PostAsync("/newgame", content);
+
+        if (response.Result.StatusCode == System.Net.HttpStatusCode.Created)
+        {
+            var locationUri = response.Result.Headers.Location;
+            if (locationUri != null)
+            {
+                Console.WriteLine(locationUri);
+                var newGameResponse = _playClient.GetAsync(locationUri);
+                Console.WriteLine(newGameResponse.Result.Content.ReadFromJsonAsync<GameState>().Result);
+            }
+            else
+            {
+                Console.WriteLine("New game created, but no location URI was returned.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to create a new game.");
+            Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+        }
+    }
+
+    public void Move(Guid guid)
+    {
+        throw new NotImplementedException();
+    }
 }
