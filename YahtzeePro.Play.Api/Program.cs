@@ -1,3 +1,4 @@
+using YahtzeePro.models;
 using YahtzeePro.Play.Api.Requests;
 
 internal class Program
@@ -14,11 +15,15 @@ internal class Program
 
         app.MapGet("/", () => "Yahtzee Pro Game Api");
 
-        app.MapPost("/newgame", (int winningValue = 5000, int diceCount = 5) => gameManager.CreateNewGame(winningValue, diceCount));
+        app.MapPost("/newgame", (GameConfiguration gameConfiguration) =>
+        {
+            var newGameGuid = gameManager.CreateNewGame(gameConfiguration.WinningValue, gameConfiguration.TotalDice);
+            return Results.Created($"/games/{newGameGuid}", newGameGuid);
+        });
 
         app.MapGet("/games", () => gameManager.GetGameIds());
 
-        app.MapGet("/games/{guid}", (Guid gameId) =>
+        app.MapGet("/games/{gameId}", (Guid gameId) =>
         {
             var gameState = gameManager.GetGame(gameId);
             if (gameState is not null)
@@ -28,7 +33,7 @@ internal class Program
             return Results.NotFound();
         });
 
-        app.MapPost("/move", (MoveRequest moveRequest) => 
+        app.MapPost("/move", (MoveRequest moveRequest) =>
         {
             var gameState = gameManager.GetGame(moveRequest.GameId);
             if (gameState is null)
