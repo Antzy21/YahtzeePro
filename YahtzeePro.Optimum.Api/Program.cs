@@ -1,4 +1,4 @@
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 using YahtzeePro.Optimum;
 
 internal class Program

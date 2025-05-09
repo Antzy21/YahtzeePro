@@ -1,6 +1,8 @@
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 
-internal class GameManager(ILogger<GameManager> logger)
+namespace YahtzeePro.Play.Api;
+
+public class GameManager(ILogger<GameManager> logger)
 {
     private readonly ILogger<GameManager> _logger = logger;
     private readonly Dictionary<Guid, GameState> games = new();
@@ -36,7 +38,7 @@ internal class GameManager(ILogger<GameManager> logger)
         return gameState;
     }
 
-    internal GameState MakeMove(Guid gameId, MoveType moveType)
+    internal GameState MakeMove(Guid gameId, MoveChoice moveType)
     {
         var game = GetGame(gameId);
         _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);

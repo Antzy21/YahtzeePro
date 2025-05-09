@@ -1,4 +1,4 @@
-﻿using YahtzeePro.models;
+﻿using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Optimum;
 

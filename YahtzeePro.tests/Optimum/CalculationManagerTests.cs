@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices.JavaScript;
 using Moq;
 using Xunit;
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 using YahtzeePro.Optimum;
 
 namespace YahtzeePro.tests.Optimum

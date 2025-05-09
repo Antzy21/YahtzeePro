@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Play;
 
@@ -51,10 +51,10 @@ internal class Game
 
             switch (move)
             {
-                case PlayChoice.Safe:
+                case MoveChoice.Safe:
                     _gameState = MakeSafeMove(_gameState);
                     break;
-                case PlayChoice.Risky:
+                case MoveChoice.Risky:
                     _gameState = MakeRiskyMove(_gameState);
                     break;
             }

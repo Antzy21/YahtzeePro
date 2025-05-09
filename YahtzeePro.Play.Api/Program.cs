@@ -1,4 +1,5 @@
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
+using YahtzeePro.Play.Api;
 using YahtzeePro.Play.Api.Requests;
 
 internal class Program

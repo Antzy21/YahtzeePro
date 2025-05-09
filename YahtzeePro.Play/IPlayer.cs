@@ -1,9 +1,9 @@
-﻿using YahtzeePro.models;
+﻿using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Play;
 
 internal interface IPlayer
 {
     string Name { get; }
-    PlayChoice GetMove(GameState gs, GameConfiguration gc);
+    MoveChoice GetMove(GameState gs, GameConfiguration gc);
 }
