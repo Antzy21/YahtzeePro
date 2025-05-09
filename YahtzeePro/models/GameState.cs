@@ -1,4 +1,4 @@
-﻿namespace YahtzeePro.models;
+﻿namespace YahtzeePro.Core.Models;
 
 [Serializable]
 public readonly record struct GameState(

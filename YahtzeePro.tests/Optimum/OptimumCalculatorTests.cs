@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 using YahtzeePro.Optimum;
 
 namespace YahtzeePro.tests.Optimum

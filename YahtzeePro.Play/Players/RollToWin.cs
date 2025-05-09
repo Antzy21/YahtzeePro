@@ -1,4 +1,4 @@
-﻿using YahtzeePro.models;
+﻿using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Play.Players
 {
@@ -6,13 +6,13 @@ namespace YahtzeePro.Play.Players
     {
         public string Name => "RollToWin";
 
-        public PlayChoice GetMove(GameState gs, GameConfiguration gc)
+        public MoveChoice GetMove(GameState gs, GameConfiguration gc)
         {
             if (gs.CachedScore >= gc.WinningValue)
             {
-                return PlayChoice.Safe;
+                return MoveChoice.Safe;
             }
-            return PlayChoice.Risky;
+            return MoveChoice.Risky;
         }
     }
 }

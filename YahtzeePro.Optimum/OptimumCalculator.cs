@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Optimum
 {

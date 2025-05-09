@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
-using YahtzeePro.models;
+using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Cli.Services;
 
