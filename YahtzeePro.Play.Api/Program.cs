@@ -1,32 +1,35 @@
-using YahtzeePro.Core.Models;
-using YahtzeePro.Play.Api;
-using YahtzeePro.Play.Api.Requests;
+using YahtzeePro.Play.Requests;
 
-internal class Program
+namespace YahtzeePro.Play.Api;
+
+public class Program
 {
     private static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Logging.AddConsole();
-        builder.Services.AddSingleton<GameManager>();
+        builder.Services.AddScoped<IGameManagerService, GameManagerService>();
+        builder.Services.AddScoped<IPlayerResolverService, PlayerResolverService>();
 
         var app = builder.Build();
-        var gameManager = app.Services.GetRequiredService<GameManager>();
+        var gameManagerService = app.Services.GetRequiredService<IGameManagerService>();
+        var playerResolverService = app.Services.GetRequiredService<IPlayerResolverService>();
 
         app.MapGet("/", () => "Yahtzee Pro Game Api");
 
-        app.MapPost("/newgame", (GameConfiguration gameConfiguration) =>
+        app.MapPost("/newgame", (NewGameRequest newGameRequest) =>
         {
-            var newGameGuid = gameManager.CreateNewGame(gameConfiguration.WinningValue, gameConfiguration.TotalDice);
+            var opponent = playerResolverService.ResolvePlayer(newGameRequest.OpponentName);
+            var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration.WinningValue, newGameRequest.GameConfiguration.TotalDice, opponent);
             return Results.Created($"/games/{newGameGuid}", newGameGuid);
         });
 
-        app.MapGet("/games", () => gameManager.GetGameIds());
+        app.MapGet("/games", () => gameManagerService.GetGameIds());
 
         app.MapGet("/games/{gameId}", (Guid gameId) =>
         {
-            var gameState = gameManager.GetGame(gameId);
+            var gameState = gameManagerService.GetGame(gameId);
             if (gameState is not null)
             {
                 return Results.Ok(gameState);
@@ -36,12 +39,12 @@ internal class Program
 
         app.MapPost("/move", (MoveRequest moveRequest) =>
         {
-            var gameState = gameManager.GetGame(moveRequest.GameId);
+            var gameState = gameManagerService.GetGame(moveRequest.GameId);
             if (gameState is null)
                 return Results.NotFound();
 
-            var newGameState = gameManager.MakeMove(moveRequest.GameId, moveRequest.Move);
-            return Results.Ok(newGameState);
+            gameManagerService.MakeMove(moveRequest.GameId, moveRequest.Move);
+            return Results.Ok(gameManagerService.GetGame(moveRequest.GameId));
         });
 
         app.Run();
