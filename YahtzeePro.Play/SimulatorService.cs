@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Players;
+using YahtzeePro.Play.Players.AutoPlayers;
 
 namespace YahtzeePro.Play;
 
 public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorService
 {
-    private readonly ILogger<SimulatorService> _logger = logger;
-
     public GameResult SimulateGame(IPlayer player1, IPlayer player2, GameConfiguration gameConfiguration)
     {
         var game = new Game(gameConfiguration, player1, player2);
@@ -18,7 +17,10 @@ public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorServ
             {
                 return result;
             }
-            game.GetAndMakeMove();
+            var currentPlayer = (IAutoPlayer)game.GetCurrentPlayer();
+            var move = currentPlayer.GetMove(game.GameState, game.GameState.GameConfiguration);
+            game.MakeMove(move);
+            logger.LogInformation("{player} is making move, {move}", currentPlayer, move);
         }
     }
 
@@ -59,10 +61,10 @@ public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorServ
         int player2SetWins = 0;
         List<GameSetResult> gameSetResults = [];
 
-        _logger.LogInformation($"Player 1 \"{player1.Name}\"");
-        _logger.LogInformation($"Player 2 \"{player2.Name}\"");
-        _logger.LogInformation($"Games per set: {totalGames}\n");
-        _logger.LogInformation("Set | P1 : P2");
+        logger.LogInformation("Player 1 \"{player1Name}\"", player1.Name);
+        logger.LogInformation("Player 2 \"{player2Name}\"", player2.Name);
+        logger.LogInformation("Games per set: {totalGames}\n", totalGames);
+        logger.LogInformation("Set | P1 : P2");
 
         for (int set = 1; set <= totalSets; set++)
         {
@@ -73,7 +75,7 @@ public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorServ
             else if (gameSetResult.PlayerTwoWinCount > gameSetResult.PlayerOneWinCount)
                 player2SetWins++;
 
-            _logger.LogInformation($"\r{set,3} |{player1SetWins,3} :{player2SetWins,3}");
+            logger.LogInformation("\r{set,3} |{player1SetWins,3} :{player2SetWins,3}", set, player1SetWins, player2SetWins);
         }
 
         return gameSetResults;

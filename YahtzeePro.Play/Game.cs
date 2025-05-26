@@ -12,18 +12,16 @@ public class Game
 
     private readonly Random _random = new();
 
-    private IPlayer _currentPlayer;
+    private int _currentPlayerId = 0;
 
-    private GameState _gameState;
+    public GameState GameState;
 
     public Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
     {
         _player1 = player1;
         _player2 = player2;
 
-        _currentPlayer = _player1;
-
-        _gameState = new(
+        GameState = new(
             PlayerScore: 0,
             OpponentScore: 0,
             CachedScore: 0,
@@ -32,21 +30,20 @@ public class Game
             GameConfiguration: gameConfiguration);
     }
 
+    public IPlayer GetCurrentPlayer()
+    {
+        return _currentPlayerId == 0 ? _player1 : _player2;
+    }
+
     public bool GameIsOver([NotNullWhen(true)] out GameResult? gameResult)
     {
         gameResult = null;
-        if (_gameState.OpponentScore >= _gameState.GameConfiguration.WinningValue)
+        if (GameState.OpponentScore >= GameState.GameConfiguration.WinningValue)
         {
-            gameResult = new(_gameState.OpponentScore, _gameState.PlayerScore, GetOpponent().Name);
+            gameResult = new(GameState.OpponentScore, GameState.PlayerScore, GetOpponent().Name);
             return true;
         }
         return false;
-    }
-
-    public void GetAndMakeMove()
-    {
-        var move = _currentPlayer.GetMove(_gameState, _gameState.GameConfiguration);
-        MakeMove(move);
     }
 
     public void MakeMove(MoveChoice move)
@@ -54,23 +51,20 @@ public class Game
         switch (move)
         {
             case MoveChoice.Safe:
-                _gameState = MakeSafeMove(_gameState);
+                GameState = MakeSafeMove(GameState);
                 break;
             case MoveChoice.Risky:
-                _gameState = MakeRiskyMove(_gameState);
+                GameState = MakeRiskyMove(GameState);
                 break;
         }
     }
 
     private void SwitchPlayer()
     {
-        if (_currentPlayer == _player1)
+        _currentPlayerId ++;
+        if (_currentPlayerId >= 2)
         {
-            _currentPlayer = _player2;
-        }
-        else
-        {
-            _currentPlayer = _player1;
+            _currentPlayerId = 0;
         }
     }
 
@@ -86,7 +80,7 @@ public class Game
         if (gs.IsStartOfTurn)
         {
             // Roll at start of turn
-            var rolledDice = DiceCombination.Generate(_gameState.GameConfiguration.TotalDice, _random);
+            var rolledDice = DiceCombination.Generate(GameState.GameConfiguration.TotalDice, _random);
             return ResolveRolledDice(rolledDice, gs);
         }
         else
@@ -115,5 +109,5 @@ public class Game
         }
     }
 
-    private IPlayer GetOpponent() => _currentPlayer == _player1 ? _player2 : _player1;
+    private IPlayer GetOpponent() => _currentPlayerId == 0 ? _player2 : _player1;
 }
