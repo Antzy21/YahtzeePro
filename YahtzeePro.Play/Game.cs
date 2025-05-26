@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
+using YahtzeePro.Core;
 using YahtzeePro.Core.Models;
+using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play;
 
-internal class Game
+public class Game
 {
-    private readonly GameConfiguration _gameConfiguration;
     private readonly IPlayer _player1;
     private readonly IPlayer _player2;
-
-    private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
 
     private readonly Random _random = new();
 
     private IPlayer _currentPlayer;
-
-    public bool firstPlayerWon = false;
 
     private GameState _gameState;
 
@@ -24,12 +20,6 @@ internal class Game
     {
         _player1 = player1;
         _player2 = player2;
-        _gameConfiguration = gameConfiguration;
-
-        for (int i = 1; i <= _gameConfiguration.TotalDice; i++)
-        {
-            _rollPosibilitiesDictionary.Add(i, new RollPossibilities(i));
-        }
 
         _currentPlayer = _player1;
 
@@ -37,33 +27,39 @@ internal class Game
             PlayerScore: 0,
             OpponentScore: 0,
             CachedScore: 0,
-            DiceToRoll: _gameConfiguration.TotalDice,
+            DiceToRoll: gameConfiguration.TotalDice,
             IsStartOfTurn: true,
-            GameConfiguration: _gameConfiguration);
+            GameConfiguration: gameConfiguration);
     }
 
-    public void Play()
+    public bool GameIsOver([NotNullWhen(true)] out GameResult? gameResult)
     {
-        while (_gameState.PlayerScore + _gameState.CachedScore < _gameConfiguration.WinningValue)
+        gameResult = null;
+        if (_gameState.OpponentScore >= _gameState.GameConfiguration.WinningValue)
         {
-
-            var move = _currentPlayer.GetMove(_gameState, _gameConfiguration);
-
-            switch (move)
-            {
-                case MoveChoice.Safe:
-                    _gameState = MakeSafeMove(_gameState);
-                    break;
-                case MoveChoice.Risky:
-                    _gameState = MakeRiskyMove(_gameState);
-                    break;
-            }
+            gameResult = new(_gameState.OpponentScore, _gameState.PlayerScore, GetOpponent().Name);
+            return true;
         }
+        return false;
+    }
 
-        if (_currentPlayer == _player1)
-            firstPlayerWon = true;
-        else
-            firstPlayerWon = false;
+    public void GetAndMakeMove()
+    {
+        var move = _currentPlayer.GetMove(_gameState, _gameState.GameConfiguration);
+        MakeMove(move);
+    }
+
+    public void MakeMove(MoveChoice move)
+    {
+        switch (move)
+        {
+            case MoveChoice.Safe:
+                _gameState = MakeSafeMove(_gameState);
+                break;
+            case MoveChoice.Risky:
+                _gameState = MakeRiskyMove(_gameState);
+                break;
+        }
     }
 
     private void SwitchPlayer()
@@ -90,7 +86,7 @@ internal class Game
         if (gs.IsStartOfTurn)
         {
             // Roll at start of turn
-            var rolledDice = DiceCombination.Generate(_gameConfiguration.TotalDice, _random);
+            var rolledDice = DiceCombination.Generate(_gameState.GameConfiguration.TotalDice, _random);
             return ResolveRolledDice(rolledDice, gs);
         }
         else
@@ -118,4 +114,6 @@ internal class Game
             return gs.AddRolledScore(rolledDice.Score, rolledDice.NumberOfScoringDice);
         }
     }
+
+    private IPlayer GetOpponent() => _currentPlayer == _player1 ? _player2 : _player1;
 }

@@ -11,8 +11,15 @@ public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorServ
     public GameResult SimulateGame(IPlayer player1, IPlayer player2, GameConfiguration gameConfiguration)
     {
         var game = new Game(gameConfiguration, player1, player2);
-        game.Play();
-        throw new NotImplementedException();
+
+        while (true)
+        {
+            if (game.GameIsOver(out var result))
+            {
+                return result;
+            }
+            game.GetAndMakeMove();
+        }
     }
 
     public GameSetResult SimulateGames(IPlayer player1, IPlayer player2, int totalGames, GameConfiguration gameConfiguration)
