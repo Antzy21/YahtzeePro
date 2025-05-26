@@ -1,80 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
+using YahtzeePro.Core;
 using YahtzeePro.Core.Models;
+using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play;
 
-internal class Game
+public class Game
 {
-    private readonly GameConfiguration _gameConfiguration;
     private readonly IPlayer _player1;
     private readonly IPlayer _player2;
 
-    private readonly Dictionary<int, RollPossibilities> _rollPosibilitiesDictionary = new();
-
     private readonly Random _random = new();
 
-    private IPlayer _currentPlayer;
+    private int _currentPlayerId = 0;
 
-    public bool firstPlayerWon = false;
-
-    private GameState _gameState;
+    public GameState GameState;
 
     public Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
     {
         _player1 = player1;
         _player2 = player2;
-        _gameConfiguration = gameConfiguration;
 
-        for (int i = 1; i <= _gameConfiguration.TotalDice; i++)
-        {
-            _rollPosibilitiesDictionary.Add(i, new RollPossibilities(i));
-        }
-
-        _currentPlayer = _player1;
-
-        _gameState = new(
+        GameState = new(
             PlayerScore: 0,
             OpponentScore: 0,
             CachedScore: 0,
-            DiceToRoll: _gameConfiguration.TotalDice,
+            DiceToRoll: gameConfiguration.TotalDice,
             IsStartOfTurn: true,
-            GameConfiguration: _gameConfiguration);
+            GameConfiguration: gameConfiguration);
     }
 
-    public void Play()
+    public IPlayer GetCurrentPlayer()
     {
-        while (_gameState.PlayerScore + _gameState.CachedScore < _gameConfiguration.WinningValue)
+        return _currentPlayerId == 0 ? _player1 : _player2;
+    }
+
+    public bool GameIsOver([NotNullWhen(true)] out GameResult? gameResult)
+    {
+        gameResult = null;
+        if (GameState.OpponentScore >= GameState.GameConfiguration.WinningValue)
         {
-
-            var move = _currentPlayer.GetMove(_gameState, _gameConfiguration);
-
-            switch (move)
-            {
-                case MoveChoice.Safe:
-                    _gameState = MakeSafeMove(_gameState);
-                    break;
-                case MoveChoice.Risky:
-                    _gameState = MakeRiskyMove(_gameState);
-                    break;
-            }
+            gameResult = new(GameState.OpponentScore, GameState.PlayerScore, GetOpponent().Name);
+            return true;
         }
+        return false;
+    }
 
-        if (_currentPlayer == _player1)
-            firstPlayerWon = true;
-        else
-            firstPlayerWon = false;
+    public void MakeMove(MoveChoice move)
+    {
+        switch (move)
+        {
+            case MoveChoice.Safe:
+                GameState = MakeSafeMove(GameState);
+                break;
+            case MoveChoice.Risky:
+                GameState = MakeRiskyMove(GameState);
+                break;
+        }
     }
 
     private void SwitchPlayer()
     {
-        if (_currentPlayer == _player1)
+        _currentPlayerId ++;
+        if (_currentPlayerId >= 2)
         {
-            _currentPlayer = _player2;
-        }
-        else
-        {
-            _currentPlayer = _player1;
+            _currentPlayerId = 0;
         }
     }
 
@@ -90,7 +80,7 @@ internal class Game
         if (gs.IsStartOfTurn)
         {
             // Roll at start of turn
-            var rolledDice = DiceCombination.Generate(_gameConfiguration.TotalDice, _random);
+            var rolledDice = DiceCombination.Generate(GameState.GameConfiguration.TotalDice, _random);
             return ResolveRolledDice(rolledDice, gs);
         }
         else
@@ -118,4 +108,6 @@ internal class Game
             return gs.AddRolledScore(rolledDice.Score, rolledDice.NumberOfScoringDice);
         }
     }
+
+    private IPlayer GetOpponent() => _currentPlayerId == 0 ? _player2 : _player1;
 }

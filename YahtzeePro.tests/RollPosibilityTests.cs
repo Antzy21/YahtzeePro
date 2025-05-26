@@ -1,4 +1,5 @@
 ﻿using Xunit;
+using YahtzeePro.Core;
 
 namespace YahtzeePro.tests
 {
