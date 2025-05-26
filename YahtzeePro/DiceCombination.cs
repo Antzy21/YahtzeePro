@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace YahtzeePro
+namespace YahtzeePro.Core
 {
     public readonly record struct DiceCombination
     {

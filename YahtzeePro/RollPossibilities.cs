@@ -3,7 +3,7 @@ using Probability = System.Double;
 using Score = System.Int32;
 using ValuableDiceCount = System.Int32;
 
-namespace YahtzeePro
+namespace YahtzeePro.Core
 {
     public class RollPossibilities
     {

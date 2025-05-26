@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
+using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play;
 
