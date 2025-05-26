@@ -1,7 +1,7 @@
 using System.CommandLine;
 using YahtzeePro.Cli.Services;
 
-namespace YahtzeePro.Cli.Commands;
+namespace YahtzeePro.Cli.Commands.PlayCommands;
 
 public class MoveCommand : Command
 {
