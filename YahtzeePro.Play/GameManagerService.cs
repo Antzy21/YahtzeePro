@@ -45,13 +45,3 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
         throw new NotImplementedException();
     }
 }
-
-internal class HumanPlayer : IPlayer
-{
-    public string Name => throw new NotImplementedException();
-
-    public MoveChoice GetMove(GameState gs, GameConfiguration gc)
-    {
-        throw new NotImplementedException();
-    }
-}
