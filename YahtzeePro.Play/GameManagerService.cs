@@ -28,20 +28,25 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
         return games.Keys;
     }
 
-    public Game? GetGame(Guid guid)
+    public Game? GetGame(Guid gameId)
     {
-        if(!games.TryGetValue(guid, out Game? game)) {
-            _logger.LogInformation("Unable to find game for with id: {guid}", guid);
-            return null;
-        };
-        _logger.LogInformation("Retrieved game: {game}", game);
-        return game;
+        if (games.TryGetValue(gameId, out Game? game))
+        {
+            _logger.LogInformation("Retrieved game: {game}", game);
+            return game;
+        }
+        _logger.LogInformation("Unable to find game for with id: {guid}", gameId);
+        return null;
     }
 
     public void MakeMove(Guid gameId, MoveChoice moveType)
     {
-        var game = GetGame(gameId);
+        if (games.TryGetValue(gameId, out Game? game))
+        {
+            _logger.LogInformation("Making move, {move}, on game: {game}", moveType, game);
+            game.MakeMove(moveType);
+        }
         _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
-        throw new NotImplementedException();
+        return;
     }
 }
