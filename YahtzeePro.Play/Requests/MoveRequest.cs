@@ -1,5 +1,5 @@
 using YahtzeePro.Core.Models;
 
-namespace YahtzeePro.Play.Api.Requests;
+namespace YahtzeePro.Play.Requests;
 
 public record MoveRequest(Guid GameId, MoveChoice Move);
