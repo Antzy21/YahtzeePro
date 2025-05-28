@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices.JavaScript;
+using System.Threading.Tasks;
 using Moq;
 using Xunit;
 using YahtzeePro.Core.Models;
@@ -9,36 +10,54 @@ namespace YahtzeePro.tests.Optimum
     public class CalculationManagerTests
     {
         [Fact]
-        public void QueueCalculation_QueueingOne_CallsCalculateOnce()
+        public async Task QueueCalculation_QueueingOne_CallsCalculateOnce()
         {
             // Arrange
-            var mockOptimumCalculator = GetMockOptimumCalculator(out var taskCompletionSource);
+            var mockOptimumCalculator = new Mock<IOptimumCalculator>();
             var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+
+            var calculationTask = new TaskCompletionSource();
+            mockOptimumCalculator
+                .Setup(m =>
+                    m.Calculate(It.IsAny<GameConfiguration>(), It.IsAny<int>(), It.IsAny<int>())
+                )
+                .Callback(calculationTask.Task.Wait);
+                
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration = new GameConfiguration(500, 5);
 
             // Act
             calculationManager.QueueCalculation(gameConfiguration);
 
-            taskCompletionSource.SetResult();
-            Thread.Sleep(50);
+            calculationTask.SetResult();
+            await calculationTask.Task;
 
             // Assert
             mockOptimumCalculator.Verify(
-                m => m.Calculate(
-                    It.IsAny<GameConfiguration>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>()),
+                m => m.Calculate(gameConfiguration, It.IsAny<int>(), It.IsAny<int>()),
                 Times.Once()
             );
         }
 
         [Fact]
-        public void Queue_After4UniqueItemsAreQueued_Shows3Items()
+        public async Task Queue_After4UniqueItemsAreQueued_Contains3Items()
         {
             // Arrange
-            var mockOptimumCalculator = GetMockOptimumCalculator(out var _);
+            var mockOptimumCalculator = new Mock<IOptimumCalculator>();
             var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+
+            var calculateStartTask = new TaskCompletionSource();
+            var calculateFinishTask = new TaskCompletionSource();
+            mockOptimumCalculator
+                .Setup(r =>
+                    r.Calculate(It.IsAny<GameConfiguration>(), It.IsAny<int>(), It.IsAny<int>())
+                )
+                .Callback(() =>
+                {
+                    calculateStartTask.SetResult();
+                    calculateFinishTask.Task.Wait();
+                });
+
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
 
             // Act
@@ -47,20 +66,26 @@ namespace YahtzeePro.tests.Optimum
             calculationManager.QueueCalculation(new GameConfiguration(500, 3));
             calculationManager.QueueCalculation(new GameConfiguration(500, 2));
 
-            // Wait for the first calculation to be dequeued (should happen shortly after queuing for first item)
-            // TODO Improve this test to be more robust
-            Thread.Sleep(100);
+            await calculateStartTask.Task;
 
             // Assert
             Assert.Equal(3, calculationManager.Queue.Count());
         }
 
         [Fact]
-        public void QueueCalculation_WithItemInQueue_DoesntDuplicate()
+        public void QueueCalculation_WhenQueingItemAlreadyInQueue_DoesntDuplicate()
         {
             // Arrange
-            var mockOptimumCalculator = GetMockOptimumCalculator(out var _);
+            var mockOptimumCalculator = new Mock<IOptimumCalculator>();
             var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
+
+            var saveTask = new TaskCompletionSource();
+            mockOptimumRepo
+                .Setup(r =>
+                    r.Save(It.IsAny<GameConfiguration>(), It.IsAny<Dictionary<GameState, GameStateProbabilities>>())
+                )
+                .Callback(saveTask.Task.Wait);
+
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
             var gameConfiguration1 = new GameConfiguration(500, 5);
             var gameConfiguration2 = new GameConfiguration(500, 3);
@@ -76,47 +101,30 @@ namespace YahtzeePro.tests.Optimum
         }
 
         [Fact]
-        public void QueueCalculation_AfterCalculation_SavesToRepo()
+        public async Task QueueCalculation_AfterCalculation_SavesToRepo()
         {
             // Arrange
-            var gameConfiguration1 = new GameConfiguration(500, 5);
-            var mockOptimumCalculator = GetMockOptimumCalculator(out var taskCompletionSource);
+            var mockOptimumCalculator = new Mock<IOptimumCalculator>();
+            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
 
             var saveTask = new TaskCompletionSource();
-            var mockOptimumRepo = new Mock<IOptimumStrategyRepository>();
-            mockOptimumRepo.Setup(r => r.Save(
-                gameConfiguration1,
-                It.IsAny<Dictionary<GameState, GameStateProbabilities>>()
-            )).Callback(saveTask.SetResult);
+            mockOptimumRepo
+                .Setup(r =>
+                    r.Save(It.IsAny<GameConfiguration>(), It.IsAny<Dictionary<GameState, GameStateProbabilities>>())
+                )
+                .Callback(saveTask.SetResult);
+
             var calculationManager = new CalculationManager(mockOptimumCalculator.Object, mockOptimumRepo.Object);
 
             // Act
-            calculationManager.QueueCalculation(gameConfiguration1);
-            taskCompletionSource.SetResult();
-            saveTask.Task.Wait(timeout: TimeSpan.FromSeconds(10));
+            calculationManager.QueueCalculation(new GameConfiguration(500, 5));
+            await saveTask.Task;
 
             // Assert
             mockOptimumRepo.Verify(
-                r => r.Save(
-                    gameConfiguration1,
-                    It.IsAny<Dictionary<GameState, GameStateProbabilities>>()),
+                r => r.Save(It.IsAny<GameConfiguration>(), It.IsAny<Dictionary<GameState, GameStateProbabilities>>()),
                 Times.Once()
             );
-        }
-
-        private static Mock<IOptimumCalculator> GetMockOptimumCalculator(out TaskCompletionSource completionTask)
-        {
-            var mockOptimumCalculator = new Mock<IOptimumCalculator>();
-            completionTask = new TaskCompletionSource();
-
-            mockOptimumCalculator.Setup(
-                m => m.Calculate(
-                    It.IsAny<GameConfiguration>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>())
-            ).Callback(completionTask.Task.Wait);
-            
-            return mockOptimumCalculator;
         }
     }
 }
