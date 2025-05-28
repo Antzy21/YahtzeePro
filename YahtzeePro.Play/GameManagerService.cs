@@ -11,10 +11,11 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
 
     public Guid CreateNewGame(int winningValue, int diceCount, IPlayer opponent)
     {
-        _logger.LogInformation("Creating a new game with winning value {winningValue} and dice count {diceCount} against {opponent}", winningValue, diceCount, opponent.Name);
-
         var newGameConfiguration = new GameConfiguration(winningValue, diceCount);
         var newGameGuid = Guid.NewGuid();
+
+        _logger.LogInformation("Creating a new game {gameId}, with winning value {winningValue} and dice count {diceCount} against {opponent}", newGameGuid, winningValue, diceCount, opponent.Name);
+
         games.Add(newGameGuid, new Game(
             gameConfiguration: newGameConfiguration,
             player1: new HumanPlayer(),
@@ -32,10 +33,10 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     {
         if (games.TryGetValue(gameId, out Game? game))
         {
-            _logger.LogInformation("Retrieved game: {game}", game);
+            _logger.LogInformation("Retrieved game for guid {gameId}: {game}", gameId, game);
             return game;
         }
-        _logger.LogInformation("Unable to find game for with id: {guid}", gameId);
+        _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
         return null;
     }
 
@@ -43,7 +44,7 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     {
         if (games.TryGetValue(gameId, out Game? game))
         {
-            _logger.LogInformation("Making move, {move}, on game: {game}", moveType, game);
+            _logger.LogInformation("Making move, {move}, on game: {gameId}", moveType, gameId);
             game.MakeMove(moveType);
         }
         _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
