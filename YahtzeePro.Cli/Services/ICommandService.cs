@@ -1,3 +1,4 @@
+using YahtzeePro.Core.Models;
 
 namespace YahtzeePro.Cli.Services;
 
@@ -9,6 +10,6 @@ public interface ICommandService {
     public void ListOptimums();
     
     public void ListGames();
-    public void Move(Guid guid);
+    public void Move(MoveChoice moveChoice, Guid gameId);
     public void NewGame(int winningValue, int totalDice);
 }
