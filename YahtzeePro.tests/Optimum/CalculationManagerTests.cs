@@ -46,7 +46,10 @@ namespace YahtzeePro.tests.Optimum
             calculationManager.QueueCalculation(new GameConfiguration(500, 4));
             calculationManager.QueueCalculation(new GameConfiguration(500, 3));
             calculationManager.QueueCalculation(new GameConfiguration(500, 2));
-            Thread.Sleep(50);
+
+            // Wait for the first calculation to be dequeued (should happen shortly after queuing for first item)
+            // TODO Improve this test to be more robust
+            Thread.Sleep(100);
 
             // Assert
             Assert.Equal(3, calculationManager.Queue.Count());
