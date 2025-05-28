@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using YahtzeePro.Core.Models;
+using YahtzeePro.Play.Requests;
 
 namespace YahtzeePro.Cli.Services;
 
@@ -122,7 +123,7 @@ public class ApiCommandService : ICommandService
         }
     }
 
-    public void Move(Guid guid)
+    public void Move(MoveChoice moveChoice, Guid gameId)
     {
         throw new NotImplementedException();
     }

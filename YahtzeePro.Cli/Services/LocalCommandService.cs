@@ -65,7 +65,7 @@ public class LocalCommandService(
         throw new NotImplementedException();
     }
 
-    public void Move(Guid guid)
+    public void Move(MoveChoice moveChoice, Guid gameId)
     {
         throw new NotImplementedException();
     }
