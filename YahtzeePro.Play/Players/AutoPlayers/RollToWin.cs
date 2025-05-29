@@ -2,7 +2,7 @@
 
 namespace YahtzeePro.Play.Players.AutoPlayers;
 
-internal class RollToWin : IPlayer
+internal class RollToWin : IAutoPlayer
 {
     public string Name => "RollToWin";
 

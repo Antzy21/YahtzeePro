@@ -1,8 +1,8 @@
-using YahtzeePro.Play.Players;
+using YahtzeePro.Play.Players.AutoPlayers;
 
 namespace YahtzeePro.Play;
 
 public interface IPlayerResolverService
 {
-    IPlayer ResolvePlayer(string playerString);
+    IAutoPlayer ResolveAutoPlayer(string playerString);
 }

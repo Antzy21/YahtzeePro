@@ -20,7 +20,7 @@ public class Program
 
         app.MapPost("/newgame", (NewGameRequest newGameRequest) =>
         {
-            var opponent = playerResolverService.ResolvePlayer(newGameRequest.OpponentName);
+            var opponent = playerResolverService.ResolveAutoPlayer(newGameRequest.OpponentName);
             var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration.WinningValue, newGameRequest.GameConfiguration.TotalDice, opponent);
             return Results.Created($"/games/{newGameGuid}", newGameGuid);
         });
