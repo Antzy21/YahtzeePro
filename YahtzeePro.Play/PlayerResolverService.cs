@@ -1,4 +1,6 @@
+using System.Text.Json;
 using YahtzeePro.Play.Players.AutoPlayers;
+using YahtzeePro.Play.Players.AutoPlayers.SimpleStrategyConfigurations;
 
 namespace YahtzeePro.Play;
 
@@ -14,9 +16,17 @@ public class PlayerResolverService : IPlayerResolverService
         };
     }
 
-    private IAutoPlayer ResolveSimpleStrategy(string playerString)
+    private static SimpleStrategy ResolveSimpleStrategy(string playerString)
     {
-        throw new NotImplementedException();
+        var simpleStrategyJson = File.ReadAllText($"Players/AutoPlayers/SimpleStrategyConfigurations/{playerString}.json");
+        var simpleStrategyConfiguration = JsonSerializer.Deserialize<SimpleStrategyConfiguration>(simpleStrategyJson);
+
+        if (simpleStrategyConfiguration == null)
+        {
+            throw new ArgumentException($"Invalid SimpleStrategy configuration: {playerString}");
+        }
+        var simpleStrategyPlayer = new SimpleStrategy(simpleStrategyConfiguration);
+        return simpleStrategyPlayer;
     }
 
     private IAutoPlayer GetOptimumPlayer()

@@ -13,5 +13,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Players\AutoPlayers\SimpleStrategyConfigurations\strategy1.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>
