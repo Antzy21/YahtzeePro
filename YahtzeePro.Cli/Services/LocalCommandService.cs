@@ -60,7 +60,7 @@ public class LocalCommandService(
         throw new NotImplementedException();
     }
 
-    public void NewGame(int winningValue, int totalDice)
+    public void NewGame(string opponent, int winningValue, int totalDice)
     {
         throw new NotImplementedException();
     }

@@ -11,5 +11,5 @@ public interface ICommandService {
     
     public void ListGames();
     public void Move(MoveChoice moveChoice, Guid gameId);
-    public void NewGame(int winningValue, int totalDice);
+    public void NewGame(string opponent, int winningValue, int totalDice);
 }
