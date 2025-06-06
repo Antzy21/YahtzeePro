@@ -96,10 +96,11 @@ public class ApiCommandService : ICommandService
         }
     }
 
-    public void NewGame(int winningValue, int totalDice)
+    public void NewGame(string opponent, int winningValue, int totalDice)
     {
         var gameConfiguration = new GameConfiguration(winningValue, totalDice);
-        var content = JsonContent.Create(gameConfiguration);
+        var newGameRequest = new NewGameRequest(gameConfiguration, opponent);
+        var content = JsonContent.Create(newGameRequest);
         var response = _playClient.PostAsync("/newgame", content);
 
         if (response.Result.StatusCode == System.Net.HttpStatusCode.Created)
