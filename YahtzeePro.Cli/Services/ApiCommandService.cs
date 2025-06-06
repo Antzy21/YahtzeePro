@@ -126,6 +126,8 @@ public class ApiCommandService : ICommandService
 
     public void Move(MoveChoice moveChoice, Guid gameId)
     {
-        throw new NotImplementedException();
+        var moveRequest = new MoveRequest(gameId, moveChoice);
+        var response = _playClient.PostAsJsonAsync("/move", moveRequest);
+        Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
     }
 }
