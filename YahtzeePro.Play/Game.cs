@@ -48,47 +48,34 @@ public class Game
 
     public void MakeMove(MoveChoice move)
     {
-        switch (move)
+        if (move == MoveChoice.Safe)
         {
-            case MoveChoice.Safe:
-                GameState = MakeSafeMove(GameState);
-                break;
-            case MoveChoice.Risky:
-                GameState = MakeRiskyMove(GameState);
-                break;
+            if (GameState.IsStartOfTurn)
+            {
+                // Roll at start of turn
+                var rolledDice = DiceCombination.Generate(GameState.GameConfiguration.TotalDice, _random);
+                ResolveRolledDice(rolledDice, GameState);
+            }
+            else
+            {
+                SwitchPlayer();
+                GameState.Bank();
+            }
+        }
+        else if (move == MoveChoice.Risky)
+        {
+            var rolledDice = DiceCombination.Generate(GameState.DiceToRoll, _random);
+            ResolveRolledDice(rolledDice, GameState);
         }
     }
 
     private void SwitchPlayer()
     {
-        _currentPlayerId ++;
+        _currentPlayerId++;
         if (_currentPlayerId >= 2)
         {
             _currentPlayerId = 0;
         }
-    }
-
-    private GameState MakeRiskyMove(GameState gs)
-    {
-        var rolledDice = DiceCombination.Generate(gs.DiceToRoll, _random);
-
-        return ResolveRolledDice(rolledDice, gs);
-    }
-
-    private GameState MakeSafeMove(GameState gs)
-    {
-        if (gs.IsStartOfTurn)
-        {
-            // Roll at start of turn
-            var rolledDice = DiceCombination.Generate(GameState.GameConfiguration.TotalDice, _random);
-            return ResolveRolledDice(rolledDice, gs);
-        }
-        else
-        {
-            SwitchPlayer();
-            return gs.Bank();
-        }
-        throw new NotImplementedException();
     }
 
     private GameState ResolveRolledDice(DiceCombination rolledDice, GameState gs)
