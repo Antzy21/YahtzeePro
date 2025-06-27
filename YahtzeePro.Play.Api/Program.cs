@@ -1,4 +1,5 @@
 using YahtzeePro.Play.Requests;
+using YahtzeePro.Play.Responses;
 
 namespace YahtzeePro.Play.Api;
 
@@ -29,22 +30,25 @@ public class Program
 
         app.MapGet("/games/{gameId}", (Guid gameId) =>
         {
-            var gameState = gameManagerService.GetGame(gameId);
-            if (gameState is not null)
-            {
-                return Results.Ok(gameState);
-            }
-            return Results.NotFound();
+            var game = gameManagerService.GetGame(gameId);
+            if (game is null)
+                return Results.NotFound();
+
+            var gameResponse = new GameResponse(game.GameState, game.GetCurrentPlayer().Name);
+            return Results.Ok(gameResponse);
         });
 
         app.MapPost("/move", (MoveRequest moveRequest) =>
         {
-            var gameState = gameManagerService.GetGame(moveRequest.GameId);
-            if (gameState is null)
+            var game = gameManagerService.GetGame(moveRequest.GameId);
+            if (game is null)
                 return Results.NotFound();
 
             gameManagerService.MakeMove(moveRequest.GameId, moveRequest.Move);
-            return Results.Ok(gameManagerService.GetGame(moveRequest.GameId));
+
+            game = gameManagerService.GetGame(moveRequest.GameId);
+            var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name);
+            return Results.Ok(gameResponse);
         });
 
         app.Run();
