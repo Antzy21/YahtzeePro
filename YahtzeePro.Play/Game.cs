@@ -30,10 +30,7 @@ public class Game
             GameConfiguration: gameConfiguration);
     }
 
-    public IPlayer GetCurrentPlayer()
-    {
-        return _currentPlayerId == 0 ? _player1 : _player2;
-    }
+    public IPlayer GetCurrentPlayer() => _currentPlayerId == 0 ? _player1 : _player2;
 
     public bool GameIsOver([NotNullWhen(true)] out GameResult? gameResult)
     {
