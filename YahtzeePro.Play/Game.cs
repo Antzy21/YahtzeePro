@@ -5,30 +5,20 @@ using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play;
 
-public class Game
+public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
 {
-    private readonly IPlayer _player1;
-    private readonly IPlayer _player2;
-
-    private readonly Random _random = new();
-
-    private int _currentPlayerId = 0;
-
-    public GameState GameState;
-
-    public Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
-    {
-        _player1 = player1;
-        _player2 = player2;
-
-        GameState = new(
+    public GameState GameState = new(
             PlayerScore: 0,
             OpponentScore: 0,
             CachedScore: 0,
             DiceToRoll: gameConfiguration.TotalDice,
             IsStartOfTurn: true,
             GameConfiguration: gameConfiguration);
-    }
+
+    private readonly IPlayer _player1 = player1;
+    private readonly IPlayer _player2 = player2;
+    private readonly Random _random = new();
+    private int _currentPlayerId = 0;
 
     public IPlayer GetCurrentPlayer() => _currentPlayerId == 0 ? _player1 : _player2;
 
