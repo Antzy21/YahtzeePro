@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Players;
+using YahtzeePro.Play.Players.AutoPlayers;
 
 namespace YahtzeePro.Play;
 
@@ -9,12 +10,12 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     private readonly ILogger<IGameManagerService> _logger = logger;
     private readonly Dictionary<Guid, Game> games = [];
 
-    public Guid CreateNewGame(int winningValue, int diceCount, IPlayer opponent)
+    public Guid CreateNewGame(int winningValue, int diceCount, IAutoPlayer opponent)
     {
         var newGameConfiguration = new GameConfiguration(winningValue, diceCount);
         var newGameGuid = Guid.NewGuid();
 
-        _logger.LogInformation("Creating a new game {gameId}, with winning value {winningValue} and dice count {diceCount} against {opponent}", newGameGuid, winningValue, diceCount, opponent.Name);
+        _logger.LogInformation("Creating a new game {gameId}, with {winningValue} to win and {diceCount} dice against {opponent}", newGameGuid, winningValue, diceCount, opponent.Name);
 
         games.Add(newGameGuid, new Game(
             gameConfiguration: newGameConfiguration,
@@ -33,21 +34,28 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     {
         if (games.TryGetValue(gameId, out Game? game))
         {
-            _logger.LogInformation("Retrieved game for guid {gameId}: {game}", gameId, game);
+            _logger.LogInformation("Retrieved game {gameId}: {game}", gameId, game.GameState);
             return game;
         }
-        _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
-        return null;
+        else
+        {
+            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
+            return null;
+        }
     }
 
     public void MakeMove(Guid gameId, MoveChoice moveType)
     {
         if (games.TryGetValue(gameId, out Game? game))
         {
-            _logger.LogInformation("Making move, {move}, on game: {gameId}", moveType, gameId);
+            _logger.LogInformation("Making {move} move, on {gameId}:, {game}", moveType, gameId, game.GameState);
             game.MakeMove(moveType);
+            _logger.LogInformation("Game state after making {move} move: {game}", moveType, game.GameState);
+
         }
-        _logger.LogInformation("Unable to find game for with id: {gameId}", gameId);
-        return;
+        else
+        {
+            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
+        }
     }
 }

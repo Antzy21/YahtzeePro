@@ -3,7 +3,7 @@ using YahtzeePro.Play.Players.AutoPlayers.SimpleStrategyConfigurations;
 
 namespace YahtzeePro.Play.Players.AutoPlayers;
 
-internal class SimpleStrategy(SimpleStrategyConfiguration configuration) : IPlayer
+internal class SimpleStrategy(SimpleStrategyConfiguration configuration) : IAutoPlayer
 {
     private SimpleStrategyConfiguration _configuration = configuration;
 

@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Requests;
+using YahtzeePro.Play.Responses;
 
 namespace YahtzeePro.Cli.Services;
 
@@ -18,7 +19,7 @@ public class ApiCommandService : ICommandService
         {
             throw new ArgumentException("Optimum API URL is not configured.");
         }
-        
+
         var basePlayAddress = configuration["PlayApiUrl"];
         if (string.IsNullOrEmpty(basePlayAddress))
         {
@@ -28,7 +29,7 @@ public class ApiCommandService : ICommandService
         _optimumClient = new HttpClient { BaseAddress = new Uri(baseOptimumAddress) };
         _playClient = new HttpClient { BaseAddress = new Uri(basePlayAddress) };
     }
-    
+
     public void Status()
     {
         var optimumApiResponse = _optimumClient.GetAsync("/status");
@@ -110,7 +111,8 @@ public class ApiCommandService : ICommandService
             {
                 Console.WriteLine(locationUri);
                 var newGameResponse = _playClient.GetAsync(locationUri);
-                Console.WriteLine(newGameResponse.Result.Content.ReadFromJsonAsync<GameState>().Result);
+                var gameResponse = newGameResponse.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
+                Console.WriteLine(gameResponse.GameState);
             }
             else
             {
@@ -120,7 +122,7 @@ public class ApiCommandService : ICommandService
         else
         {
             Console.WriteLine("Failed to create a new game.");
-            Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+            Console.WriteLine(response.Exception?.Message);
         }
     }
 
@@ -128,6 +130,19 @@ public class ApiCommandService : ICommandService
     {
         var moveRequest = new MoveRequest(gameId, moveChoice);
         var response = _playClient.PostAsJsonAsync("/move", moveRequest);
-        Console.WriteLine(response.Result.Content.ReadAsStringAsync().Result);
+        if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var gameResponse = response.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
+            Console.WriteLine(gameResponse.GameState);
+        }
+        else if (response.Result.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            Console.WriteLine($"No game found with ID {gameId}.");
+        }
+        else
+        {
+            Console.WriteLine("Failed to make move.");
+            Console.WriteLine(response.Exception?.Message);
+        }
     }
 }
