@@ -34,7 +34,7 @@ public class Program
             if (game is null)
                 return Results.NotFound();
 
-            var gameResponse = new GameResponse(game.GameState, game.GetCurrentPlayer().Name);
+            var gameResponse = new GameResponse(game.GameState, game.GetCurrentPlayer().Name, game.LastDiceRoll);
             return Results.Ok(gameResponse);
         });
 
@@ -47,7 +47,7 @@ public class Program
             gameManagerService.MakeMove(moveRequest.GameId, moveRequest.Move);
 
             game = gameManagerService.GetGame(moveRequest.GameId);
-            var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name);
+            var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name, game!.LastDiceRoll);
             return Results.Ok(gameResponse);
         });
 
