@@ -43,20 +43,20 @@ public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer 
                 // Roll at start of turn
                 var rolledDice = DiceCombinationGenerator.Generate(GameState.GameConfiguration.TotalDice, _random);
                 LastDiceRoll = rolledDice;
-                ResolveRolledDice(rolledDice, GameState);
+                GameState = ResolveRolledDice(rolledDice, GameState);
             }
             else
             {
                 SwitchPlayer();
                 LastDiceRoll = null;
-                GameState.Bank();
+                GameState = GameState.Bank();
             }
         }
         else if (move == MoveChoice.Risky)
         {
             var rolledDice = DiceCombinationGenerator.Generate(GameState.DiceToRoll, _random);
             LastDiceRoll = rolledDice;
-            ResolveRolledDice(rolledDice, GameState);
+            GameState = ResolveRolledDice(rolledDice, GameState);
         }
     }
 
