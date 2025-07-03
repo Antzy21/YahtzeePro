@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YahtzeePro.Optimum\YahtzeePro.Optimum.csproj" />
-    <ProjectReference Include="..\YahtzeePro\YahtzeePro.Core.csproj" />
+    <ProjectReference Include="..\YahtzeePro.Core\YahtzeePro.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

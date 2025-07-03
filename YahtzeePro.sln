@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.Core", "YahtzeePro\YahtzeePro.Core.csproj", "{AA5F0006-236F-4F60-BFE8-F68B41253DEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.Core", "YahtzeePro.Core\YahtzeePro.Core.csproj", "{AA5F0006-236F-4F60-BFE8-F68B41253DEA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YahtzeePro.tests", "YahtzeePro.tests\YahtzeePro.tests.csproj", "{12CB7296-2B08-401D-AAC1-C3914926FBFA}"
 EndProject

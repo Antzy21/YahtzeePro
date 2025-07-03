@@ -13,22 +13,10 @@ namespace YahtzeePro.tests
         [InlineData(1000, 1, 1, 1, 1)]
         public void Score_IsCalculatedCorrectly(int expectedScore, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedScore, diceCombo.Score);
         }
         
-        [Theory]
-        [InlineData("1,2,3,4,5,6,", 1, 2, 3, 4, 5, 6)]
-        [InlineData("2,2,2,4,", 2, 2, 2, 4)]
-        [InlineData("6,6,6,", 6, 6, 6)]
-        [InlineData("1,4,4,4,4,", 4, 4, 4, 4, 1)]
-        [InlineData("1,1,1,1,", 1, 1, 1, 1)]
-        public void ToString_IsCorrect(string expectedString, params int[] dice)
-        {
-            var diceCombo = new DiceCombination(dice);
-            Assert.Equal(expectedString, diceCombo.ToString());
-        }
-
         [Theory]
         [InlineData(2, 1, 2, 3, 4, 5, 6)]
         [InlineData(3, 2, 2, 2, 4)]
@@ -37,7 +25,7 @@ namespace YahtzeePro.tests
         [InlineData(4, 1, 1, 1, 1)]
         public void NumberOfScoringDice_IsCalculatedCorrectly(int expectedNumberOfScoringDice, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedNumberOfScoringDice, diceCombo.NumberOfScoringDice);
         }
 
@@ -49,15 +37,8 @@ namespace YahtzeePro.tests
         [InlineData(true, 1, 1, 1, 1)]
         public void AllDiceAreScoring_IsCorrect(bool expectedBool, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedBool, diceCombo.AllDiceAreScoring);
-        }
-
-        [Fact]
-        public void AddDie_CreatesNewDiceCombination_WithNewDie() {
-            var diceCombo = new DiceCombination(1,2);
-            var newDiceCombo = diceCombo.AddDie(6);
-            Assert.Equal("1,2,6,", newDiceCombo.ToString());
         }
     }
 }

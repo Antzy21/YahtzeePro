@@ -1,6 +1,6 @@
 using YahtzeePro.Core.Models;
 
-namespace YahtzeePro
+namespace YahtzeePro.Core
 {
     public static class GameStateExtensions
     {
