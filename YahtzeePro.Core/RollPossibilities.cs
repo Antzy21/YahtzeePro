@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using YahtzeePro.Core.Models;
 using Probability = System.Double;
 using Score = System.Int32;
 using ValuableDiceCount = System.Int32;
@@ -18,7 +19,7 @@ namespace YahtzeePro.Core
         {
             _maxDiceCount = maxDiceCount;
 
-            GenerateValues(_maxDiceCount, new DiceCombination(Array.Empty<int>()));
+            GenerateValues(_maxDiceCount, []);
 
             foreach ((DiceCombination diceCombo, double probability) in _diceComboToProbabilities)
             {
@@ -37,18 +38,18 @@ namespace YahtzeePro.Core
             }
         }
 
-        private void GenerateValues(int diceCount, DiceCombination diceCombo, double probability = 1)
+        private void GenerateValues(int diceCount, List<int> dice, double probability = 1)
         {
             if (diceCount == 0)
             {
-                _diceComboToProbabilities[diceCombo] = probability;
+                _diceComboToProbabilities[DiceCombinationGenerator.FromDieList(dice)] = probability;
                 return;
             }
 
             for (int i = 1; i <= 6; i++)
             {
-                var comboWithExtraOne = diceCombo.AddDie(dieValue: i);
-                GenerateValues(diceCount - 1, comboWithExtraOne, probability / 6);
+                var diceWithAddedDie = new List<int>(dice) { i };
+                GenerateValues(diceCount - 1, diceWithAddedDie, probability / 6);
             }
         }
 

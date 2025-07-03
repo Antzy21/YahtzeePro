@@ -53,7 +53,7 @@ public class Game
             if (GameState.IsStartOfTurn)
             {
                 // Roll at start of turn
-                var rolledDice = DiceCombination.Generate(GameState.GameConfiguration.TotalDice, _random);
+                var rolledDice = DiceCombinationGenerator.Generate(GameState.GameConfiguration.TotalDice, _random);
                 ResolveRolledDice(rolledDice, GameState);
             }
             else
@@ -64,7 +64,7 @@ public class Game
         }
         else if (move == MoveChoice.Risky)
         {
-            var rolledDice = DiceCombination.Generate(GameState.DiceToRoll, _random);
+            var rolledDice = DiceCombinationGenerator.Generate(GameState.DiceToRoll, _random);
             ResolveRolledDice(rolledDice, GameState);
         }
     }

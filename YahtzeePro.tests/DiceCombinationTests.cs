@@ -13,7 +13,7 @@ namespace YahtzeePro.tests
         [InlineData(1000, 1, 1, 1, 1)]
         public void Score_IsCalculatedCorrectly(int expectedScore, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedScore, diceCombo.Score);
         }
         
@@ -25,7 +25,7 @@ namespace YahtzeePro.tests
         [InlineData("1,1,1,1,", 1, 1, 1, 1)]
         public void ToString_IsCorrect(string expectedString, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedString, diceCombo.ToString());
         }
 
@@ -37,7 +37,7 @@ namespace YahtzeePro.tests
         [InlineData(4, 1, 1, 1, 1)]
         public void NumberOfScoringDice_IsCalculatedCorrectly(int expectedNumberOfScoringDice, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedNumberOfScoringDice, diceCombo.NumberOfScoringDice);
         }
 
@@ -49,15 +49,8 @@ namespace YahtzeePro.tests
         [InlineData(true, 1, 1, 1, 1)]
         public void AllDiceAreScoring_IsCorrect(bool expectedBool, params int[] dice)
         {
-            var diceCombo = new DiceCombination(dice);
+            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
             Assert.Equal(expectedBool, diceCombo.AllDiceAreScoring);
-        }
-
-        [Fact]
-        public void AddDie_CreatesNewDiceCombination_WithNewDie() {
-            var diceCombo = new DiceCombination(1,2);
-            var newDiceCombo = diceCombo.AddDie(6);
-            Assert.Equal("1,2,6,", newDiceCombo.ToString());
         }
     }
 }
