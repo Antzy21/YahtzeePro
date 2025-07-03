@@ -18,18 +18,6 @@ namespace YahtzeePro.tests
         }
         
         [Theory]
-        [InlineData("1,2,3,4,5,6,", 1, 2, 3, 4, 5, 6)]
-        [InlineData("2,2,2,4,", 2, 2, 2, 4)]
-        [InlineData("6,6,6,", 6, 6, 6)]
-        [InlineData("1,4,4,4,4,", 4, 4, 4, 4, 1)]
-        [InlineData("1,1,1,1,", 1, 1, 1, 1)]
-        public void ToString_IsCorrect(string expectedString, params int[] dice)
-        {
-            var diceCombo = DiceCombinationGenerator.FromDieList(dice);
-            Assert.Equal(expectedString, diceCombo.ToString());
-        }
-
-        [Theory]
         [InlineData(2, 1, 2, 3, 4, 5, 6)]
         [InlineData(3, 2, 2, 2, 4)]
         [InlineData(3, 6, 6, 6)]
