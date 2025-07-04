@@ -63,7 +63,7 @@ public class SimulatorService(ILogger<SimulatorService> logger, IGameManagerServ
 
         logger.LogInformation("Player 1 \"{player1Name}\"", player1.Name);
         logger.LogInformation("Player 2 \"{player2Name}\"", player2.Name);
-        logger.LogInformation("Games per set: {totalGames}\n", totalGames);
+        logger.LogInformation("Games per set: {totalGames}", totalGames);
         logger.LogInformation("Set | P1 : P2");
 
         for (int set = 1; set <= totalSets; set++)
@@ -75,7 +75,7 @@ public class SimulatorService(ILogger<SimulatorService> logger, IGameManagerServ
             else if (gameSetResult.PlayerTwoWinCount > gameSetResult.PlayerOneWinCount)
                 player2SetWins++;
 
-            logger.LogInformation("\r{set,3} |{player1SetWins,3} :{player2SetWins,3}", set, player1SetWins, player2SetWins);
+            logger.LogInformation("{set,3} |{player1SetWins,3} :{player2SetWins,3}", set, player1SetWins, player2SetWins);
         }
 
         return gameSetResults;
