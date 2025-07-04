@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YahtzeePro.Optimum\YahtzeePro.Optimum.csproj" />
+    <ProjectReference Include="..\YahtzeePro.Play\YahtzeePro.Play.csproj" />
     <ProjectReference Include="..\YahtzeePro.Core\YahtzeePro.Core.csproj" />
   </ItemGroup>
 
