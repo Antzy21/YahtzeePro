@@ -183,6 +183,7 @@ public class ApiCommandService : ICommandService
         // For Sets of Games
         if (simulatedResults.Count > 1)
         {
+            Console.WriteLine($"Simulating {numberOfGames} games in {numberOfSets} sets between {strategy1} and {strategy2}.\n");
             foreach (var result in simulatedResults)
             {
                 Console.WriteLine($"{strategy1}: {result.PlayerOneWinCount}");
@@ -193,10 +194,11 @@ public class ApiCommandService : ICommandService
         // For Single Set Simulation
         else if (simulatedResults.Count == 1)
         {
+            Console.WriteLine($"Simulating {numberOfGames} games between {strategy1} and {strategy2}.");
             var gameSetResult = simulatedResults.Single();
             foreach (var gameResult in gameSetResult.GameResults)
             {
-                Console.WriteLine($"Game Result: {gameResult.WinningPlayer}");
+                Console.WriteLine($"Winning Player: {gameResult.WinningPlayer}");
                 Console.WriteLine($"Score: {gameResult.WinnerScore} - {gameResult.LoserScore}");
                 Console.WriteLine();
             }
