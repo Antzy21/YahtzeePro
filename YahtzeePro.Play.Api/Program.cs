@@ -1,5 +1,6 @@
 using YahtzeePro.Play.Requests;
 using YahtzeePro.Play.Responses;
+using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play.Api;
 
@@ -24,7 +25,7 @@ public class Program
         app.MapPost("/newgame", (NewGameRequest newGameRequest) =>
         {
             var opponent = playerResolverService.ResolveAutoPlayer(newGameRequest.OpponentName);
-            var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration.WinningValue, newGameRequest.GameConfiguration.TotalDice, opponent);
+            var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration, new HumanPlayer(), opponent);
             return Results.Created($"/games/{newGameGuid}", newGameGuid);
         });
 

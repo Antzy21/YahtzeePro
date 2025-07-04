@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Players;
-using YahtzeePro.Play.Players.AutoPlayers;
 
 namespace YahtzeePro.Play;
 
@@ -10,18 +9,13 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     private readonly ILogger<IGameManagerService> _logger = logger;
     private readonly Dictionary<Guid, Game> games = [];
 
-    public Guid CreateNewGame(int winningValue, int diceCount, IAutoPlayer opponent)
+    public Guid CreateNewGame(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
     {
-        var newGameConfiguration = new GameConfiguration(winningValue, diceCount);
         var newGameGuid = Guid.NewGuid();
 
         _logger.LogInformation("Creating a new game {gameId}, with {winningValue} to win and {diceCount} dice against {opponent}", newGameGuid, winningValue, diceCount, opponent.Name);
 
-        games.Add(newGameGuid, new Game(
-            gameConfiguration: newGameConfiguration,
-            player1: new HumanPlayer(),
-            player2: opponent
-        ));
+        games.Add(newGameGuid, new Game(gameConfiguration, player1, player2));
         return newGameGuid;
     }
 
