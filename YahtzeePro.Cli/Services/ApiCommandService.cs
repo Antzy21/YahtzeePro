@@ -133,7 +133,18 @@ public class ApiCommandService : ICommandService
         if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var gameResponse = response.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
-            Console.WriteLine(gameResponse.GameState);
+            if (gameResponse.LastDiceRoll != null)
+            {
+                Console.Write(string.Concat(Enumerable.Repeat("1 ", gameResponse.LastDiceRoll.DiceCount[1])));
+                Console.Write(string.Concat(Enumerable.Repeat("2 ", gameResponse.LastDiceRoll.DiceCount[2])));
+                Console.Write(string.Concat(Enumerable.Repeat("3 ", gameResponse.LastDiceRoll.DiceCount[3])));
+                Console.Write(string.Concat(Enumerable.Repeat("4 ", gameResponse.LastDiceRoll.DiceCount[4])));
+                Console.Write(string.Concat(Enumerable.Repeat("5 ", gameResponse.LastDiceRoll.DiceCount[5])));
+                Console.Write(string.Concat(Enumerable.Repeat("6 ", gameResponse.LastDiceRoll.DiceCount[6])));
+                Console.WriteLine();
+            }
+            Console.WriteLine($"Cached: {gameResponse.GameState.CachedScore}");
+            Console.WriteLine($"Score: {gameResponse.GameState.PlayerScore} - {gameResponse.GameState.OpponentScore}");
         }
         else if (response.Result.StatusCode == System.Net.HttpStatusCode.NotFound)
         {

@@ -50,8 +50,8 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
         {
             _logger.LogInformation("Making {move} move, on {gameId}:, {game}", moveType, gameId, game.GameState);
             game.MakeMove(moveType);
+            _logger.LogInformation("Last dice roll: {lastDiceRoll}", game.LastDiceRoll?.ToString() ?? "Banked");
             _logger.LogInformation("Game state after making {move} move: {game}", moveType, game.GameState);
-
         }
         else
         {
