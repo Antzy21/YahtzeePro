@@ -13,7 +13,8 @@ public class ApiCommandService : ICommandService
 
     public ApiCommandService(
         IConfiguration configuration
-    ) {
+    )
+    {
         var baseOptimumAddress = configuration["OptimumApiUrl"];
         if (string.IsNullOrEmpty(baseOptimumAddress))
         {
@@ -133,7 +134,12 @@ public class ApiCommandService : ICommandService
         if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var gameResponse = response.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
-            Console.WriteLine(gameResponse.GameState);
+            if (gameResponse.LastDiceRoll != null)
+            {
+                PrettyPrintDie(gameResponse.LastDiceRoll);
+            }
+            Console.WriteLine($"Cached: {gameResponse.GameState.CachedScore}");
+            Console.WriteLine($"Score: {gameResponse.GameState.PlayerScore} - {gameResponse.GameState.OpponentScore}");
         }
         else if (response.Result.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
@@ -144,5 +150,24 @@ public class ApiCommandService : ICommandService
             Console.WriteLine("Failed to make move.");
             Console.WriteLine(response.Exception?.Message);
         }
+    }
+
+    private static void PrettyPrintDie(DiceCombination die)
+    {
+        var totalDie = 0;
+        for (int i = 1; i <= 6; i++)
+        {
+            totalDie += die.DiceCount[i];
+        }
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ---  ", totalDie)));
+
+        for (int i = 1; i <= 6; i++)
+        {
+            Console.Write(string.Concat(Enumerable.Repeat($"| {i} | ", die.DiceCount[i])));
+        }
+        Console.WriteLine();
+        
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ---  ", totalDie)));
+
     }
 }
