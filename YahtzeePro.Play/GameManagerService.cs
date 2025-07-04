@@ -14,7 +14,7 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
     {
         var newGameGuid = Guid.NewGuid();
 
-        _logger.LogInformation("Creating a new game {gameId}, with {winningValue} to win and {diceCount} dice against {opponent}", newGameGuid, winningValue, diceCount, opponent.Name);
+        _logger.LogInformation("Creating a new game {gameId}, with {winningValue} to win and {diceCount} dice for players: {player1} and {player2}", newGameGuid, gameConfiguration.WinningValue, gameConfiguration.TotalDice, player1.Name, player2.Name);
 
         games.Add(newGameGuid, new Game(gameConfiguration, player1, player2));
         return newGameGuid;
