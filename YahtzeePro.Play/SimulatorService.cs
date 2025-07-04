@@ -31,7 +31,7 @@ public class SimulatorService(ILogger<SimulatorService> logger, IGameManagerServ
         List<GameResult> gameResults = [];
 
         // Player 1 goes first
-        for (int i = 0; i < totalGames / 2; i++)
+        for (int i = 0; i < (totalGames + 1) / 2; i++)
         {
             var gameResult = SimulateGame(player1, player2, gameConfiguration);
             gameResults.Add(gameResult);
