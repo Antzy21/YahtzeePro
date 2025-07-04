@@ -166,8 +166,42 @@ public class ApiCommandService : ICommandService
             Console.Write(string.Concat(Enumerable.Repeat($"| {i} | ", die.DiceCount[i])));
         }
         Console.WriteLine();
-        
+
         Console.WriteLine(string.Concat(Enumerable.Repeat(" ---  ", totalDie)));
 
+    }
+
+    public void Simulate(string strategy1, string strategy2, int numberOfGames, int numberOfSets, int winningValue, int totalDice)
+    {
+        var gameConfiguration = new GameConfiguration(winningValue, totalDice);
+        var simulateGameRequest = new SimulateGamesRequest(strategy1, strategy2, numberOfGames, numberOfSets, gameConfiguration);
+        var content = JsonContent.Create(simulateGameRequest);
+        var response = _playClient.PostAsync("/simulate", content);
+
+        var simulatedResults = response.Result.Content.ReadFromJsonAsync<List<GameSetResult>>().Result ?? [];
+
+        // For Sets of Games
+        if (simulatedResults.Count > 1)
+        {
+            Console.WriteLine($"Simulating {numberOfGames} games in {numberOfSets} sets between {strategy1} and {strategy2}.\n");
+            foreach (var result in simulatedResults)
+            {
+                Console.WriteLine($"{strategy1}: {result.PlayerOneWinCount}");
+                Console.WriteLine($"{strategy2}: {result.PlayerTwoWinCount}");
+                Console.WriteLine();
+            }
+        }
+        // For Single Set Simulation
+        else if (simulatedResults.Count == 1)
+        {
+            Console.WriteLine($"Simulating {numberOfGames} games between {strategy1} and {strategy2}.");
+            var gameSetResult = simulatedResults.Single();
+            foreach (var gameResult in gameSetResult.GameResults)
+            {
+                Console.WriteLine($"Winning Player: {gameResult.WinningPlayer}");
+                Console.WriteLine($"Score: {gameResult.WinnerScore} - {gameResult.LoserScore}");
+                Console.WriteLine();
+            }
+        }
     }
 }

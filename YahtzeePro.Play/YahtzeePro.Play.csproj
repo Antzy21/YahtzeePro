@@ -15,7 +15,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Content Include="Players\AutoPlayers\SimpleStrategyConfigurations\strategy1.json">
+    <Content Include="Players\AutoPlayers\SimpleStrategyConfigurations\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
