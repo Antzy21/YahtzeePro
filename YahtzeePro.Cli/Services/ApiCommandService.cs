@@ -13,7 +13,8 @@ public class ApiCommandService : ICommandService
 
     public ApiCommandService(
         IConfiguration configuration
-    ) {
+    )
+    {
         var baseOptimumAddress = configuration["OptimumApiUrl"];
         if (string.IsNullOrEmpty(baseOptimumAddress))
         {
@@ -135,13 +136,7 @@ public class ApiCommandService : ICommandService
             var gameResponse = response.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
             if (gameResponse.LastDiceRoll != null)
             {
-                Console.Write(string.Concat(Enumerable.Repeat("1 ", gameResponse.LastDiceRoll.DiceCount[1])));
-                Console.Write(string.Concat(Enumerable.Repeat("2 ", gameResponse.LastDiceRoll.DiceCount[2])));
-                Console.Write(string.Concat(Enumerable.Repeat("3 ", gameResponse.LastDiceRoll.DiceCount[3])));
-                Console.Write(string.Concat(Enumerable.Repeat("4 ", gameResponse.LastDiceRoll.DiceCount[4])));
-                Console.Write(string.Concat(Enumerable.Repeat("5 ", gameResponse.LastDiceRoll.DiceCount[5])));
-                Console.Write(string.Concat(Enumerable.Repeat("6 ", gameResponse.LastDiceRoll.DiceCount[6])));
-                Console.WriteLine();
+                PrettyPrintDie(gameResponse.LastDiceRoll);
             }
             Console.WriteLine($"Cached: {gameResponse.GameState.CachedScore}");
             Console.WriteLine($"Score: {gameResponse.GameState.PlayerScore} - {gameResponse.GameState.OpponentScore}");
@@ -155,5 +150,24 @@ public class ApiCommandService : ICommandService
             Console.WriteLine("Failed to make move.");
             Console.WriteLine(response.Exception?.Message);
         }
+    }
+
+    private static void PrettyPrintDie(DiceCombination die)
+    {
+        var totalDie = 0;
+        for (int i = 1; i <= 6; i++)
+        {
+            totalDie += die.DiceCount[i];
+        }
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ---  ", totalDie)));
+
+        for (int i = 1; i <= 6; i++)
+        {
+            Console.Write(string.Concat(Enumerable.Repeat($"| {i} | ", die.DiceCount[i])));
+        }
+        Console.WriteLine();
+        
+        Console.WriteLine(string.Concat(Enumerable.Repeat(" ---  ", totalDie)));
+
     }
 }
