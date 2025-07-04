@@ -1,30 +1,30 @@
 ﻿using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
-using YahtzeePro.Play.Players;
 using YahtzeePro.Play.Players.AutoPlayers;
 
 namespace YahtzeePro.Play;
 
-public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorService
+public class SimulatorService(ILogger<SimulatorService> logger, IGameManagerService gameManagerService) : ISimulatorService
 {
-    public GameResult SimulateGame(IPlayer player1, IPlayer player2, GameConfiguration gameConfiguration)
+    public GameResult SimulateGame(IAutoPlayer player1, IAutoPlayer player2, GameConfiguration gameConfiguration)
     {
-        var game = new Game(gameConfiguration, player1, player2);
+        var gameGuid = gameManagerService.CreateNewGame(gameConfiguration, player1, player2);
+        var game = gameManagerService.GetGame(gameGuid)!;
 
         while (true)
         {
-            if (game.GameIsOver(out var result))
+            if (gameManagerService.GameIsOver(gameGuid, out var result))
             {
                 return result;
             }
             var currentPlayer = (IAutoPlayer)game.GetCurrentPlayer();
             var move = currentPlayer.GetMove(game.GameState, game.GameState.GameConfiguration);
-            game.MakeMove(move);
+            gameManagerService.MakeMove(gameGuid, move);
             logger.LogInformation("{player} is making move, {move}", currentPlayer, move);
         }
     }
 
-    public GameSetResult SimulateGames(IPlayer player1, IPlayer player2, int totalGames, GameConfiguration gameConfiguration)
+    public GameSetResult SimulateGames(IAutoPlayer player1, IAutoPlayer player2, int totalGames, GameConfiguration gameConfiguration)
     {
         int player1WinCount = 0;
         int player2WinCount = 0;
@@ -55,7 +55,7 @@ public class SimulatorService(ILogger<SimulatorService> logger) : ISimulatorServ
         return new GameSetResult(gameResults, player1WinCount, player2WinCount);
     }
 
-    public IEnumerable<GameSetResult> SimulateSetsOfGames(IPlayer player1, IPlayer player2, int totalGames, int totalSets, GameConfiguration gameConfiguration)
+    public IEnumerable<GameSetResult> SimulateSetsOfGames(IAutoPlayer player1, IAutoPlayer player2, int totalGames, int totalSets, GameConfiguration gameConfiguration)
     {
         int player1SetWins = 0;
         int player2SetWins = 0;
