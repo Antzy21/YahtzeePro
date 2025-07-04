@@ -1,7 +1,7 @@
 # Yahtzee Pro Play API
 
 ## `/newgame` POST
-_Creates a new Game that can be sent moves to play on._
+Creates a new Game that can be sent moves to play on.
 
 #### Input parameter
 `GameConfiguration`
@@ -17,10 +17,10 @@ _Creates a new Game that can be sent moves to play on._
 Guid of the newly created game.
 
 ## `/games` GET
-_Lists the ids of all games stored._
+Lists the ids of all games stored.
 
 #### Returns
-_All guids of existing games._
+All guids of existing games.
 ```json
 [
     "some-guid-of-a-game",
@@ -29,7 +29,7 @@ _All guids of existing games._
 ```
 
 ## `/games/{guid}` GET
-_Return details of a game, including the current game state, the active player and last dice roll_
+Return details of a game, including the current game state, the active player and last dice roll
 #### Input parameter:
 `Guid` of the game to be retrieved.
 #### Returns
@@ -55,12 +55,12 @@ _Return details of a game, including the current game state, the active player a
 
 ## `/move` POST
 
-_Makes a given move on the game of the provided game id._
+Makes a given move on the game of the provided game id.
 
 #### Input parameter
 `MoveRequest`
 
-_The move choice must be either "safe" or "risky"_
+The move choice must be either "safe" or "risky"
 
 ```json
 {
@@ -103,7 +103,7 @@ _The move choice must be either "safe" or "risky"_
 ```    
 
 ## `/simulate` POST
-_Simulates games between two auto players. This can be one game, many games, or sets of games _
+Simulates games between two auto players. This can be one game, many games, or sets of games
 
 #### Input parameter
 `SimulateGamesRequest`
@@ -120,7 +120,7 @@ _Simulates games between two auto players. This can be one game, many games, or 
 }
 ```
 #### Returns:
-_List of simulation results for each set_
+List of simulation results for each set
 
 `GameSetResult`
 ```json
