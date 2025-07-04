@@ -12,9 +12,11 @@ public class Program
         builder.Logging.AddConsole();
         builder.Services.AddScoped<IGameManagerService, GameManagerService>();
         builder.Services.AddScoped<IPlayerResolverService, PlayerResolverService>();
+        builder.Services.AddScoped<ISimulatorService, SimulatorService>();
 
         var app = builder.Build();
         var gameManagerService = app.Services.GetRequiredService<IGameManagerService>();
+        var simulator = app.Services.GetRequiredService<ISimulatorService>();
         var playerResolverService = app.Services.GetRequiredService<IPlayerResolverService>();
 
         app.MapGet("/", () => "Yahtzee Pro Game Api");
@@ -49,6 +51,14 @@ public class Program
             game = gameManagerService.GetGame(moveRequest.GameId);
             var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name, game!.LastDiceRoll);
             return Results.Ok(gameResponse);
+        });
+
+        app.MapPost("/simulate", (SimulateGamesRequest simulateGamesRequest) =>
+        {
+            var player1 = playerResolverService.ResolveAutoPlayer(simulateGamesRequest.Player1Name);
+            var player2 = playerResolverService.ResolveAutoPlayer(simulateGamesRequest.Player2Name);
+            var gameSetResult = simulator.SimulateSetsOfGames(player1, player2, simulateGamesRequest.TotalGames, simulateGamesRequest.TotalSets, simulateGamesRequest.GameConfiguration).ToList();
+            return Results.Ok(gameSetResult);
         });
 
         app.Run();
