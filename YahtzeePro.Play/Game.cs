@@ -23,17 +23,6 @@ public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer 
 
     public IPlayer GetCurrentPlayer() => _currentPlayerId == 0 ? _player1 : _player2;
 
-    public bool GameIsOver([NotNullWhen(true)] out GameResult? gameResult)
-    {
-        gameResult = null;
-        if (GameState.OpponentScore >= GameState.GameConfiguration.WinningValue)
-        {
-            gameResult = new(GameState.OpponentScore, GameState.PlayerScore, GetOpponent().Name);
-            return true;
-        }
-        return false;
-    }
-
     public void MakeMove(MoveChoice move)
     {
         if (move == MoveChoice.Safe)
@@ -87,5 +76,5 @@ public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer 
         }
     }
 
-    private IPlayer GetOpponent() => _currentPlayerId == 0 ? _player2 : _player1;
+    public IPlayer GetOpponent() => _currentPlayerId == 0 ? _player2 : _player1;
 }

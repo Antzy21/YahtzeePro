@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Players;
@@ -50,6 +51,25 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
         else
         {
             _logger.LogInformation("Unable to find game with id {gameId}", gameId);
+        }
+    }
+
+    public bool GameIsOver(Guid gameId, [NotNullWhen(true)] out GameResult? gameResult)
+    {
+        if (games.TryGetValue(gameId, out Game? game))
+        {
+            gameResult = null;
+            if (game.GameState.OpponentScore >= game.GameState.GameConfiguration.WinningValue)
+            {
+                gameResult = new(game.GameState.OpponentScore, game.GameState.PlayerScore, game.GetOpponent().Name);
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
+            throw new KeyNotFoundException($"Game with id {gameId} not found.");
         }
     }
 }
