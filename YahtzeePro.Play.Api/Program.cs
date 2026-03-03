@@ -12,11 +12,13 @@ public class Program
 
         builder.Logging.AddConsole();
         builder.Services.AddScoped<IGameManagerService, GameManagerService>();
+        builder.Services.AddScoped<IGameRepository, InMemoryGameRepository>();
         builder.Services.AddScoped<IPlayerResolverService, PlayerResolverService>();
         builder.Services.AddScoped<ISimulatorService, SimulatorService>();
 
         var app = builder.Build();
         var gameManagerService = app.Services.GetRequiredService<IGameManagerService>();
+        var gameRepository = app.Services.GetRequiredService<IGameRepository>();
         var simulator = app.Services.GetRequiredService<ISimulatorService>();
         var playerResolverService = app.Services.GetRequiredService<IPlayerResolverService>();
 
