@@ -1,75 +1,39 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using YahtzeePro.Core;
 using YahtzeePro.Core.Models;
-using YahtzeePro.Play.Players;
 
 namespace YahtzeePro.Play;
 
 public class GameManagerService(ILogger<IGameManagerService> logger) : IGameManagerService
 {
+    private readonly Random _random = new();
     private readonly ILogger<IGameManagerService> _logger = logger;
-    private readonly Dictionary<Guid, Game> games = [];
 
-    public Guid CreateNewGame(GameConfiguration gameConfiguration, IPlayer player1, IPlayer player2)
+    public void MakeMove(Game game, MoveChoice move)
     {
-        var newGameGuid = Guid.NewGuid();
-
-        _logger.LogInformation("Creating a new game {gameId}, with {winningValue} to win and {diceCount} dice for players: {player1} and {player2}", newGameGuid, gameConfiguration.WinningValue, gameConfiguration.TotalDice, player1.Name, player2.Name);
-
-        games.Add(newGameGuid, new Game(gameConfiguration, player1, player2));
-        return newGameGuid;
-    }
-
-    public IEnumerable<Guid> GetGameIds()
-    {
-        return games.Keys;
-    }
-
-    public Game? GetGame(Guid gameId)
-    {
-        if (games.TryGetValue(gameId, out Game? game))
+        _logger.LogInformation("Making {move} move, on {game}", move, game.GameState);
+        if (move == MoveChoice.Safe)
         {
-            _logger.LogInformation("Retrieved game {gameId}: {game}", gameId, game.GameState);
-            return game;
-        }
-        else
-        {
-            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
-            return null;
-        }
-    }
-
-    public void MakeMove(Guid gameId, MoveChoice moveType)
-    {
-        if (games.TryGetValue(gameId, out Game? game))
-        {
-            _logger.LogInformation("Making {move} move, on {gameId}:, {game}", moveType, gameId, game.GameState);
-            game.MakeMove(moveType);
-            _logger.LogInformation("Last dice roll: {lastDiceRoll}", game.LastDiceRoll?.ToString() ?? "Banked");
-            _logger.LogInformation("Game state after making {move} move: {game}", moveType, game.GameState);
-        }
-        else
-        {
-            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
-        }
-    }
-
-    public bool GameIsOver(Guid gameId, [NotNullWhen(true)] out GameResult? gameResult)
-    {
-        if (games.TryGetValue(gameId, out Game? game))
-        {
-            gameResult = null;
-            if (game.GameState.OpponentScore >= game.GameState.GameConfiguration.WinningValue)
+            if (game.GameState.IsStartOfTurn)
             {
-                gameResult = new(game.GameState.OpponentScore, game.GameState.PlayerScore, game.GetOpponent().Name);
-                return true;
+                // Roll at start of turn
+                var rolledDice = DiceCombinationGenerator.Generate(game.GameState.GameConfiguration.TotalDice, _random);
+                game.ResolveRolledDice(rolledDice);
             }
-            return false;
+            else
+            {
+                game.TurnMoves.Add(new TurnMove(game.Turns, MoveChoice.Safe, null));
+                game.Turns++;
+                game.GameState = game.GameState.Bank();
+            }
         }
-        else
+        else if (move == MoveChoice.Risky)
         {
-            _logger.LogInformation("Unable to find game with id {gameId}", gameId);
-            throw new KeyNotFoundException($"Game with id {gameId} not found.");
+            var rolledDice = DiceCombinationGenerator.Generate(game.GameState.DiceToRoll, _random);
+            game.TurnMoves.Add(new TurnMove(game.Turns, MoveChoice.Risky, rolledDice));
+            game.ResolveRolledDice(rolledDice);
         }
+        _logger.LogInformation("Last dice roll: {lastDiceRoll}", game.TurnMoves?.ToString() ?? "Banked");
+        _logger.LogInformation("Game state after making {move} move: {game}", move, game.GameState);
     }
 }

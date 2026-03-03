@@ -8,20 +8,17 @@ public class SimulatorService(ILogger<SimulatorService> logger, IGameManagerServ
 {
     public GameResult SimulateGame(IAutoPlayer player1, IAutoPlayer player2, GameConfiguration gameConfiguration)
     {
-        var gameGuid = gameManagerService.CreateNewGame(gameConfiguration, player1, player2);
-        var game = gameManagerService.GetGame(gameGuid)!;
+        var game = new Game(gameConfiguration, player1, player2);
+        GameResult? result;
 
-        while (true)
+        while (!game.GameIsOver(out result))
         {
-            if (gameManagerService.GameIsOver(gameGuid, out var result))
-            {
-                return result;
-            }
             var currentPlayer = (IAutoPlayer)game.GetCurrentPlayer();
             var move = currentPlayer.GetMove(game.GameState, game.GameState.GameConfiguration);
-            gameManagerService.MakeMove(gameGuid, move);
+            gameManagerService.MakeMove(game, move);
             logger.LogInformation("{player} is making move, {move}", currentPlayer, move);
         }
+        return result;
     }
 
     public GameSetResult SimulateGames(IAutoPlayer player1, IAutoPlayer player2, int totalGames, GameConfiguration gameConfiguration)

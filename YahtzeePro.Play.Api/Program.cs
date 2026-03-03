@@ -41,9 +41,7 @@ public class Program
             var game = gameRepository.GetGame(gameId);
             if (game is null)
                 return Results.NotFound();
-
-            var gameResponse = new GameResponse(game.GameState, game.GetCurrentPlayer().Name, game.LastDiceRoll);
-            return Results.Ok(gameResponse);
+            return Results.Ok(game);
         });
 
         app.MapPost("/move", (MoveRequest moveRequest) =>
@@ -52,11 +50,10 @@ public class Program
             if (game is null)
                 return Results.NotFound();
 
-            gameManagerService.MakeMove(moveRequest.GameId, moveRequest.Move);
+            gameManagerService.MakeMove(game, moveRequest.Move);
 
-            game = gameManagerService.GetGame(moveRequest.GameId);
-            var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name, game!.LastDiceRoll);
-            return Results.Ok(gameResponse);
+            var updatedGame = gameRepository.GetGame(moveRequest.GameId);
+            return Results.Ok(updatedGame);
         });
 
         app.MapGet("/strategies", () =>
