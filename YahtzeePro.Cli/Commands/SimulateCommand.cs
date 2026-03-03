@@ -3,9 +3,9 @@ using YahtzeePro.Cli.Services;
 
 namespace YahtzeePro.Cli.Commands;
 
-public class SimulateGameCommand : Command
+public class SimulateCommand : Command
 {
-    public SimulateGameCommand(ICommandService commandService)
+    public SimulateCommand(ICommandService commandService)
         : base("simulate", "Simulate a game between two strategies")
     {
         var player1Arg = new Argument<string>("player1", description: "Strategy 1");

@@ -10,7 +10,7 @@ internal class YahtzeeProCommand : RootCommand
         Add(new OptimumCommand(commandService));
         Add(new PlayCommand(commandService));
         Add(new StatusCommand(commandService));
-        Add(new SimulateGameCommand(commandService));
+        Add(new SimulateCommand(commandService));
         
         this.SetHandler(() =>
         {
