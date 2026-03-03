@@ -15,6 +15,7 @@ public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer 
             IsStartOfTurn: true,
             GameConfiguration: gameConfiguration);
     public DiceCombination? LastDiceRoll = null;
+    public List<TurnMove> TurnMoves { get; set; } = [];
 
     private readonly IPlayer _player1 = player1;
     private readonly IPlayer _player2 = player2;
@@ -47,6 +48,11 @@ public class Game(GameConfiguration gameConfiguration, IPlayer player1, IPlayer 
             LastDiceRoll = rolledDice;
             GameState = ResolveRolledDice(rolledDice, GameState);
         }
+        TurnMoves.Add(new TurnMove(
+            Turn: TurnMoves.Count + 1,
+            MoveChoice: move,
+            RolledDice: LastDiceRoll
+        ));
     }
 
     private void SwitchPlayer()
