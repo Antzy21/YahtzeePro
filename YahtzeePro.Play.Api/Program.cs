@@ -12,11 +12,13 @@ public class Program
 
         builder.Logging.AddConsole();
         builder.Services.AddScoped<IGameManagerService, GameManagerService>();
+        builder.Services.AddScoped<IGameRepository, InMemoryGameRepository>();
         builder.Services.AddScoped<IPlayerResolverService, PlayerResolverService>();
         builder.Services.AddScoped<ISimulatorService, SimulatorService>();
 
         var app = builder.Build();
         var gameManagerService = app.Services.GetRequiredService<IGameManagerService>();
+        var gameRepository = app.Services.GetRequiredService<IGameRepository>();
         var simulator = app.Services.GetRequiredService<ISimulatorService>();
         var playerResolverService = app.Services.GetRequiredService<IPlayerResolverService>();
 
@@ -25,33 +27,33 @@ public class Program
         app.MapPost("/newgame", (NewGameRequest newGameRequest) =>
         {
             var opponent = playerResolverService.ResolveAutoPlayer(newGameRequest.OpponentName);
-            var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration, new HumanPlayer(), opponent);
-            return Results.Created($"/games/{newGameGuid}", newGameGuid);
+
+            var newGame = new Game(newGameRequest.GameConfiguration, new HumanPlayer(), opponent);
+            var newGameId = gameRepository.AddGame(newGame);
+
+            return Results.Created($"/games/{newGameId}", newGameId);
         });
 
-        app.MapGet("/games", () => gameManagerService.GetGameIds());
+        app.MapGet("/games", () => gameRepository.GetAllGameIds());
 
         app.MapGet("/games/{gameId}", (Guid gameId) =>
         {
-            var game = gameManagerService.GetGame(gameId);
+            var game = gameRepository.GetGame(gameId);
             if (game is null)
                 return Results.NotFound();
-
-            var gameResponse = new GameResponse(game.GameState, game.GetCurrentPlayer().Name, game.LastDiceRoll);
-            return Results.Ok(gameResponse);
+            return Results.Ok(game);
         });
 
         app.MapPost("/move", (MoveRequest moveRequest) =>
         {
-            var game = gameManagerService.GetGame(moveRequest.GameId);
+            var game = gameRepository.GetGame(moveRequest.GameId);
             if (game is null)
                 return Results.NotFound();
 
-            gameManagerService.MakeMove(moveRequest.GameId, moveRequest.Move);
+            gameManagerService.MakeMove(game, moveRequest.Move);
 
-            game = gameManagerService.GetGame(moveRequest.GameId);
-            var gameResponse = new GameResponse(game!.GameState, game!.GetCurrentPlayer().Name, game!.LastDiceRoll);
-            return Results.Ok(gameResponse);
+            var updatedGame = gameRepository.GetGame(moveRequest.GameId);
+            return Results.Ok(updatedGame);
         });
 
         app.MapGet("/strategies", () =>

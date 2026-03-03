@@ -32,7 +32,7 @@ namespace YahtzeePro.Core
 
         public static DiceCombination Empty()
         {
-            return Generate(0, new Random());
+            return FromDieList([]);
         }
 
         private static int CalculateScore(Dictionary<int, int> diceCount)
