@@ -54,6 +54,12 @@ public class Program
             return Results.Ok(gameResponse);
         });
 
+        app.MapGet("/strategies", () =>
+        {
+            var strategies = playerResolverService.GetAvailableAutoPlayers();
+            return Results.Ok(strategies);
+        });
+
         app.MapPost("/simulate", (SimulateGamesRequest simulateGamesRequest) =>
         {
             var player1 = playerResolverService.ResolveAutoPlayer(simulateGamesRequest.Player1Name);

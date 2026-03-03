@@ -5,4 +5,5 @@ namespace YahtzeePro.Play;
 public interface IPlayerResolverService
 {
     IAutoPlayer ResolveAutoPlayer(string playerString);
+    IEnumerable<string> GetAvailableAutoPlayers();
 }

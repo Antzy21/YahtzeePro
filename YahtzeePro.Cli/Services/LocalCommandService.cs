@@ -70,6 +70,11 @@ public class LocalCommandService(
         throw new NotImplementedException();
     }
 
+    public void ListStrategies()
+    {
+        throw new NotImplementedException();
+    }
+
     public void Simulate(string strategy1, string strategy2, int numberOfGames, int numberOfSets, int winningValue, int totalDice)
     {
         throw new NotImplementedException();
