@@ -21,10 +21,6 @@ public class SimulatorServiceTests
         var gameManagerService = new Mock<IGameManagerService>();
 
         GameResult gameResult = new(0, 0, "");
-        
-        gameManagerService
-            .Setup(g => g.GameIsOver(It.IsAny<Guid>(), out gameResult!))
-            .Returns(true);
 
         var player1 = new Mock<IAutoPlayer>();
         player1.Setup(p => p.Name).Returns("Player 1");
