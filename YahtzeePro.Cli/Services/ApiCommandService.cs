@@ -171,6 +171,17 @@ public class ApiCommandService : ICommandService
 
     }
 
+    public void ListStrategies()
+    {
+        var response = _playClient.GetAsync("/strategies");
+        var strategies = response.Result.Content.ReadFromJsonAsync<List<string>>().Result ?? [];
+
+        foreach (var strategy in strategies)
+        {
+            Console.WriteLine(strategy);
+        }
+    }
+
     public void Simulate(string strategy1, string strategy2, int numberOfGames, int numberOfSets, int winningValue, int totalDice)
     {
         var gameConfiguration = new GameConfiguration(winningValue, totalDice);

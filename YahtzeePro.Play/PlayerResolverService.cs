@@ -16,6 +16,13 @@ public class PlayerResolverService : IPlayerResolverService
         };
     }
 
+    public IEnumerable<string> GetAvailableAutoPlayers()
+    {
+        var simpleStrategyFiles = Directory.GetFiles("Players/AutoPlayers/SimpleStrategyConfigurations", "*.json");
+        var simpleStrategyNames = simpleStrategyFiles.Select(file => Path.GetFileNameWithoutExtension(file));
+        return new[] { "Optimum", "RollToWin" }.Concat(simpleStrategyNames);
+    }
+
     private static SimpleStrategy ResolveSimpleStrategy(string playerString)
     {
         var simpleStrategyJson = File.ReadAllText($"Players/AutoPlayers/SimpleStrategyConfigurations/{playerString}.json");
