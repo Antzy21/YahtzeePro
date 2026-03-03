@@ -27,8 +27,11 @@ public class Program
         app.MapPost("/newgame", (NewGameRequest newGameRequest) =>
         {
             var opponent = playerResolverService.ResolveAutoPlayer(newGameRequest.OpponentName);
-            var newGameGuid = gameManagerService.CreateNewGame(newGameRequest.GameConfiguration, new HumanPlayer(), opponent);
-            return Results.Created($"/games/{newGameGuid}", newGameGuid);
+
+            var newGame = new Game(newGameRequest.GameConfiguration, new HumanPlayer(), opponent);
+            var newGameId = gameRepository.AddGame(newGame);
+
+            return Results.Created($"/games/{newGameId}", newGameId);
         });
 
         app.MapGet("/games", () => gameRepository.GetAllGameIds());
