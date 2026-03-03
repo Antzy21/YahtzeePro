@@ -30,6 +30,15 @@ public class SimulatorServiceTests
         var simulatorService = new SimulatorService(logger.Object, gameManagerService.Object);
         var gameConfiguration = new GameConfiguration(50, 5);
 
+        gameManagerService
+            .Setup(g => g.MakeMove(It.IsAny<Game>(), It.IsAny<MoveChoice>()))
+            .Callback<Game, MoveChoice>((game, move) =>
+            {
+                game.GameState = new GameState(
+                    50, 0, 0, 5, true, gameConfiguration
+                );
+            });
+
         // Act
         var gameSetResult = simulatorService.SimulateGames(player1.Object, player2.Object, numberOfGames, gameConfiguration);
 
