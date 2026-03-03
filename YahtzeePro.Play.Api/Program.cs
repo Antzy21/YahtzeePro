@@ -31,11 +31,11 @@ public class Program
             return Results.Created($"/games/{newGameGuid}", newGameGuid);
         });
 
-        app.MapGet("/games", () => gameManagerService.GetGameIds());
+        app.MapGet("/games", () => gameRepository.GetAllGameIds());
 
         app.MapGet("/games/{gameId}", (Guid gameId) =>
         {
-            var game = gameManagerService.GetGame(gameId);
+            var game = gameRepository.GetGame(gameId);
             if (game is null)
                 return Results.NotFound();
 
@@ -45,7 +45,7 @@ public class Program
 
         app.MapPost("/move", (MoveRequest moveRequest) =>
         {
-            var game = gameManagerService.GetGame(moveRequest.GameId);
+            var game = gameRepository.GetGame(moveRequest.GameId);
             if (game is null)
                 return Results.NotFound();
 
