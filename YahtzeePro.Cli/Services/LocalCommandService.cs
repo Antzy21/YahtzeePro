@@ -17,6 +17,16 @@ public class LocalCommandService(
         Console.WriteLine("Local command service ready.");
     }
 
+    public void ListConfig()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetConfig(ConfigVariable variable, string arg2)
+    {
+        throw new NotImplementedException();
+    }
+
     public void CalculateOptimum(int winningValue, int totalDice) {
         var gameConfiguration = new GameConfiguration(winningValue, totalDice);
 
