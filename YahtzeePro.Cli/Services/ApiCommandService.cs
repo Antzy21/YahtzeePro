@@ -271,6 +271,10 @@ public class ApiCommandService : ICommandService
             Console.WriteLine("Invalid gameId. Must be a valid GUID.");
             return;
         }
+        SetGameIdConfig(gameId);
+    }
+    private void SetGameIdConfig(Guid gameId)
+    {
         Console.WriteLine($"Setting gameId to {gameId}");
         _config.GAMEID = gameId;
         SaveConfig();
