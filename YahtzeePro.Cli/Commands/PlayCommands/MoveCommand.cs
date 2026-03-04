@@ -12,7 +12,7 @@ public class MoveCommand : Command
         var moveArg = new Argument<MoveChoice>("The move to make in the game. Risky or Safe");
         Add(moveArg);
         
-        var gameOption = new Option<Guid>("--gameId", "The game ID") { IsRequired = true };
+        var gameOption = new Option<Guid>("--gameId", "The game ID");
         Add(gameOption);
 
         this.SetHandler(commandService.Move, moveArg, gameOption);

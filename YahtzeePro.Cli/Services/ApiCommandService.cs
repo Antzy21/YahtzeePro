@@ -177,6 +177,16 @@ public class ApiCommandService : ICommandService
 
     public void Move(MoveChoice moveChoice, Guid gameId)
     {
+        gameId = gameId != Guid.Empty ? gameId : _config.GAMEID ?? Guid.Empty;
+        if (gameId == Guid.Empty)
+        {
+            Console.WriteLine("No gameId provided or found in config");
+            return;
+        }
+        if (gameId != _config.GAMEID && _config.AUTO_UPDATE_CONFIG)
+        {
+            SetGameIdConfig(gameId);
+        }
         var moveRequest = new MoveRequest(gameId, moveChoice);
         var response = _playClient.PostAsJsonAsync("/move", moveRequest);
         if (response.Result.StatusCode == System.Net.HttpStatusCode.OK)
@@ -277,7 +287,7 @@ public class ApiCommandService : ICommandService
     {
         Console.WriteLine($"Setting gameId to {gameId}");
         _config.GAMEID = gameId;
-        SaveConfig();
+        SaveConfig();        
     }
 
     private void SetWinningValueConfig(string value)
