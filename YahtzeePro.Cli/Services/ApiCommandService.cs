@@ -156,7 +156,9 @@ public class ApiCommandService : ICommandService
             var locationUri = response.Result.Headers.Location;
             if (locationUri != null)
             {
-                Console.WriteLine(locationUri);
+                Console.WriteLine($"New game created against {opponent}.");
+                if (_config.AUTO_UPDATE_CONFIG)
+                    SetGameIdConfig(locationUri.ToString().Split("/").Last());
                 var newGameResponse = _playClient.GetAsync(locationUri);
                 var gameResponse = newGameResponse.Result.Content.ReadFromJsonAsync<GameResponse>().Result!;
                 Console.WriteLine(gameResponse.GameState);
