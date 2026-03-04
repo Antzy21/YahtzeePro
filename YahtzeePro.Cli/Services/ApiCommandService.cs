@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using YahtzeePro.Core.Models;
 using YahtzeePro.Play.Requests;
@@ -10,11 +11,16 @@ public class ApiCommandService : ICommandService
 {
     private readonly HttpClient _optimumClient;
     private readonly HttpClient _playClient;
+    private readonly string _yahtzeeProAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Antzy21", "YahtzeePro");
+    private readonly string _configPath;
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new ()
+    {
+        WriteIndented = true
+    };
 
     public ApiCommandService(
         IConfiguration configuration
-    )
-    {
+    ) {
         var baseOptimumAddress = configuration["OptimumApiUrl"];
         if (string.IsNullOrEmpty(baseOptimumAddress))
         {
@@ -29,6 +35,15 @@ public class ApiCommandService : ICommandService
 
         _optimumClient = new HttpClient { BaseAddress = new Uri(baseOptimumAddress) };
         _playClient = new HttpClient { BaseAddress = new Uri(basePlayAddress) };
+
+        Directory.CreateDirectory(_yahtzeeProAppDataPath);
+
+        _configPath = Path.Combine(_yahtzeeProAppDataPath, "cliconfig.json");
+        if (!File.Exists(_configPath))
+        {
+            string emptyJsonConfig = JsonSerializer.Serialize(new Config(), _jsonSerializerOptions);
+            File.WriteAllText(_configPath, emptyJsonConfig);
+        }     
     }
 
     public void Status()
@@ -52,6 +67,33 @@ public class ApiCommandService : ICommandService
         {
             Console.WriteLine("Unable to reach YatzeePro Play API server");
         }
+    }
+
+    public void ListConfig()
+    {
+        var configFileContents = File.ReadAllText(_configPath);
+        var config = JsonDocument.Parse(configFileContents);
+        Console.WriteLine(config.RootElement);
+    }
+
+    public void SetConfig(ConfigVariable variable, string value)
+    {
+        var configFileContents = File.ReadAllText(_configPath);
+        var config = JsonSerializer.Deserialize<Config>(configFileContents)!;
+        switch (variable)
+        {
+            case ConfigVariable.GAMEID:
+                SetGameIdConfig(config, value);
+                break;
+            case ConfigVariable.GAMECONFIG_WINNINGVALUE:
+                SetWinningValueConfig(config, value);
+                break;
+            case ConfigVariable.GAMECONFIG_TOTALDICE:
+                SetTotalDiceConfig(config, value);
+                break;
+        }
+        var configJson = JsonSerializer.Serialize(config, _jsonSerializerOptions);
+        File.WriteAllText(_configPath, configJson);
     }
 
     public void CalculateOptimum(int winningValue, int totalDice)
@@ -214,5 +256,38 @@ public class ApiCommandService : ICommandService
                 Console.WriteLine();
             }
         }
+    }
+
+    private static void SetGameIdConfig(Config config, string value)
+    {
+        if (!Guid.TryParse(value, out var gameId))
+        {
+            Console.WriteLine("Invalid gameId. Must be a valid GUID.");
+            return;
+        }
+        Console.WriteLine($"Setting gameId to {gameId}");
+        config.GAMEID = gameId;
+    }
+
+    private static void SetWinningValueConfig(Config config, string value)
+    {
+        if (!int.TryParse(value, out var winningValue))
+        {
+            Console.WriteLine("Invalid winning value. Must be an integer.");
+            return;
+        }
+        Console.WriteLine($"Setting Winning Value to {winningValue}");
+        config.GAMECONFIG_WINNINGVALUE = winningValue;
+    }
+
+    private static void SetTotalDiceConfig(Config config, string value)
+    {
+        if (!int.TryParse(value, out var totalDice))
+        {
+            Console.WriteLine("Invalid total dice. Must be an integer.");
+            return;
+        }
+        Console.WriteLine($"Setting Total Dice to {totalDice}");
+        config.GAMECONFIG_TOTALDICE = totalDice;
     }
 }
