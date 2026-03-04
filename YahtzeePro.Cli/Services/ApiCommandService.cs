@@ -86,20 +86,18 @@ public class ApiCommandService : ICommandService
         switch (variable)
         {
             case ConfigVariable.GAMEID:
-                SetGameIdConfig(_config, value);
+                SetGameIdConfig(value);
                 break;
             case ConfigVariable.GAMECONFIG_WINNINGVALUE:
-                SetWinningValueConfig(_config, value);
+                SetWinningValueConfig(value);
                 break;
             case ConfigVariable.GAMECONFIG_TOTALDICE:
-                SetTotalDiceConfig(_config, value);
+                SetTotalDiceConfig(value);
                 break;
             case ConfigVariable.AUTO_UPDATE_CONFIG:
-                SetAutoUpdateConfigConfig(_config, value);
+                SetAutoUpdateConfigConfig(value);
                 break;
         }
-        var configJson = JsonSerializer.Serialize(_config, _jsonSerializerOptions);
-        File.WriteAllText(_configPath, configJson);
     }
 
     public void CalculateOptimum(int winningValue, int totalDice)
@@ -264,7 +262,7 @@ public class ApiCommandService : ICommandService
         }
     }
 
-    private static void SetGameIdConfig(Config config, string value)
+    private void SetGameIdConfig(string value)
     {
         if (!Guid.TryParse(value, out var gameId))
         {
@@ -272,10 +270,11 @@ public class ApiCommandService : ICommandService
             return;
         }
         Console.WriteLine($"Setting gameId to {gameId}");
-        config.GAMEID = gameId;
+        _config.GAMEID = gameId;
+        SaveConfig();
     }
 
-    private static void SetWinningValueConfig(Config config, string value)
+    private void SetWinningValueConfig(string value)
     {
         if (!int.TryParse(value, out var winningValue))
         {
@@ -283,10 +282,11 @@ public class ApiCommandService : ICommandService
             return;
         }
         Console.WriteLine($"Setting Winning Value to {winningValue}");
-        config.GAMECONFIG_WINNINGVALUE = winningValue;
+        _config.GAMECONFIG_WINNINGVALUE = winningValue;
+        SaveConfig();
     }
 
-    private static void SetTotalDiceConfig(Config config, string value)
+    private void SetTotalDiceConfig(string value)
     {
         if (!int.TryParse(value, out var totalDice))
         {
@@ -294,10 +294,11 @@ public class ApiCommandService : ICommandService
             return;
         }
         Console.WriteLine($"Setting Total Dice to {totalDice}");
-        config.GAMECONFIG_TOTALDICE = totalDice;
+        _config.GAMECONFIG_TOTALDICE = totalDice;
+        SaveConfig();
     }
 
-    private static void SetAutoUpdateConfigConfig(Config config, string value)
+    private void SetAutoUpdateConfigConfig(string value)
     {
         if (!bool.TryParse(value, out var autoUpdateConfig))
         {
@@ -305,7 +306,14 @@ public class ApiCommandService : ICommandService
             return;
         }
         Console.WriteLine($"Turning AUTO_UPDATE_CONFIG {(autoUpdateConfig ? "on" : "off")}");
-        config.AUTO_UPDATE_CONFIG = autoUpdateConfig;
+        _config.AUTO_UPDATE_CONFIG = autoUpdateConfig;
+        SaveConfig();
+    }
+
+    private void SaveConfig()
+    {
+        var configJson = JsonSerializer.Serialize(_config, _jsonSerializerOptions);
+        File.WriteAllText(_configPath, configJson);
     }
 
     private void InitConfigFileIfNoneExists(string configPath)
