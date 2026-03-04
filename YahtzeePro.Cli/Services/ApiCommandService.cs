@@ -13,6 +13,7 @@ public class ApiCommandService : ICommandService
     private readonly HttpClient _playClient;
     private readonly string _yahtzeeProAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Antzy21", "YahtzeePro");
     private readonly string _configPath;
+    private readonly Config _config;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new ()
     {
         WriteIndented = true
@@ -20,7 +21,8 @@ public class ApiCommandService : ICommandService
 
     public ApiCommandService(
         IConfiguration configuration
-    ) {
+    )
+    {
         var baseOptimumAddress = configuration["OptimumApiUrl"];
         if (string.IsNullOrEmpty(baseOptimumAddress))
         {
@@ -39,11 +41,10 @@ public class ApiCommandService : ICommandService
         Directory.CreateDirectory(_yahtzeeProAppDataPath);
 
         _configPath = Path.Combine(_yahtzeeProAppDataPath, "cliconfig.json");
-        if (!File.Exists(_configPath))
-        {
-            string emptyJsonConfig = JsonSerializer.Serialize(new Config(), _jsonSerializerOptions);
-            File.WriteAllText(_configPath, emptyJsonConfig);
-        }     
+        InitConfigFileIfNoneExists(_configPath);
+
+        var configFileContents = File.ReadAllText(_configPath);
+        _config = JsonSerializer.Deserialize<Config>(configFileContents)!;
     }
 
     public void Status()
@@ -71,31 +72,33 @@ public class ApiCommandService : ICommandService
 
     public void ListConfig()
     {
-        var configFileContents = File.ReadAllText(_configPath);
-        var config = JsonDocument.Parse(configFileContents);
-        Console.WriteLine(config.RootElement);
+        if (_config.GAMEID != null)
+            Console.WriteLine($"Game Id: {_config.GAMEID}");
+        if (_config.GAMECONFIG_WINNINGVALUE != null)
+            Console.WriteLine($"Winning Value: {_config.GAMECONFIG_WINNINGVALUE}");
+        if (_config.GAMECONFIG_TOTALDICE != null)
+            Console.WriteLine($"Total Dice: {_config.GAMECONFIG_TOTALDICE}");
+        Console.WriteLine($"Auto Update Config: {_config.AUTO_UPDATE_CONFIG}");
     }
 
     public void SetConfig(ConfigVariable variable, string value)
     {
-        var configFileContents = File.ReadAllText(_configPath);
-        var config = JsonSerializer.Deserialize<Config>(configFileContents)!;
         switch (variable)
         {
             case ConfigVariable.GAMEID:
-                SetGameIdConfig(config, value);
+                SetGameIdConfig(_config, value);
                 break;
             case ConfigVariable.GAMECONFIG_WINNINGVALUE:
-                SetWinningValueConfig(config, value);
+                SetWinningValueConfig(_config, value);
                 break;
             case ConfigVariable.GAMECONFIG_TOTALDICE:
-                SetTotalDiceConfig(config, value);
+                SetTotalDiceConfig(_config, value);
                 break;
             case ConfigVariable.AUTO_UPDATE_CONFIG:
-                SetAutoUpdateConfigConfig(config, value);
+                SetAutoUpdateConfigConfig(_config, value);
                 break;
         }
-        var configJson = JsonSerializer.Serialize(config, _jsonSerializerOptions);
+        var configJson = JsonSerializer.Serialize(_config, _jsonSerializerOptions);
         File.WriteAllText(_configPath, configJson);
     }
 
@@ -303,5 +306,14 @@ public class ApiCommandService : ICommandService
         }
         Console.WriteLine($"Turning AUTO_UPDATE_CONFIG {(autoUpdateConfig ? "on" : "off")}");
         config.AUTO_UPDATE_CONFIG = autoUpdateConfig;
+    }
+
+    private void InitConfigFileIfNoneExists(string configPath)
+    {
+        if (!File.Exists(configPath))
+        {
+            string emptyJsonConfig = JsonSerializer.Serialize(new Config(), _jsonSerializerOptions);
+            File.WriteAllText(configPath, emptyJsonConfig);
+        }
     }
 }
