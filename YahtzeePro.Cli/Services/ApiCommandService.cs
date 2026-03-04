@@ -91,6 +91,9 @@ public class ApiCommandService : ICommandService
             case ConfigVariable.GAMECONFIG_TOTALDICE:
                 SetTotalDiceConfig(config, value);
                 break;
+            case ConfigVariable.AUTO_UPDATE_CONFIG:
+                SetAutoUpdateConfigConfig(config, value);
+                break;
         }
         var configJson = JsonSerializer.Serialize(config, _jsonSerializerOptions);
         File.WriteAllText(_configPath, configJson);
@@ -289,5 +292,16 @@ public class ApiCommandService : ICommandService
         }
         Console.WriteLine($"Setting Total Dice to {totalDice}");
         config.GAMECONFIG_TOTALDICE = totalDice;
+    }
+
+    private static void SetAutoUpdateConfigConfig(Config config, string value)
+    {
+        if (!bool.TryParse(value, out var autoUpdateConfig))
+        {
+            Console.WriteLine("Invalid value for auto-update-config setting. Must be true or false.");
+            return;
+        }
+        Console.WriteLine($"Turning AUTO_UPDATE_CONFIG {(autoUpdateConfig ? "on" : "off")}");
+        config.AUTO_UPDATE_CONFIG = autoUpdateConfig;
     }
 }
