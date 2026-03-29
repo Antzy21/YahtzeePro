@@ -37,7 +37,7 @@ public class OptimumCalculator : IOptimumCalculator
             int initialStackCounterToReturnKnownValue = 2,
             int calculationIterations = 3)
         {
-            _logger.LogInformation("Calculate Optimum YatzeePro Strategy...");
+            _logger.LogInformation("Calculate Optimum YahtzeePro Strategy...");
 
             _winningValue = gameConfiguration.WinningValue;
             _totalDice = gameConfiguration.TotalDice;

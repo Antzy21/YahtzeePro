@@ -18,7 +18,7 @@ namespace YahtzeePro.Core
         public static DiceCombination Generate(int numberOfDice, Random random)
         {
             if (numberOfDice < 0)
-                throw new ArgumentOutOfRangeException($"number of dice give {numberOfDice} is negative.");
+                throw new ArgumentOutOfRangeException($"number of dice given {numberOfDice} is negative.");
 
             var dice = new List<int>();
             for (int i = 0; i < numberOfDice; i++)

@@ -52,21 +52,21 @@ public class ApiCommandService : ICommandService
         var optimumApiResponse = _optimumClient.GetAsync("/status");
         if (optimumApiResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Connected to YatzeePro Optimum API server!");
+            Console.WriteLine("Connected to YahtzeePro Optimum API server!");
         }
         else
         {
-            Console.WriteLine("Unable to reach YatzeePro Optimum API server");
+            Console.WriteLine("Unable to reach YahtzeePro Optimum API server");
         }
 
         var playApiResponse = _playClient.GetAsync("/");
         if (playApiResponse.Result.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Connected to YatzeePro Play API server!");
+            Console.WriteLine("Connected to YahtzeePro Play API server!");
         }
         else
         {
-            Console.WriteLine("Unable to reach YatzeePro Play API server");
+            Console.WriteLine("Unable to reach YahtzeePro Play API server");
         }
     }
 
