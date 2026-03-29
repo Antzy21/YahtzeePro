@@ -7,7 +7,7 @@ namespace YahtzeePro.Cli.Commands;
 public class OptimumCommand : Command
 {
     public OptimumCommand(ICommandService commandService)
-        : base("optimum", "View and create calculated Optimum stragies")
+        : base("optimum", "View and create calculated Optimum strategies")
     {
         Add(new CalculateOptimumCommand(commandService));
         Add(new GetOptimumCommand(commandService));
