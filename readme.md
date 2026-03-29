@@ -24,7 +24,7 @@ This call will calculate with the following:
 - 3 total dice
 - 5 for `initialStackCounterToReturnKnownValue`
 - 4 for `calculationIterations`
-- loggin all calculations to the console
+- logging all calculations to the console
 
 ## Play
 Get two players to play a few games (or lots of sets of matches!)
@@ -58,7 +58,7 @@ On a turn, the player can roll or bank
 
 Probability of winning is the max of:  
 - the probability of winning if you roll
-- the probability of winnning if you bank
+- the probability of winning if you bank
 
 Probability if chosing to bank  
 `Sb(Si, So, C, D) = P(So, Si+C, 0, 0) | P(So, Si+C, C, D)`  
