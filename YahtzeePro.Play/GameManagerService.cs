@@ -32,8 +32,9 @@ public class GameManagerService(ILogger<IGameManagerService> logger) : IGameMana
             var rolledDice = DiceCombinationGenerator.Generate(game.GameState.DiceToRoll, _random);
             game.TurnMoves.Add(new TurnMove(game.Turns, MoveChoice.Risky, rolledDice));
             game.ResolveRolledDice(rolledDice);
+            var diceRoll = string.Join(" ", game.TurnMoves.Last().RolledDice!.DiceCount.Select(kv => $"{kv.Key}s:{kv.Value}"));
+            _logger.LogInformation("Last dice roll: {lastDiceRoll}", diceRoll);
         }
-        _logger.LogInformation("Last dice roll: {lastDiceRoll}", game.TurnMoves?.ToString() ?? "Banked");
-        _logger.LogInformation("Game state after making {move} move: {game}", move, game.GameState);
+        _logger.LogInformation("Game state after making {move} move: P1 {P1} + {cachedScore}, P2 {P2}", move, game.GameState.PlayerScore, game.GameState.CachedScore, game.GameState.OpponentScore);
     }
 }
