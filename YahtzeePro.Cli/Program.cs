@@ -10,6 +10,7 @@ internal class Program
     static void Main(string[] args)
     {
         var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
 
