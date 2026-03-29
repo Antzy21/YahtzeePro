@@ -7,6 +7,7 @@ internal class YahtzeeProCommand : RootCommand
 {
     public YahtzeeProCommand(ICommandService commandService)
     {
+        Name = "YahtzeePro";
         Add(new StatusCommand(commandService));
         Add(new PlayCommand(commandService));
         Add(new OptimumCommand(commandService));
